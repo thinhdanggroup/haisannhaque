@@ -1,0 +1,156 @@
+import { Plus } from "lucide-react";
+
+import { AdminDataTable } from "@/components/admin/admin-data-table";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { FilterBar } from "@/components/admin/filter-bar";
+import { StatusChip, type StatusChipTone } from "@/components/admin/status-chip";
+import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
+import { shouldUseAdminPlaywrightFixture } from "@/src/features/admin/dashboard";
+import { createServerClient } from "@/src/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
+
+type PurchaseOrderRow = {
+  poNo: string;
+  supplier: string;
+  warehouse: string;
+  status: string;
+  orderedTotal: string;
+  receivedTotal: string;
+};
+
+type PurchaseOrderRecord = {
+  po_no: string;
+  status: string;
+  ordered_total: number | string;
+  received_total: number | string;
+  suppliers: { name: string } | Array<{ name: string }> | null;
+  warehouses: { code: string } | Array<{ code: string }> | null;
+};
+
+type PurchaseOrdersPageData =
+  | { access: "allowed"; purchaseOrders: PurchaseOrderRow[] }
+  | { access: "denied" };
+
+function firstRelation<T>(relation: T | T[] | null): T | null {
+  return Array.isArray(relation) ? (relation[0] ?? null) : relation;
+}
+
+function getPurchaseOrderStatusTone(status: string): StatusChipTone {
+  if (status === "received") {
+    return "success";
+  }
+
+  if (status === "cancelled") {
+    return "danger";
+  }
+
+  if (status === "submitted") {
+    return "info";
+  }
+
+  if (status === "partially_received") {
+    return "warning";
+  }
+
+  return "neutral";
+}
+
+async function getPurchaseOrders(): Promise<PurchaseOrderRow[]> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "purchase_orders:read");
+
+  const { data, error } = await client
+    .from("purchase_orders")
+    .select("po_no, status, ordered_total, received_total, suppliers(name), warehouses(code)")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (error) {
+    throw error;
+  }
+
+  return ((data ?? []) as PurchaseOrderRecord[]).map((purchaseOrder) => {
+    const supplier = firstRelation(purchaseOrder.suppliers);
+    const warehouse = firstRelation(purchaseOrder.warehouses);
+
+    return {
+      poNo: purchaseOrder.po_no,
+      supplier: supplier?.name ?? "",
+      warehouse: warehouse?.code ?? "",
+      status: purchaseOrder.status,
+      orderedTotal: String(purchaseOrder.ordered_total),
+      receivedTotal: String(purchaseOrder.received_total),
+    };
+  });
+}
+
+async function getPurchaseOrdersPageData(): Promise<PurchaseOrdersPageData> {
+  if (shouldUseAdminPlaywrightFixture()) {
+    return { access: "allowed", purchaseOrders: [] };
+  }
+
+  try {
+    const purchaseOrders = await getPurchaseOrders();
+
+    return { access: "allowed", purchaseOrders };
+  } catch (error) {
+    if (error instanceof AdminAuthorizationError) {
+      return { access: "denied" };
+    }
+
+    throw error;
+  }
+}
+
+export default async function AdminPurchaseOrdersPage() {
+  const pageData = await getPurchaseOrdersPageData();
+
+  if (pageData.access === "denied") {
+    return (
+      <div>
+        <AdminPageHeader title="Purchase Orders" />
+        <p className="text-sm text-slate-600">You do not have access to purchase orders.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <AdminPageHeader
+        title="Purchase Orders"
+        description="Track supplier orders, destination warehouses, and receiving progress."
+        action={
+          <button className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white">
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            New purchase order
+          </button>
+        }
+      />
+      <FilterBar>
+        <span className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">
+          Procurement queue
+        </span>
+        <span className="text-xs text-slate-600">Latest 50 supplier purchase orders</span>
+      </FilterBar>
+      <AdminDataTable
+        columns={[
+          { key: "poNo", label: "PO" },
+          { key: "supplier", label: "Supplier" },
+          { key: "warehouse", label: "Warehouse" },
+          {
+            key: "status",
+            label: "Status",
+            render: (row) => (
+              <StatusChip value={row.status} tone={getPurchaseOrderStatusTone(row.status)} />
+            ),
+          },
+          { key: "orderedTotal", label: "Ordered" },
+          { key: "receivedTotal", label: "Received" },
+        ]}
+        rows={pageData.purchaseOrders}
+        emptyMessage="No purchase orders yet."
+      />
+    </div>
+  );
+}
