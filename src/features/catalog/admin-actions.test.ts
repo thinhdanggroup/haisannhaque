@@ -31,11 +31,16 @@ describe("archiveProduct", () => {
   });
 
   it("sets status to archived for the given product id", async () => {
-    await archiveProduct("prod-uuid-123");
+    const validId = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
+    await archiveProduct(validId);
     expect(mockFrom).toHaveBeenCalledWith("products");
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ status: "archived" }),
     );
-    expect(mockEq).toHaveBeenCalledWith("id", "prod-uuid-123");
+    expect(mockEq).toHaveBeenCalledWith("id", validId);
+  });
+
+  it("throws for a non-UUID product id", async () => {
+    await expect(archiveProduct("prod-uuid-123")).rejects.toThrow("Invalid product id");
   });
 });

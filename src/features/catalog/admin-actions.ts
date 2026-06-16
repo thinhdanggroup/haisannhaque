@@ -20,6 +20,9 @@ export async function updateProduct(
   _prev: UpdateProductState,
   formData: FormData,
 ): Promise<UpdateProductState> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "products:update");
+
   const result = updateProductSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),
@@ -31,9 +34,6 @@ export async function updateProduct(
   if (!result.success) {
     return { error: result.error.issues[0]?.message ?? "Invalid input." };
   }
-
-  const client = await createServerClient();
-  await requireAdminPermission(client, "products:update");
 
   const { error } = await client
     .from("products")
@@ -53,13 +53,16 @@ export async function updateProduct(
 }
 
 export async function archiveProduct(id: string): Promise<void> {
+  const parsed = z.string().uuid().safeParse(id);
+  if (!parsed.success) throw new Error("Invalid product id");
+
   const client = await createServerClient();
   await requireAdminPermission(client, "products:delete");
 
   const { error } = await client
     .from("products")
     .update({ status: "archived", updated_at: new Date().toISOString() })
-    .eq("id", id);
+    .eq("id", parsed.data);
 
   if (error) throw error;
 
