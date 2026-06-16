@@ -25,7 +25,6 @@ describe("CMS query helpers", () => {
         id: "p1",
         slug: "alaska-lobster-500g",
         name: "Alaska lobster 500g",
-        is_available: true,
         product_images: [
           {
             url: "https://placehold.co/lobster",
@@ -117,7 +116,6 @@ describe("CMS query helpers", () => {
           id: "p1",
           slug: "alaska-lobster-500g",
           name: "Alaska lobster 500g",
-          is_available: true,
           product_images: [],
           product_variants: [
             {
@@ -178,7 +176,6 @@ describe("CMS query helpers", () => {
         id: "p1",
         slug: "alaska-lobster-500g",
         name: "Alaska lobster 500g",
-        is_available: true,
         product_images: [],
         product_variants: [
           {
@@ -244,7 +241,7 @@ describe("CMS query helpers", () => {
     expect(card.imageUrl).toBe("https://placehold.co/first");
   });
 
-  it("defaults availability to false when CMS rows do not provide it", () => {
+  it("sets isAvailable to true when at least one variant is active", () => {
     const card = mapCmsProductCardRow({
       badge_text: null,
       products: {
@@ -266,7 +263,7 @@ describe("CMS query helpers", () => {
       },
     });
 
-    expect(card.isAvailable).toBe(false);
+    expect(card.isAvailable).toBe(true);
   });
 
   it("filters invalid section products from homepage content", async () => {
@@ -291,7 +288,6 @@ describe("CMS query helpers", () => {
                 id: "valid",
                 slug: "valid-product",
                 name: "Valid product",
-                is_available: true,
                 product_images: [],
                 product_variants: [
                   {
