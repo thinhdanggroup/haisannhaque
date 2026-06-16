@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ProductEditForm } from "@/components/admin/product-edit-form";
+import { ProductImagesManager } from "@/components/admin/product-images-manager";
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { createServerClient } from "@/src/lib/supabase/server";
 
@@ -36,6 +37,12 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
     notFound();
   }
 
+  const { data: images } = await client
+    .from("product_images")
+    .select("id, url, alt_text")
+    .eq("product_id", id)
+    .order("sort_order", { ascending: true });
+
   return (
     <div>
       <AdminPageHeader
@@ -49,6 +56,12 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
         shortDescription={product.short_description ?? ""}
         origin={product.origin ?? ""}
       />
+      <div className="mt-8 border-t border-slate-200 pt-8">
+        <ProductImagesManager
+          productId={product.id}
+          images={(images ?? []).map((img) => ({ id: img.id, url: img.url, altText: img.alt_text ?? null }))}
+        />
+      </div>
     </div>
   );
 }
