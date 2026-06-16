@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { AdminDataTable } from "@/components/admin/admin-data-table";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { ProductRowActions } from "@/components/admin/product-row-actions";
 import { StatusChip, type StatusChipTone } from "@/components/admin/status-chip";
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { shouldUseAdminPlaywrightFixture } from "@/src/features/admin/dashboard";
@@ -13,12 +14,14 @@ export const dynamic = "force-dynamic";
 type ProductClient = Pick<SupabaseClient, "from">;
 
 type AdminProductRow = {
+  id: string;
   name: string;
   status: string;
   variants: number;
 };
 
 type ProductRecord = {
+  id: string;
   name: string;
   status: string;
   product_variants: Array<{ id: string }> | null;
@@ -43,7 +46,7 @@ function getProductStatusTone(status: string): StatusChipTone {
 async function getAdminProductRows(client: ProductClient): Promise<AdminProductRow[]> {
   const { data, error } = await client
     .from("products")
-    .select("name, status, product_variants(id)")
+    .select("id, name, status, product_variants(id)")
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -52,6 +55,7 @@ async function getAdminProductRows(client: ProductClient): Promise<AdminProductR
   }
 
   return ((data ?? []) as ProductRecord[]).map((product) => ({
+    id: product.id,
     name: product.name,
     status: product.status,
     variants: product.product_variants?.length ?? 0,
@@ -116,6 +120,7 @@ export default async function AdminProductsPage() {
         ]}
         rows={pageData.products}
         emptyMessage="No products created yet."
+        actionsSlot={(row) => <ProductRowActions id={row.id} name={row.name} />}
       />
     </div>
   );
