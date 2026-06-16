@@ -45,6 +45,7 @@ type CmsProductRow = {
   id: string;
   slug: string;
   name: string;
+  is_available?: boolean | null;
   product_images: Relation<CmsProductImageRow>;
   product_variants: Relation<CmsProductVariantRow>;
 };
@@ -181,7 +182,7 @@ export function mapCmsProductCardRow(row: CmsSectionProductCardRow): CmsProductC
     imageUrl: image?.url ?? null,
     price: variant.sale_price ?? variant.list_price,
     compareAtPrice: variant.sale_price == null ? null : variant.list_price,
-    isAvailable: getDisplayVariant(asArray(product.product_variants)) !== null,
+    isAvailable: product.is_available ?? false,
     badgeText: row.badge_text,
     unitLabel: variant.unit,
     soldLabel: "",
@@ -285,6 +286,7 @@ export async function getHomePageContent(
             id,
             slug,
             name,
+            is_available,
             product_images(url, alt_text, sort_order),
             product_variants(
               id,
