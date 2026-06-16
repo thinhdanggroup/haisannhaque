@@ -33,6 +33,9 @@ pnpm-debug.log*
 test-results/
 playwright-report/
 
+# Local image uploads (temporary server-side storage)
+uploads/
+
 # OS/editor
 .DS_Store
 .idea/
