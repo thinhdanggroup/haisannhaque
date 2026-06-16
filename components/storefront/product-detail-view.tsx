@@ -1,8 +1,6 @@
 import Image from "next/image";
 import {
   CheckCircle2,
-  Minus,
-  Plus,
   RotateCcw,
   ShieldCheck,
   Snowflake,
@@ -12,7 +10,7 @@ import type {
   ProductDetail,
   ProductVariantSummary,
 } from "@/src/features/catalog/types";
-import { formatVnd } from "@/src/lib/format";
+import { AddToCartControls } from "./add-to-cart-controls";
 
 type ProductDetailViewProps = {
   product: ProductDetail;
@@ -45,8 +43,6 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   const images = product.images;
   const primaryImage = images[0] ?? null;
   const variants = getDisplayVariants(product.variants);
-  const firstVariant = variants[0] ?? null;
-  const price = firstVariant?.salePrice ?? firstVariant?.listPrice ?? 0;
 
   return (
     <div className="space-y-8">
@@ -118,104 +114,8 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
             </p>
           ) : null}
 
-          <div className="mt-5 rounded-lg bg-red-50 px-4 py-3">
-            <div className="text-xs font-semibold uppercase tracking-normal text-red-700">
-              Gia ban
-            </div>
-            <div className="mt-1 text-3xl font-bold text-red-600">
-              {formatVnd(price)}
-            </div>
-            {firstVariant?.salePrice ? (
-              <div className="mt-1 text-sm text-slate-500 line-through">
-                {formatVnd(firstVariant.listPrice)}
-              </div>
-            ) : null}
-          </div>
-
-          <fieldset className="mt-5">
-            <legend className="text-sm font-semibold text-slate-950">
-              Quy cach
-            </legend>
-            <div className="mt-2 grid gap-2">
-              {variants.length > 0 ? (
-                variants.map((variant, index) => (
-                  <label
-                    key={variant.id}
-                    className="flex min-h-14 items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm"
-                  >
-                    <input
-                      type="radio"
-                      name="variant"
-                      defaultChecked={index === 0}
-                      disabled
-                      className="h-4 w-4"
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-semibold text-slate-950">
-                        {variant.optionSummary ?? variant.unit}
-                      </span>
-                      <span className="block text-xs text-slate-500">
-                        SKU: {variant.sku}
-                      </span>
-                    </span>
-                    <span className="text-sm font-bold text-red-600">
-                      {formatVnd(variant.salePrice ?? variant.listPrice)}
-                    </span>
-                  </label>
-                ))
-              ) : (
-                <div className="rounded-lg border border-dashed border-slate-300 px-3 py-4 text-sm text-slate-600">
-                  San pham dang cap nhat quy cach.
-                </div>
-              )}
-            </div>
-          </fieldset>
-
           <div className="mt-5">
-            <div className="text-sm font-semibold text-slate-950">So luong</div>
-            <div className="mt-2 inline-grid grid-cols-[40px_64px_40px] overflow-hidden rounded-lg border border-slate-200 bg-white">
-              <button
-                type="button"
-                aria-label="Decrease quantity"
-                disabled
-                className="grid h-10 place-items-center text-slate-400 disabled:cursor-not-allowed"
-              >
-                <Minus className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <input
-                aria-label="Quantity"
-                value="1"
-                readOnly
-                className="h-10 border-x border-slate-200 text-center text-sm font-semibold outline-none"
-              />
-              <button
-                type="button"
-                aria-label="Increase quantity"
-                disabled
-                className="grid h-10 place-items-center text-slate-400 disabled:cursor-not-allowed"
-              >
-                <Plus className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-5 grid gap-2 sm:grid-cols-2">
-            <button
-              type="button"
-              disabled
-              title="Cart actions are wired in the checkout slice."
-              className="min-h-12 rounded-lg bg-orange-500 px-4 text-sm font-bold text-white opacity-70 disabled:cursor-not-allowed"
-            >
-              Add to cart
-            </button>
-            <button
-              type="button"
-              disabled
-              title="Buy-now actions are wired in the checkout slice."
-              className="min-h-12 rounded-lg bg-teal-700 px-4 text-sm font-bold text-white opacity-70 disabled:cursor-not-allowed"
-            >
-              Buy now
-            </button>
+            <AddToCartControls variants={variants} />
           </div>
 
           <div className="mt-5 grid gap-2 text-sm text-slate-700">
