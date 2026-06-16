@@ -29,7 +29,7 @@ export async function updateProduct(
   });
 
   if (!result.success) {
-    return { error: result.error.errors[0]?.message ?? "Invalid input." };
+    return { error: result.error.issues[0]?.message ?? "Invalid input." };
   }
 
   const client = await createServerClient();
