@@ -10,6 +10,7 @@ type AdminDataTableProps<T extends object> = {
   columns: Array<AdminDataTableColumn<T>>;
   rows: T[];
   emptyMessage?: string;
+  actionsSlot?: (row: T) => ReactNode;
 };
 
 function formatCellValue(value: unknown): string {
@@ -20,6 +21,7 @@ export function AdminDataTable<T extends object>({
   columns,
   rows,
   emptyMessage = "No records found.",
+  actionsSlot,
 }: AdminDataTableProps<T>) {
   if (rows.length === 0) {
     return (
@@ -39,6 +41,9 @@ export function AdminDataTable<T extends object>({
                 {column.label}
               </th>
             ))}
+            {actionsSlot ? (
+              <th className="px-3 py-2 font-semibold text-right">Actions</th>
+            ) : null}
           </tr>
         </thead>
         <tbody>
@@ -49,6 +54,9 @@ export function AdminDataTable<T extends object>({
                   {column.render ? column.render(row) : formatCellValue(row[column.key])}
                 </td>
               ))}
+              {actionsSlot ? (
+                <td className="px-3 py-2 text-right">{actionsSlot(row)}</td>
+              ) : null}
             </tr>
           ))}
         </tbody>
