@@ -19,7 +19,10 @@ export function InventoryAdjustmentForm({ sku, warehouseCode }: InventoryAdjustm
     null,
   );
 
-  if (!open) {
+  // Collapse the form once the server action reports success.
+  const formOpen = open && !(state && "success" in state);
+
+  if (!formOpen) {
     return (
       <button
         onClick={() => setOpen(true)}
@@ -32,10 +35,7 @@ export function InventoryAdjustmentForm({ sku, warehouseCode }: InventoryAdjustm
 
   return (
     <form
-      action={(fd) => {
-        action(fd);
-        if (!state || "success" in state) setOpen(false);
-      }}
+      action={action}
       className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-3 text-sm shadow-sm"
     >
       <input type="hidden" name="sku" value={sku} />
