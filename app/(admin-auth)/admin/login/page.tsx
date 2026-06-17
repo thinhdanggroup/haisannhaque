@@ -11,7 +11,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
           <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">
-            Dao Seafood
+            Hải Sản Nhà Quê
           </div>
           <h1 className="mt-1 text-2xl font-bold text-slate-900">Admin</h1>
         </div>
