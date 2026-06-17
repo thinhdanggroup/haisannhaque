@@ -180,10 +180,10 @@ export function StorefrontFooter({
         <div className="grid gap-8 lg:grid-cols-[1fr_2fr]">
           <div>
             <div className="text-2xl font-extrabold text-[#0f766e]">
-              Dao Seafood
+              Hải Sản Nhà Quê
             </div>
             <p className="mt-3 max-w-sm text-sm leading-6 text-slate-600">
-              Dao Seafood Commerce vận hành gian hàng, thanh toán và quy trình
+              Hải Sản Nhà Quê vận hành gian hàng, thanh toán và quy trình
               bán hải sản theo nhịp thương mại Việt Nam.
             </p>
             <a
@@ -239,14 +239,15 @@ export function StorefrontFooter({
 
       <div id="stores" className="bg-[#0f3f46] pb-24 pt-8 text-white md:pb-8">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-[220px_minmax(0,1fr)_180px] md:items-center">
-          <div className="text-2xl font-extrabold text-white">Dao Seafood</div>
+          <div className="text-2xl font-extrabold text-white">Hải Sản Nhà Quê</div>
           <div>
             <h2 className="text-sm font-bold uppercase text-orange-200">
               Thông tin công ty
             </h2>
             <p className="mt-2 text-sm leading-6 text-teal-50">
-              Công ty TNHH Dao Seafood. VP: 11 Block A, phường Tân Sơn,
-              TP.HCM. Hotline: 1900 0098. Email: care@daoseafood.local.
+              CÔNG TY TNHH HẢI SẢN NHÀ QUÊ. MST: 0319442718. VP: SAV.2-00.04 Tầng trệt,
+              Tháp 2, Toà Nhà The Sun Avenue, 28 Mai Chí Thọ, P.Bình Trưng, TP.HCM, Việt Nam.
+              Hotline: 1900 0098. Email: care@haisannhaque.vn.
             </p>
             <p className="mt-1 text-xs leading-5 text-teal-100">
               Nội dung, hình ảnh và dữ liệu demo trong dự án là tài sản minh họa
