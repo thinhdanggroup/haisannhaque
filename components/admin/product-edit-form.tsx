@@ -8,10 +8,11 @@ type ProductEditFormProps = {
   name: string;
   status: string;
   shortDescription: string;
+  description: string;
   origin: string;
 };
 
-export function ProductEditForm({ id, name, status, shortDescription, origin }: ProductEditFormProps) {
+export function ProductEditForm({ id, name, status, shortDescription, description, origin }: ProductEditFormProps) {
   const [state, action, isPending] = useActionState<UpdateProductState, FormData>(
     updateProduct,
     null,
@@ -58,6 +59,17 @@ export function ProductEditForm({ id, name, status, shortDescription, origin }: 
           name="shortDescription"
           defaultValue={shortDescription}
           rows={3}
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+        />
+      </label>
+
+      <label className="block text-sm" htmlFor="description">
+        <span className="font-medium text-slate-700">Mô tả chi tiết</span>
+        <textarea
+          id="description"
+          name="description"
+          defaultValue={description}
+          rows={6}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         />
       </label>

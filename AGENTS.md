@@ -33,6 +33,7 @@ Use `pnpm`; the lockfile is [`pnpm-lock.yaml`](pnpm-lock.yaml).
 | `pnpm start` | Run the built app. |
 | `pnpm lint` | Run ESLint with Next core-web-vitals and TypeScript rules. |
 | `pnpm test` | Run the Vitest suite once. |
+| `pnpm test src/features/catalog` | Run tests matching a path or name filter. |
 | `pnpm test:watch` | Run Vitest in watch mode. |
 | `pnpm exec playwright test` | Run Playwright tests from [`tests/e2e/`](tests/e2e/). |
 | `docker compose up --build` | Start the web app plus local Postgres/PostgREST/Auth gateway and apply migrations once. |

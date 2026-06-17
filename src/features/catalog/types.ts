@@ -34,4 +34,5 @@ export type ProductDetail = {
     altText: string | null;
   }>;
   variants: ProductVariantSummary[];
+  relatedProducts: ProductCard[];
 };

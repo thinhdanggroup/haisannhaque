@@ -12,6 +12,33 @@ type ProductCardRow = {
   is_available: boolean;
 };
 
+type RelatedProductRow = {
+  id: string;
+  slug: string;
+  name: string;
+  product_images: Array<{ url: string; alt_text: string | null; sort_order: number }>;
+  product_variants: Array<{ id: string; sku: string; unit: string; list_price: number; sale_price: number | null; is_active: boolean }>;
+};
+
+function mapRelatedProductRowToCard(row: RelatedProductRow): ProductCard {
+  const activeVariants = row.product_variants.filter((v) => v.is_active);
+  const cheapest = activeVariants.slice().sort((a, b) => {
+    return (a.sale_price ?? a.list_price) - (b.sale_price ?? b.list_price);
+  })[0];
+  const firstImage = row.product_images.slice().sort((a, b) => a.sort_order - b.sort_order)[0];
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    imageUrl: firstImage?.url ?? null,
+    price: cheapest ? (cheapest.sale_price ?? cheapest.list_price) : 0,
+    compareAtPrice: cheapest?.sale_price ? cheapest.list_price : null,
+    isAvailable: activeVariants.length > 0,
+    unitLabel: cheapest?.unit ?? null,
+  };
+}
+
 type ProductDetailRow = {
   id: string;
   slug: string;
@@ -34,6 +61,10 @@ type ProductDetailRow = {
     sale_price: number | null;
     is_active: boolean;
   }>;
+  product_related: Array<{
+    sort_order: number;
+    related: RelatedProductRow[] | RelatedProductRow | null;
+  }>;
 };
 
 export function mapProductRowToCard(row: ProductCardRow): ProductCard {
@@ -51,6 +82,14 @@ export function mapProductRowToCard(row: ProductCardRow): ProductCard {
 }
 
 function mapProductDetailRow(row: ProductDetailRow): ProductDetail {
+  const relatedProducts = row.product_related
+    .slice()
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .flatMap((r) => {
+      const rel = Array.isArray(r.related) ? r.related[0] ?? null : r.related;
+      return rel ? [mapRelatedProductRowToCard(rel)] : [];
+    });
+
   return {
     id: row.id,
     slug: row.slug,
@@ -74,6 +113,7 @@ function mapProductDetailRow(row: ProductDetailRow): ProductDetail {
       salePrice: variant.sale_price,
       isActive: variant.is_active,
     })),
+    relatedProducts,
   };
 }
 
@@ -138,5 +178,19 @@ export async function getProductBySlug(
     return null;
   }
 
-  return mapProductDetailRow(data as ProductDetailRow);
+  // Fetch related products separately so the page works even before the migration runs.
+  const relatedRaw = await client
+    .from("product_related" as never)
+    .select(
+      `sort_order, related:related_product_id(id, slug, name, product_images(url, alt_text, sort_order), product_variants(id, sku, unit, list_price, sale_price, is_active))`,
+    )
+    .eq("product_id", data.id)
+    .order("sort_order", { ascending: true });
+
+  const relatedRows: Array<{ sort_order: number; related: RelatedProductRow[] | RelatedProductRow | null }> =
+    relatedRaw.error ? [] : ((relatedRaw.data ?? []) as unknown as typeof relatedRows);
+
+  const baseRow = data as unknown as Omit<ProductDetailRow, "product_related">;
+
+  return mapProductDetailRow({ ...baseRow, product_related: relatedRows });
 }

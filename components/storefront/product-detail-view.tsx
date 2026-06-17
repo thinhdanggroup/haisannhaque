@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   CheckCircle2,
   RotateCcw,
@@ -11,6 +10,8 @@ import type {
   ProductVariantSummary,
 } from "@/src/features/catalog/types";
 import { AddToCartControls } from "./add-to-cart-controls";
+import { ProductCard } from "./product-card";
+import { ProductImageGallery } from "./product-image-gallery";
 
 type ProductDetailViewProps = {
   product: ProductDetail;
@@ -41,55 +42,12 @@ function getDisplayVariants(
 
 export function ProductDetailView({ product }: ProductDetailViewProps) {
   const images = product.images;
-  const primaryImage = images[0] ?? null;
   const variants = getDisplayVariants(product.variants);
 
   return (
     <div className="space-y-8">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_430px]">
-        <div className="space-y-3">
-          <div className="relative aspect-square overflow-hidden rounded-lg bg-slate-100">
-            {primaryImage ? (
-              <Image
-                src={primaryImage.url}
-                alt={primaryImage.altText ?? product.name}
-                fill
-                sizes="(min-width: 1024px) 650px, 100vw"
-                className="object-cover"
-                unoptimized
-                priority
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-slate-500">
-                No image
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-4 gap-2">
-            {(images.length > 0 ? images : [null]).slice(0, 4).map((image, index) => (
-              <div
-                key={image?.url ?? `empty-${index}`}
-                className="relative aspect-square overflow-hidden rounded-md border border-slate-200 bg-white"
-              >
-                {image ? (
-                  <Image
-                    src={image.url}
-                    alt={image.altText ?? `${product.name} image ${index + 1}`}
-                    fill
-                    sizes="120px"
-                    className="object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-xs text-slate-500">
-                    No image
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <ProductImageGallery images={images} productName={product.name} />
 
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-normal">
@@ -148,12 +106,16 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
         </p>
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-5">
-        <h2 className="text-xl font-bold text-slate-950">Related products</h2>
-        <div className="mt-3 rounded-lg border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-600">
-          Related product recommendations will appear here.
-        </div>
-      </section>
+      {product.relatedProducts.length > 0 && (
+        <section className="rounded-lg border border-slate-200 bg-white p-5">
+          <h2 className="text-xl font-bold text-slate-950">Sản phẩm liên quan</h2>
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {product.relatedProducts.map((related) => (
+              <ProductCard key={related.id} product={related} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -82,6 +82,7 @@ function createPlaywrightProductFixture(slug: string): ProductDetail {
         isActive: true,
       },
     ],
+    relatedProducts: [],
   };
 }
 
