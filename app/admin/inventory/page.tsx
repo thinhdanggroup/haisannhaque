@@ -1,5 +1,6 @@
 import { AdminDataTable } from "@/components/admin/admin-data-table";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { InventoryAdjustmentForm } from "@/components/admin/inventory-adjustment-form";
 import { StatusChip } from "@/components/admin/status-chip";
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { shouldUseAdminPlaywrightFixture } from "@/src/features/admin/dashboard";
@@ -68,6 +69,9 @@ export default async function AdminInventoryPage() {
         ]}
         rows={pageData.inventoryRows}
         emptyMessage="No inventory records yet."
+        actionsSlot={(row) => (
+          <InventoryAdjustmentForm sku={row.sku} warehouseCode={row.warehouseCode} />
+        )}
       />
     </div>
   );

@@ -4,6 +4,7 @@ export type AdminInventoryRow = {
   sku: string;
   product: string;
   warehouse: string;
+  warehouseCode: string;
   available: string;
   unit: string;
   quality: string;
@@ -46,6 +47,7 @@ export async function getAdminInventoryRows(
     sku: row.sku,
     product: row.product_name,
     warehouse: `${row.warehouse_code} - ${row.warehouse_name}`,
+    warehouseCode: row.warehouse_code,
     available: formatQuantity(row.available_quantity),
     unit: row.unit,
     quality: row.quality ?? "sellable",

@@ -31,6 +31,7 @@ describe("getAdminInventoryRows", () => {
         sku: "TOM-SU-500G",
         product: "Tom su",
         warehouse: "HCM-01 - Primary warehouse",
+        warehouseCode: "HCM-01",
         available: "12,5",
         unit: "kg",
         quality: "sellable",
