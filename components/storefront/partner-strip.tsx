@@ -176,7 +176,7 @@ export function PartnerStrip({ section }: PartnerStripProps) {
     >
       <div className="mb-4">
         <h2 id={headingId} className={storefrontTheme.sectionTitle}>
-          {section.title ?? "Đối tác Dao Seafood"}
+          {section.title ?? "Đối tác Hải Sản Nhà Quê"}
         </h2>
         {section.subtitle ? (
           <p className="mt-1 text-sm text-slate-600">{section.subtitle}</p>
