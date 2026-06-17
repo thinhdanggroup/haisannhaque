@@ -8,6 +8,8 @@ import { canTransitionOrder, type OrderStatus } from "@/src/features/orders/stat
 import { getAdminOrderDetail } from "@/src/features/orders/queries";
 import { createServerClient } from "@/src/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 type AdminOrderDetailPageProps = {
   params: Promise<{ id: string }>;
 };
