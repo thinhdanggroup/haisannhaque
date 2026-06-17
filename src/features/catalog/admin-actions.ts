@@ -110,7 +110,12 @@ export async function createProduct(
     .select("id")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505") {
+      return { error: "A product with a similar name already exists. Please use a more specific name." };
+    }
+    throw error;
+  }
 
   revalidatePath("/admin/products");
   redirect(`/admin/products/${data.id}/edit`);
