@@ -40,7 +40,7 @@ export function StorefrontHeader({ navItems }: StorefrontHeaderProps) {
               href="/"
               className="shrink-0 text-xl font-extrabold tracking-normal text-[#0f766e] md:text-2xl"
             >
-              Dao Seafood
+              Hải Sản Nhà Quê
             </Link>
             <div className="flex items-center gap-2 md:hidden">
               <Link
