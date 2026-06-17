@@ -60,10 +60,10 @@ with product_seed as (
       {"slug":"korean-abalone-live","name":"Bào ngư Hàn Quốc sống","category":"best-sellers","temperature":"live","origin":"Hàn Quốc","price":99000,"sale":65000,"unit":"1 con","summary":"Bào ngư sống theo khẩu phần","image":"https://placehold.co/900x700/e8f5e9/0f172a?text=Bao+Ngu"},
       {"slug":"fresh-salmon-loin","name":"Phi lê cá hồi tươi","category":"salmon","temperature":"fresh","origin":"Na Uy","price":249000,"sale":null,"unit":"khay 200g","summary":"Khay phi lê cá hồi đã sơ chế","image":"https://placehold.co/900x700/fff3e0/0f172a?text=Ca+Hoi+Tuoi"},
       {"slug":"green-lobster-live","name":"Tôm hùm xanh sống","category":"fresh-seafood","temperature":"live","origin":"Việt Nam","price":535000,"sale":429000,"unit":"con 350g","summary":"Tôm hùm xanh sống theo con","image":"https://placehold.co/900x700/e3f2fd/0f172a?text=Tom+Hum+Xanh"},
-      {"slug":"sashimi-mix-family","name":"Set sashimi gia đình","category":"sashimi","temperature":"chilled","origin":"Bếp Dao Seafood","price":965000,"sale":799000,"unit":"combo","summary":"Khay sashimi tổng hợp cho gia đình","image":"https://placehold.co/900x700/fce4ec/0f172a?text=Sashimi+Gia+Dinh"},
-      {"slug":"shrimp-teriyaki-maki","name":"Maki tôm teriyaki","category":"sashimi","temperature":"ready","origin":"Bếp Dao Seafood","price":99000,"sale":null,"unit":"phần","summary":"Phần maki dùng ngay","image":"https://placehold.co/900x700/f3e5f5/0f172a?text=Maki+Tom"},
+      {"slug":"sashimi-mix-family","name":"Set sashimi gia đình","category":"sashimi","temperature":"chilled","origin":"Bếp Nhà Quê","price":965000,"sale":799000,"unit":"combo","summary":"Khay sashimi tổng hợp cho gia đình","image":"https://placehold.co/900x700/fce4ec/0f172a?text=Sashimi+Gia+Dinh"},
+      {"slug":"shrimp-teriyaki-maki","name":"Maki tôm teriyaki","category":"sashimi","temperature":"ready","origin":"Bếp Nhà Quê","price":99000,"sale":null,"unit":"phần","summary":"Phần maki dùng ngay","image":"https://placehold.co/900x700/f3e5f5/0f172a?text=Maki+Tom"},
       {"slug":"peeled-white-shrimp","name":"Tôm thẻ bóc nõn","category":"frozen-seafood","temperature":"frozen","origin":"Việt Nam","price":79000,"sale":69000,"unit":"khay 150g","summary":"Khay tôm bóc nõn đông lạnh","image":"https://placehold.co/900x700/e1f5fe/0f172a?text=Tom+Boc+Non"},
-      {"slug":"ready-meal-salmon-soy","name":"Cơm cá hồi sốt tương","category":"ready-to-eat","temperature":"ready","origin":"Bếp Dao Seafood","price":179000,"sale":null,"unit":"khay","summary":"Cơm cá hồi đã chuẩn bị","image":"https://placehold.co/900x700/fff8e1/0f172a?text=Com+Ca+Hoi"},
+      {"slug":"ready-meal-salmon-soy","name":"Cơm cá hồi sốt tương","category":"ready-to-eat","temperature":"ready","origin":"Bếp Nhà Quê","price":179000,"sale":null,"unit":"khay","summary":"Cơm cá hồi đã chuẩn bị","image":"https://placehold.co/900x700/fff8e1/0f172a?text=Com+Ca+Hoi"},
       {"slug":"clam-combo","name":"Combo 3 loại nghêu","category":"promotions","temperature":"fresh","origin":"Việt Nam","price":119000,"sale":null,"unit":"combo","summary":"Combo nghêu tổng hợp","image":"https://placehold.co/900x700/e0f2f1/0f172a?text=Combo+Ngheu"},
       {"slug":"blue-crab-live","name":"Cua xanh sống","category":"crab-lobster","temperature":"live","origin":"Việt Nam","price":390000,"sale":369000,"unit":"1kg","summary":"Cua xanh sống bán theo kg","image":"https://placehold.co/900x700/ede7f6/0f172a?text=Cua+Xanh"},
       {"slug":"canada-oyster-half-shell","name":"Hàu Canada nửa vỏ","category":"oyster-shellfish","temperature":"chilled","origin":"Canada","price":290000,"sale":null,"unit":"hộp","summary":"Hộp hàu nửa vỏ giữ lạnh","image":"https://placehold.co/900x700/e0f2fe/0f172a?text=Hau+Canada"},
@@ -72,14 +72,14 @@ with product_seed as (
       {"slug":"snow-crab-cluster","name":"Cụm cua tuyết","category":"crab-lobster","temperature":"frozen","origin":"Nhập khẩu","price":690000,"sale":629000,"unit":"kg","summary":"Cụm cua tuyết đông lạnh","image":"https://placehold.co/900x700/ede9fe/0f172a?text=Cua+Tuyet"},
       {"slug":"tiger-prawn-live","name":"Tôm sú sống","category":"live-seafood","temperature":"live","origin":"Việt Nam","price":420000,"sale":null,"unit":"kg","summary":"Tôm sú sống bán theo kg","image":"https://placehold.co/900x700/dcfce7/0f172a?text=Tom+Su"},
       {"slug":"squid-ring-tray","name":"Khoanh mực đông lạnh","category":"shrimp-squid","temperature":"frozen","origin":"Việt Nam","price":125000,"sale":99000,"unit":"khay 300g","summary":"Khay khoanh mực đông lạnh","image":"https://placehold.co/900x700/e0f2fe/0f172a?text=Khoanh+Muc"},
-      {"slug":"seafood-hotpot-combo","name":"Combo lẩu hải sản","category":"promotions","temperature":"fresh","origin":"Bếp Dao Seafood","price":459000,"sale":399000,"unit":"combo","summary":"Combo hải sản nấu lẩu","image":"https://placehold.co/900x700/fef3c7/0f172a?text=Lau+Hai+San"},
-      {"slug":"grilled-salmon-teriyaki","name":"Cá hồi nướng teriyaki","category":"ready-to-eat","temperature":"ready","origin":"Bếp Dao Seafood","price":189000,"sale":null,"unit":"khay","summary":"Khay cá hồi teriyaki đã chuẩn bị","image":"https://placehold.co/900x700/ffedd5/0f172a?text=Ca+Hoi+Teriyaki"},
-      {"slug":"ikura-sushi-pack","name":"Set sushi trứng cá hồi","category":"sashimi","temperature":"chilled","origin":"Bếp Dao Seafood","price":219000,"sale":null,"unit":"gói","summary":"Set sushi trứng cá hồi giữ lạnh","image":"https://placehold.co/900x700/fce7f3/0f172a?text=Ikura+Sushi"},
+      {"slug":"seafood-hotpot-combo","name":"Combo lẩu hải sản","category":"promotions","temperature":"fresh","origin":"Bếp Nhà Quê","price":459000,"sale":399000,"unit":"combo","summary":"Combo hải sản nấu lẩu","image":"https://placehold.co/900x700/fef3c7/0f172a?text=Lau+Hai+San"},
+      {"slug":"grilled-salmon-teriyaki","name":"Cá hồi nướng teriyaki","category":"ready-to-eat","temperature":"ready","origin":"Bếp Nhà Quê","price":189000,"sale":null,"unit":"khay","summary":"Khay cá hồi teriyaki đã chuẩn bị","image":"https://placehold.co/900x700/ffedd5/0f172a?text=Ca+Hoi+Teriyaki"},
+      {"slug":"ikura-sushi-pack","name":"Set sushi trứng cá hồi","category":"sashimi","temperature":"chilled","origin":"Bếp Nhà Quê","price":219000,"sale":null,"unit":"gói","summary":"Set sushi trứng cá hồi giữ lạnh","image":"https://placehold.co/900x700/fce7f3/0f172a?text=Ikura+Sushi"},
       {"slug":"baby-octopus-tray","name":"Bạch tuộc baby khay","category":"shrimp-squid","temperature":"frozen","origin":"Việt Nam","price":145000,"sale":null,"unit":"khay 300g","summary":"Khay bạch tuộc baby đông lạnh","image":"https://placehold.co/900x700/e0f2fe/0f172a?text=Bach+Tuoc"},
       {"slug":"black-tiger-shrimp","name":"Tôm sú tươi","category":"shrimp-squid","temperature":"fresh","origin":"Việt Nam","price":260000,"sale":229000,"unit":"kg","summary":"Tôm sú tươi bán theo kg","image":"https://placehold.co/900x700/e0f7fa/0f172a?text=Tom+Su+Tuoi"},
       {"slug":"lobster-tail-pack","name":"Đuôi tôm hùm","category":"crab-lobster","temperature":"frozen","origin":"Nhập khẩu","price":530000,"sale":489000,"unit":"gói","summary":"Gói đuôi tôm hùm đông lạnh","image":"https://placehold.co/900x700/ede9fe/0f172a?text=Duoi+Tom+Hum"},
       {"slug":"clam-meat-pack","name":"Thịt nghêu gói","category":"frozen-seafood","temperature":"frozen","origin":"Việt Nam","price":69000,"sale":null,"unit":"gói 250g","summary":"Gói thịt nghêu đông lạnh","image":"https://placehold.co/900x700/e0f2f1/0f172a?text=Thit+Ngheu"},
-      {"slug":"seaweed-salad-box","name":"Salad rong biển","category":"ready-to-eat","temperature":"chilled","origin":"Bếp Dao Seafood","price":59000,"sale":null,"unit":"hộp","summary":"Hộp salad rong biển giữ lạnh","image":"https://placehold.co/900x700/dcfce7/0f172a?text=Salad+Rong+Bien"}
+      {"slug":"seaweed-salad-box","name":"Salad rong biển","category":"ready-to-eat","temperature":"chilled","origin":"Bếp Nhà Quê","price":59000,"sale":null,"unit":"hộp","summary":"Hộp salad rong biển giữ lạnh","image":"https://placehold.co/900x700/dcfce7/0f172a?text=Salad+Rong+Bien"}
     ]'::jsonb
   ) as product(
     slug text,
@@ -110,12 +110,12 @@ upserted_products as (
     slug,
     name,
     'Hải sản được chọn cho giao nhanh trong ngày.',
-    'Nội dung sản phẩm placeholder gốc cho dữ liệu seed Dao Seafood.',
+    'Nội dung sản phẩm placeholder gốc cho dữ liệu seed Hải Sản Nhà Quê.',
     origin,
     temperature,
     'published',
     name,
-    'Đặt ' || name || ' tại Dao Seafood.'
+    'Đặt ' || name || ' tại Hải Sản Nhà Quê.'
   from product_seed
   on conflict (slug) do update
   set name = excluded.name,
@@ -265,7 +265,7 @@ where not exists (
 );
 
 insert into cms_pages (page_key, title, status)
-values ('home', 'Trang chủ Dao Seafood', 'published')
+values ('home', 'Trang chủ Hải Sản Nhà Quê', 'published')
 on conflict (page_key) do update
 set title = excluded.title,
     status = excluded.status,
@@ -275,7 +275,7 @@ with section_seed as (
   select *
   from jsonb_to_recordset(
     '[
-      {"section_key":"hero","section_type":"hero","title":"Chợ hải sản hôm nay","subtitle":"Ưu đãi hải sản tươi từ Dao Seafood","layout":"dao_market_grid","sort":10,"metadata":{}},
+      {"section_key":"hero","section_type":"hero","title":"Chợ hải sản hôm nay","subtitle":"Ưu đãi hải sản tươi từ Hải Sản Nhà Quê","layout":"dao_market_grid","sort":10,"metadata":{}},
       {"section_key":"service-strip","section_type":"service_strip","title":"Cam kết dịch vụ","subtitle":"Giao hàng, tích điểm và hỗ trợ","layout":"icons","sort":20,"metadata":{"items":[{"label":"Giao 2H","detail":"Giao nhanh giữ lạnh nội thành","iconKey":"truck"},{"label":"Tích điểm","detail":"Nhận điểm cho mỗi đơn hàng","iconKey":"award"},{"label":"Hàng mới","detail":"Hải sản mới về cho bữa cơm tuần","iconKey":"package-plus"},{"label":"Bán chạy","detail":"Món được chọn nhiều đã bổ sung hàng","iconKey":"star"}]}},
       {"section_key":"category-shortcuts","section_type":"category_shortcuts","title":"Mua theo danh mục","subtitle":"Lối tắt mua nhanh","layout":"compact_grid","sort":30,"metadata":{"items":[{"label":"Bán chạy","href":"/categories/best-sellers","iconKey":"star"},{"label":"Khuyến mãi","href":"/categories/promotions","iconKey":"badge-percent"},{"label":"Sushi & sashimi","href":"/categories/sashimi","iconKey":"fish"},{"label":"Hải sản tươi","href":"/categories/fresh-seafood","iconKey":"waves"},{"label":"Hải sản đông lạnh","href":"/categories/frozen-seafood","iconKey":"snowflake"},{"label":"Hải sản sống","href":"/categories/live-seafood","iconKey":"waves"},{"label":"Hàng nhập khẩu","href":"/categories/imported-seafood","iconKey":"ship"},{"label":"Cá hồi","href":"/categories/salmon","iconKey":"fish"},{"label":"Hàu và nghêu sò","href":"/categories/oyster-shellfish","iconKey":"shell"},{"label":"Cua và tôm hùm","href":"/categories/crab-lobster","iconKey":"fish"},{"label":"Tôm và mực","href":"/categories/shrimp-squid","iconKey":"fish"},{"label":"Món chế biến sẵn","href":"/categories/ready-to-eat","iconKey":"utensils"}]}},
       {"section_key":"best-sellers","section_type":"product_rail","title":"Bán chạy","subtitle":"Sản phẩm được chọn nhiều tuần này","layout":"grid","sort":40,"metadata":{"viewMoreHref":"/categories/best-sellers"}},
@@ -288,7 +288,7 @@ with section_seed as (
       {"section_key":"crab-lobster","section_type":"product_rail","title":"Cua và tôm hùm","subtitle":"Gợi ý cho bữa ăn đặc biệt","layout":"grid","sort":110,"metadata":{"viewMoreHref":"/categories/crab-lobster"}},
       {"section_key":"ready-to-eat","section_type":"product_rail","title":"Món chế biến sẵn","subtitle":"Món hải sản đã chuẩn bị","layout":"grid","sort":120,"metadata":{"viewMoreHref":"/categories/ready-to-eat"}},
       {"section_key":"content-highlights","section_type":"content_highlights","title":"Thông tin hữu ích","subtitle":"Mẹo chọn, bảo quản và đặt hải sản","layout":"editorial_grid","sort":130,"metadata":{"cards":[{"groupLabel":"Cẩm nang","title":"Cách giữ lạnh hải sản khi nhận hàng","description":"Gợi ý kiểm tra đá gel, bao bì và thời gian bảo quản trước khi nấu.","href":"#cold-storage","imageUrl":"https://placehold.co/720x420/e0f2fe/0f172a?text=Giu+Lanh+Hai+San"},{"groupLabel":"Món ngon","title":"Thực đơn cuối tuần với tôm và nghêu","description":"Một nhịp chuẩn bị nhanh cho bữa cơm gia đình nhiều món.","href":"#weekend-menu","imageUrl":"https://placehold.co/540x360/fef3c7/0f172a?text=Thuc+Don+Cuoi+Tuan"},{"groupLabel":"Chính sách","title":"Cam kết đổi trả cho đơn giao lạnh","description":"Quy trình tiếp nhận phản hồi minh bạch cho đơn hàng trong ngày.","href":"#fresh-policy","imageUrl":"https://placehold.co/540x360/dcfce7/0f172a?text=Cam+Ket+Don+Hang"}],"highlights":[{"groupLabel":"Cẩm nang","title":"Cách giữ lạnh hải sản khi nhận hàng","description":"Gợi ý kiểm tra đá gel, bao bì và thời gian bảo quản trước khi nấu.","href":"#cold-storage","imageUrl":"https://placehold.co/720x420/e0f2fe/0f172a?text=Giu+Lanh+Hai+San"},{"groupLabel":"Món ngon","title":"Thực đơn cuối tuần với tôm và nghêu","description":"Một nhịp chuẩn bị nhanh cho bữa cơm gia đình nhiều món.","href":"#weekend-menu","imageUrl":"https://placehold.co/540x360/fef3c7/0f172a?text=Thuc+Don+Cuoi+Tuan"},{"groupLabel":"Chính sách","title":"Cam kết đổi trả cho đơn giao lạnh","description":"Quy trình tiếp nhận phản hồi minh bạch cho đơn hàng trong ngày.","href":"#fresh-policy","imageUrl":"https://placehold.co/540x360/dcfce7/0f172a?text=Cam+Ket+Don+Hang"}]}},
-      {"section_key":"partners","section_type":"partner_strip","title":"Đối tác Dao Seafood","subtitle":"Đối tác bán lẻ, thanh toán và vận hành demo","layout":"logo_grid","sort":140,"metadata":{"groups":[{"label":"Đối tác","items":[{"label":"Retail Partner","imageUrl":"https://placehold.co/220x90/e0f2fe/0f172a?text=Retail+Partner","href":"#partners"},{"label":"Cold Delivery","imageUrl":"https://placehold.co/220x90/dcfce7/0f172a?text=Cold+Delivery","href":"#partners"}]},{"label":"Thanh toán","items":[{"label":"COD","imageUrl":"https://placehold.co/220x90/ecfeff/0f172a?text=COD","href":"#payments"},{"label":"VNPAY Demo","imageUrl":"https://placehold.co/220x90/dbeafe/0f172a?text=VNPAY+Demo","href":"#payments"}]},{"label":"Kênh xã hội","items":[{"label":"Zalo demo","imageUrl":"https://placehold.co/220x90/e0f7fa/0f172a?text=Zalo+Demo","href":"#zalo"},{"label":"Community demo","imageUrl":"https://placehold.co/220x90/fce7f3/0f172a?text=Community","href":"#community"}]},{"label":"Cam kết","items":[{"label":"Fresh Daily","imageUrl":"https://placehold.co/220x90/ccfbf1/0f172a?text=Fresh+Daily","href":"#trust"},{"label":"Cold Chain","imageUrl":"https://placehold.co/220x90/e0f2fe/0f172a?text=Cold+Chain","href":"#trust"}]}]}}
+      {"section_key":"partners","section_type":"partner_strip","title":"Đối tác Hải Sản Nhà Quê","subtitle":"Đối tác bán lẻ, thanh toán và vận hành demo","layout":"logo_grid","sort":140,"metadata":{"groups":[{"label":"Đối tác","items":[{"label":"Retail Partner","imageUrl":"https://placehold.co/220x90/e0f2fe/0f172a?text=Retail+Partner","href":"#partners"},{"label":"Cold Delivery","imageUrl":"https://placehold.co/220x90/dcfce7/0f172a?text=Cold+Delivery","href":"#partners"}]},{"label":"Thanh toán","items":[{"label":"COD","imageUrl":"https://placehold.co/220x90/ecfeff/0f172a?text=COD","href":"#payments"},{"label":"VNPAY Demo","imageUrl":"https://placehold.co/220x90/dbeafe/0f172a?text=VNPAY+Demo","href":"#payments"}]},{"label":"Kênh xã hội","items":[{"label":"Zalo demo","imageUrl":"https://placehold.co/220x90/e0f7fa/0f172a?text=Zalo+Demo","href":"#zalo"},{"label":"Community demo","imageUrl":"https://placehold.co/220x90/fce7f3/0f172a?text=Community","href":"#community"}]},{"label":"Cam kết","items":[{"label":"Fresh Daily","imageUrl":"https://placehold.co/220x90/ccfbf1/0f172a?text=Fresh+Daily","href":"#trust"},{"label":"Cold Chain","imageUrl":"https://placehold.co/220x90/e0f2fe/0f172a?text=Cold+Chain","href":"#trust"}]}]}}
     ]'::jsonb
   ) as section(
     section_key text,
@@ -483,7 +483,7 @@ insert into cms_footer_links (
   is_active
 )
 values
-  ('Thông tin', 'Về Dao Seafood Commerce', '#company', 10, true),
+  ('Thông tin', 'Về Hải Sản Nhà Quê', '#company', 10, true),
   ('Thông tin', 'Hệ thống cửa hàng', '#stores', 20, true),
   ('Thông tin', 'Khách hàng thân thiết', '/account/loyalty', 30, true),
   ('Hỗ trợ khách hàng', 'Chính sách giao hàng', '#shipping', 10, true),
@@ -506,8 +506,8 @@ insert into cms_brand_assets (
   is_active
 )
 values
-  ('brand-logo', 'brand', 'https://placehold.co/240x96/f8fafc/0f172a?text=Dao+Seafood', 'Logo placeholder Dao Seafood', '/', 10, true),
-  ('brand-wordmark', 'brand', 'https://placehold.co/320x96/ecfeff/0f172a?text=Dao+Seafood+Commerce', 'Wordmark placeholder Dao Seafood Commerce', '/', 20, true),
+  ('brand-logo', 'brand', 'https://placehold.co/240x96/f8fafc/0f172a?text=Hai+San+Nha+Que', 'Logo placeholder Hải Sản Nhà Quê', '/', 10, true),
+  ('brand-wordmark', 'brand', 'https://placehold.co/320x96/ecfeff/0f172a?text=Hai+San+Nha+Que', 'Wordmark placeholder Hải Sản Nhà Quê', '/', 20, true),
   ('payment-cod', 'payment', 'https://placehold.co/180x80/f8fafc/0f172a?text=COD', 'Cash on delivery', null, 10, true),
   ('payment-momo', 'payment', 'https://placehold.co/180x80/fce7f3/0f172a?text=MoMo+Demo', 'Thanh toán MoMo demo', null, 20, true),
   ('payment-vnpay', 'payment', 'https://placehold.co/180x80/dbeafe/0f172a?text=VNPAY+Demo', 'Thanh toán VNPAY demo', null, 30, true),
