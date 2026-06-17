@@ -55,6 +55,67 @@ export async function updateProduct(
   redirect("/admin/products");
 }
 
+const createProductSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  status: z.enum(["draft", "published"]),
+  shortDescription: z.string(),
+  description: z.string(),
+  origin: z.string(),
+  temperatureClass: z.enum(["live", "fresh", "chilled", "frozen", "ready"]),
+});
+
+export type CreateProductState = { error: string } | null;
+
+export async function createProduct(
+  _prev: CreateProductState,
+  formData: FormData,
+): Promise<CreateProductState> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "products:update");
+
+  const result = createProductSchema.safeParse({
+    name: formData.get("name"),
+    status: formData.get("status"),
+    shortDescription: formData.get("shortDescription") ?? "",
+    description: formData.get("description") ?? "",
+    origin: formData.get("origin") ?? "",
+    temperatureClass: formData.get("temperatureClass"),
+  });
+
+  if (!result.success) {
+    return { error: result.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const baseSlug = result.data.name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+  const slug = `${baseSlug}-${Math.random().toString(36).slice(2, 7)}`;
+
+  const { data, error } = await client
+    .from("products")
+    .insert({
+      name: result.data.name,
+      slug,
+      status: result.data.status,
+      short_description: result.data.shortDescription,
+      description: result.data.description,
+      origin: result.data.origin,
+      temperature_class: result.data.temperatureClass,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw error;
+
+  revalidatePath("/admin/products");
+  redirect(`/admin/products/${data.id}/edit`);
+}
+
 export async function archiveProduct(id: string): Promise<void> {
   const parsed = z.string().uuid().safeParse(id);
   if (!parsed.success) throw new Error("Invalid product id");

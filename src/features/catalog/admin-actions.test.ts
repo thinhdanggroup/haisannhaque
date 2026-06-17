@@ -17,7 +17,54 @@ vi.mock("@/src/lib/supabase/server", () => ({
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 
-import { archiveProduct } from "./admin-actions";
+import { archiveProduct, createProduct } from "./admin-actions";
+
+describe("createProduct", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+    mockRpc.mockResolvedValue({ data: [{ open_order_count: 0 }], error: null });
+
+    const insertChain = {
+      select: vi.fn().mockReturnValue({
+        single: vi.fn().mockResolvedValue({ data: { id: "new-product-uuid" }, error: null }),
+      }),
+    };
+    const fromChain = {
+      insert: vi.fn().mockReturnValue(insertChain),
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({
+          data: [{ admin_roles: { name: "super_admin" } }],
+          error: null,
+        }),
+      }),
+    };
+    mockFrom.mockReturnValue(fromChain);
+  });
+
+  it("returns error when name is empty", async () => {
+    const fd = new FormData();
+    fd.set("name", "");
+    fd.set("status", "draft");
+    fd.set("temperatureClass", "fresh");
+    const result = await createProduct(null, fd);
+    expect(result).toEqual({ error: expect.stringContaining("required") });
+  });
+
+  it("inserts product and redirects on valid input", async () => {
+    const { redirect } = await import("next/navigation");
+    const fd = new FormData();
+    fd.set("name", "Cá hồi tươi");
+    fd.set("status", "draft");
+    fd.set("shortDescription", "");
+    fd.set("description", "");
+    fd.set("origin", "Na Uy");
+    fd.set("temperatureClass", "fresh");
+    await createProduct(null, fd).catch(() => {});
+    expect(mockFrom).toHaveBeenCalledWith("products");
+    expect(redirect).toHaveBeenCalledWith(expect.stringContaining("/admin/products/"));
+  });
+});
 
 describe("archiveProduct", () => {
   beforeEach(() => {

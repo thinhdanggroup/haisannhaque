@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -100,10 +101,13 @@ export default async function AdminProductsPage() {
         title="Products"
         description="Manage storefront product records and variant coverage."
         action={
-          <button className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white">
+          <Link
+            href="/admin/products/new"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
+          >
             <Plus className="h-4 w-4" aria-hidden="true" />
             New product
-          </button>
+          </Link>
         }
       />
       <AdminDataTable
