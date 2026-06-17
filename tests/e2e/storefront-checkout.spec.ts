@@ -3,7 +3,7 @@ import { expect, type Page, test } from "@playwright/test";
 async function expectFullHomepageRefreshSections(page: Page): Promise<void> {
   await expect(page.getByText("Gợi ý cho bạn")).toBeVisible();
   await expect(page.getByText("Thông tin hữu ích")).toBeVisible();
-  await expect(page.getByText("Đối tác Dao Seafood")).toBeVisible();
+  await expect(page.getByText("Đối tác Hải Sản Nhà Quê")).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Thanh toán", exact: true }).first(),
   ).toBeVisible();
@@ -79,7 +79,7 @@ test.describe("storefront checkout smoke", () => {
     await page.goto("/");
     await expect(page.getByRole("banner")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Dao Seafood", exact: true }),
+      page.getByRole("link", { name: "Hải Sản Nhà Quê", exact: true }),
     ).toBeVisible();
     await expect(page.getByPlaceholder("Tìm hải sản")).toBeVisible();
     await expect(
