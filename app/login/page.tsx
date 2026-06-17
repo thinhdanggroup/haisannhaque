@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "@/components/storefront/login-form";
 
 export const metadata: Metadata = {
-  title: "Đăng nhập – Dao Seafood",
+  title: "Đăng nhập – Hải Sản Nhà Quê",
 };
 
 export default function LoginPage() {

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dao Hai San Commerce",
-  description: "Next.js and Supabase seafood commerce platform",
+  title: "Hải Sản Nhà Quê",
+  description: "Nền tảng thương mại hải sản trực tuyến",
 };
 
 export default function RootLayout({
