@@ -101,6 +101,14 @@ export default async function AdminOrdersPage() {
         ]}
         rows={pageData.orders}
         emptyMessage="No orders yet."
+        actionsSlot={(row) => (
+          <a
+            href={`/admin/orders/${row.id}`}
+            className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          >
+            View
+          </a>
+        )}
       />
     </div>
   );
