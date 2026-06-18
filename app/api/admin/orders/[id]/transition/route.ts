@@ -36,10 +36,18 @@ const transitionSchema = z.object({
 
 export async function POST(request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
-  const payload = transitionSchema.parse(await request.json());
   const client = await createServerClient();
 
   try {
+    const parseResult = transitionSchema.safeParse(await request.json());
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message },
+        { status: 400 },
+      );
+    }
+    const payload = parseResult.data;
+
     const admin = await requireAdminPermission(client, "orders:update");
     const { data: order, error: readError } = await client
       .from("orders")

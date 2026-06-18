@@ -3,6 +3,8 @@ import { PurchaseOrderCreateForm } from "@/components/admin/purchase-order-creat
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { createServerClient } from "@/src/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPurchaseOrderNewPage() {
   const client = await createServerClient();
 

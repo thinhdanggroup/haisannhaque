@@ -42,5 +42,6 @@ export async function updateComplaintCase(
   if (error) throw error;
 
   revalidatePath("/admin/complaints");
+  revalidatePath("/admin/complaints/[id]", "page");
   return null;
 }

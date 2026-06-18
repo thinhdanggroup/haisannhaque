@@ -4,6 +4,8 @@ import { PurchaseOrderReceiveForm } from "@/components/admin/purchase-order-rece
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { createServerClient } from "@/src/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }> };
 
 type LineRecord = {
