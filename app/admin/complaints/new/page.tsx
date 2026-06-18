@@ -3,6 +3,8 @@ import { ComplaintCreateForm } from "@/components/admin/complaint-create-form";
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { createServerClient } from "@/src/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminComplaintNewPage() {
   const client = await createServerClient();
 

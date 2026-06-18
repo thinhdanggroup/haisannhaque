@@ -153,7 +153,7 @@ export default async function AdminComplaintsPage() {
         ]}
         rows={pageData.complaints}
         emptyMessage="No complaints yet."
-        actionsSlot={(row) => <a href={`/admin/complaints/${row.id}`}>View</a>}
+        actionsSlot={(row) => <Link href={`/admin/complaints/${row.id}`}>View</Link>}
       />
     </div>
   );
