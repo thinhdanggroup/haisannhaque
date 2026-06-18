@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
@@ -207,12 +208,12 @@ export function PurchaseOrderCreateForm({
         >
           {isPending ? "Creating…" : "Create purchase order"}
         </button>
-        <a
+        <Link
           href="/admin/purchase-orders"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           Cancel
-        </a>
+        </Link>
       </div>
     </form>
   );
