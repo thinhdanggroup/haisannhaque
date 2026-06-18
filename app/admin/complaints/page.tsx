@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { AdminDataTable } from "@/components/admin/admin-data-table";
@@ -11,6 +12,7 @@ import { createServerClient } from "@/src/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 type ComplaintRow = {
+  id: string;
   orderNo: string;
   customer: string;
   status: string;
@@ -19,6 +21,7 @@ type ComplaintRow = {
 };
 
 type ComplaintRecord = {
+  id: string;
   status: string;
   reason: string;
   resolution: string | null;
@@ -60,7 +63,7 @@ async function getComplaints(): Promise<ComplaintRow[]> {
 
   const { data, error } = await client
     .from("complaint_cases")
-    .select("status, reason, resolution, orders(order_no), customers(full_name)")
+    .select("id, status, reason, resolution, orders(order_no), customers(full_name)")
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -73,6 +76,7 @@ async function getComplaints(): Promise<ComplaintRow[]> {
     const customer = firstRelation(complaint.customers);
 
     return {
+      id: complaint.id,
       orderNo: order?.order_no ?? "",
       customer: customer?.full_name ?? "",
       status: complaint.status,
@@ -118,10 +122,13 @@ export default async function AdminComplaintsPage() {
         title="Complaints"
         description="Track customer complaint cases from intake through resolution."
         action={
-          <button className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white">
+          <Link
+            href="/admin/complaints/new"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
+          >
             <Plus className="h-4 w-4" aria-hidden="true" />
             New complaint
-          </button>
+          </Link>
         }
       />
       <FilterBar>
@@ -146,6 +153,7 @@ export default async function AdminComplaintsPage() {
         ]}
         rows={pageData.complaints}
         emptyMessage="No complaints yet."
+        actionsSlot={(row) => <a href={`/admin/complaints/${row.id}`}>View</a>}
       />
     </div>
   );
