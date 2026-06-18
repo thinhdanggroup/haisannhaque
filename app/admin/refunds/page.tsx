@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { AdminDataTable } from "@/components/admin/admin-data-table";
@@ -76,10 +77,13 @@ export default async function AdminRefundsPage() {
         title="Refunds"
         description="Review refund requests, methods, and processing state."
         action={
-          <button className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white">
+          <Link
+            href="/admin/refunds/new"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
+          >
             <Plus className="h-4 w-4" aria-hidden="true" />
             New refund
-          </button>
+          </Link>
         }
       />
       <FilterBar>
