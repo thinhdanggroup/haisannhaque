@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { AdminDataTable } from "@/components/admin/admin-data-table";
@@ -11,6 +12,7 @@ import { createServerClient } from "@/src/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 type PurchaseOrderRow = {
+  id: string;
   poNo: string;
   supplier: string;
   warehouse: string;
@@ -20,6 +22,7 @@ type PurchaseOrderRow = {
 };
 
 type PurchaseOrderRecord = {
+  id: string;
   po_no: string;
   status: string;
   ordered_total: number | string;
@@ -62,7 +65,7 @@ async function getPurchaseOrders(): Promise<PurchaseOrderRow[]> {
 
   const { data, error } = await client
     .from("purchase_orders")
-    .select("po_no, status, ordered_total, received_total, suppliers(name), warehouses(code)")
+    .select("id, po_no, status, ordered_total, received_total, suppliers(name), warehouses(code)")
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -75,6 +78,7 @@ async function getPurchaseOrders(): Promise<PurchaseOrderRow[]> {
     const warehouse = firstRelation(purchaseOrder.warehouses);
 
     return {
+      id: purchaseOrder.id,
       poNo: purchaseOrder.po_no,
       supplier: supplier?.name ?? "",
       warehouse: warehouse?.code ?? "",
@@ -121,10 +125,13 @@ export default async function AdminPurchaseOrdersPage() {
         title="Purchase Orders"
         description="Track supplier orders, destination warehouses, and receiving progress."
         action={
-          <button className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white">
+          <Link
+            href="/admin/purchase-orders/new"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
+          >
             <Plus className="h-4 w-4" aria-hidden="true" />
             New purchase order
-          </button>
+          </Link>
         }
       />
       <FilterBar>
@@ -150,6 +157,14 @@ export default async function AdminPurchaseOrdersPage() {
         ]}
         rows={pageData.purchaseOrders}
         emptyMessage="No purchase orders yet."
+        actionsSlot={(row) => (
+          <a
+            href={`/admin/purchase-orders/${row.id}`}
+            className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          >
+            View
+          </a>
+        )}
       />
     </div>
   );
