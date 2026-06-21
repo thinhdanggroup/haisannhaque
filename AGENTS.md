@@ -133,7 +133,6 @@ Use these constraints consistently:
 - Handle payments through synchronous route handlers and idempotent webhooks.
 - Protect admin operations with both Supabase RLS and `requireAdminPermission`.
 - Keep customer-visible text Vietnamese-ready. The root layout uses `lang="vi"`.
-- Do not copy proprietary daohaisan.vn assets, branding, logos, or text unless the project owner has permission.
 
 ## Coding Guidelines
 
