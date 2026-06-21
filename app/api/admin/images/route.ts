@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join, extname } from "path";
+import { extname } from "path";
+import { createAdminClient } from "@/src/lib/supabase/admin";
 import { createServerClient } from "@/src/lib/supabase/server";
 import { requireAdminPermission } from "@/src/features/admin/auth";
 
-const UPLOADS_DIR = join(process.cwd(), "uploads");
-
 export async function POST(request: NextRequest) {
-  const client = await createServerClient();
+  const authClient = await createServerClient();
 
   try {
-    await requireAdminPermission(client, "products:update");
+    await requireAdminPermission(authClient, "products:update");
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -39,24 +37,33 @@ export async function POST(request: NextRequest) {
   }
 
   const ext = extname(file.name) || ".jpg";
-  const filename = `${crypto.randomUUID()}${ext}`;
+  const storagePath = `products/${crypto.randomUUID()}${ext}`;
 
-  await mkdir(UPLOADS_DIR, { recursive: true });
+  const adminClient = createAdminClient();
   const bytes = await file.arrayBuffer();
-  await writeFile(join(UPLOADS_DIR, filename), Buffer.from(bytes));
 
-  const url = `/api/images/${filename}`;
+  const { error: uploadError } = await adminClient.storage
+    .from("media")
+    .upload(storagePath, bytes, { contentType: file.type, upsert: false });
 
-  const { error } = await client.from("product_images").insert({
+  if (uploadError) {
+    return NextResponse.json({ error: uploadError.message }, { status: 500 });
+  }
+
+  const {
+    data: { publicUrl },
+  } = adminClient.storage.from("media").getPublicUrl(storagePath);
+
+  const { error: dbError } = await authClient.from("product_images").insert({
     product_id: productId,
-    url,
+    url: publicUrl,
     alt_text: null,
     sort_order: 0,
   });
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (dbError) {
+    return NextResponse.json({ error: dbError.message }, { status: 500 });
   }
 
-  return NextResponse.json({ url });
+  return NextResponse.json({ url: publicUrl });
 }
