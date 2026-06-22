@@ -41,10 +41,12 @@ export async function addAddressAction(
   const client = await createServerClient();
 
   if (result.data.isDefault) {
-    await client
+    const { error: unsetError } = await client
       .from("addresses")
       .update({ is_default: false })
       .eq("customer_id", result.data.customerId);
+
+    if (unsetError) return { error: "Không thể cập nhật địa chỉ mặc định. Vui lòng thử lại." };
   }
 
   const { error } = await client.from("addresses").insert({
@@ -78,10 +80,12 @@ export async function setDefaultAddressAction(
 ): Promise<void> {
   const client = await createServerClient();
 
-  await client
+  const { error: unsetError } = await client
     .from("addresses")
     .update({ is_default: false })
     .eq("customer_id", customerId);
+
+  if (unsetError) throw unsetError;
 
   const { error } = await client
     .from("addresses")
