@@ -56,7 +56,7 @@ export default async function AccountLoyaltyPage() {
                     <p className="text-sm text-slate-700">
                       {reasonLabels[entry.reason] ?? entry.reason}
                     </p>
-                    <p className="text-xs text-slate-400">{entry.createdAt}</p>
+                    <p className="text-xs text-slate-400">{new Date(entry.createdAt + "T00:00:00").toLocaleDateString("vi-VN")}</p>
                   </div>
                   <span
                     className={`text-sm font-semibold ${
