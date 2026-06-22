@@ -4,11 +4,17 @@ import { createServerClient } from "@/src/lib/supabase/server";
 import { getAccountSessionState } from "@/src/features/account/actions";
 import { getAccountProfile, getAccountWishlist } from "@/src/features/account/queries";
 import { RemoveWishlistButton } from "@/components/account/remove-wishlist-button";
-import { redirect } from "next/navigation";
 
 export default async function AccountWishlistPage() {
   const session = await getAccountSessionState();
-  if (session.status === "anonymous") redirect("/login");
+  if (session.status === "anonymous") {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-slate-600 mb-4">Vui lòng đăng nhập để xem danh sách yêu thích.</p>
+        <a href="/login" className="text-blue-600 hover:underline font-medium">Đăng nhập</a>
+      </div>
+    );
+  }
   if (session.status === "unconfigured") {
     return <p className="text-sm text-slate-500">Chưa cấu hình Supabase.</p>;
   }

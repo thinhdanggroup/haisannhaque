@@ -1,7 +1,6 @@
 import { createServerClient } from "@/src/lib/supabase/server";
 import { getAccountSessionState } from "@/src/features/account/actions";
 import { getAccountProfile, getAccountOrders } from "@/src/features/account/queries";
-import { redirect } from "next/navigation";
 
 const statusLabels: Record<string, string> = {
   draft_checkout: "Nháp",
@@ -23,7 +22,14 @@ const statusLabels: Record<string, string> = {
 
 export default async function AccountOrdersPage() {
   const session = await getAccountSessionState();
-  if (session.status === "anonymous") redirect("/login");
+  if (session.status === "anonymous") {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-slate-600 mb-4">Vui lòng đăng nhập để xem đơn hàng của bạn.</p>
+        <a href="/login" className="text-blue-600 hover:underline font-medium">Đăng nhập</a>
+      </div>
+    );
+  }
   if (session.status === "unconfigured") {
     return <p className="text-sm text-slate-500">Chưa cấu hình Supabase.</p>;
   }
