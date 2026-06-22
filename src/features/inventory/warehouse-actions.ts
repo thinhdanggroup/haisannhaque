@@ -9,7 +9,7 @@ import { requireAdminPermission } from "@/src/features/admin/auth";
 export type WarehouseState = { error: string } | null;
 
 const warehouseSchema = z.object({
-  code: z.string().min(1, "Code is required").regex(/^[A-Z0-9-]+$/, "Code must be uppercase letters, digits, and hyphens"),
+  code: z.string().min(1, "Code is required").regex(/^[A-Z0-9_-]+$/, "Code must be uppercase letters, digits, underscores, or hyphens"),
   name: z.string().min(1, "Name is required"),
   address: z.string(),
   isActive: z.boolean(),
