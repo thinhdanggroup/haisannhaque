@@ -1,13 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { deleteCategory } from "@/src/features/catalog/category-actions";
 
 export function CategoryRowActions({ id, name }: { id: string; name: string }) {
+  const router = useRouter();
+
   async function handleDelete() {
     if (!confirm(`Delete category "${name}"? Child categories will become top-level.`)) return;
     try {
       await deleteCategory(id);
+      router.refresh();
     } catch (e) {
       alert(e instanceof Error ? e.message : "Delete failed.");
     }
