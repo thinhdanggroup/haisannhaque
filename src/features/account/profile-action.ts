@@ -32,8 +32,7 @@ export async function updateProfileAction(
 
   const { error } = await client
     .from("profiles")
-    .update({ full_name: result.data.fullName, phone: result.data.phone })
-    .eq("id", user.id);
+    .upsert({ id: user.id, full_name: result.data.fullName, phone: result.data.phone });
 
   if (error) return { error: "Không thể lưu thông tin. Vui lòng thử lại." };
 

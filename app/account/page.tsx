@@ -15,15 +15,25 @@ export default async function AccountProfilePage() {
   const {
     data: { user },
   } = await client.auth.getUser();
-  const profile = user ? await getAccountProfile(client, user.id) : null;
+  // getAccountProfile is still needed for customerId (used by other account pages)
+  if (user) await getAccountProfile(client, user.id);
+
+  // Fetch form defaults from profiles table — this is where updateProfileAction writes
+  const { data: profileRow } = user
+    ? await client
+        .from("profiles")
+        .select("full_name, phone")
+        .eq("id", user.id)
+        .single()
+    : { data: null };
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-6">
       <h1 className="text-2xl font-semibold mb-1">Hồ sơ</h1>
       <p className="text-sm text-slate-500 mb-6">{session.email}</p>
       <ProfileForm
-        defaultFullName={profile?.fullName ?? null}
-        defaultPhone={profile?.phone ?? null}
+        defaultFullName={profileRow?.full_name ?? null}
+        defaultPhone={profileRow?.phone ?? null}
       />
     </div>
   );
