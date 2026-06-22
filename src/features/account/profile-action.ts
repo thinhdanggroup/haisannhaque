@@ -5,8 +5,8 @@ import { z } from "zod";
 import { createServerClient } from "@/src/lib/supabase/server";
 
 const profileSchema = z.object({
-  fullName: z.string().min(1, "Vui lòng nhập họ tên"),
-  phone: z.string().min(1, "Vui lòng nhập số điện thoại"),
+  fullName: z.string(),
+  phone: z.string(),
 });
 
 export type ProfileActionState = { error: string } | { success: true } | null;
