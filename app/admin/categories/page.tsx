@@ -10,16 +10,6 @@ import { CategoryRowActions } from "@/components/admin/category-row-actions";
 
 export const dynamic = "force-dynamic";
 
-type RawCategoryRow = {
-  id: string;
-  slug: string;
-  name: string;
-  parent_id: string | null;
-  sort_order: number;
-  is_active: boolean;
-  parent: { name: string }[] | null;
-};
-
 type CategoryRow = {
   id: string;
   slug: string;
@@ -27,7 +17,7 @@ type CategoryRow = {
   parent_id: string | null;
   sort_order: number;
   is_active: boolean;
-  parent: { name: string } | null;
+  parentName: string | null;
 };
 
 type PageData = { access: "allowed"; categories: CategoryRow[] } | { access: "denied" };
@@ -39,13 +29,15 @@ async function getPageData(): Promise<PageData> {
     await requireAdminPermission(client, "categories:update");
     const { data, error } = await client
       .from("categories")
-      .select("id, slug, name, parent_id, sort_order, is_active, parent:categories!parent_id(name)")
+      .select("id, slug, name, parent_id, sort_order, is_active")
       .order("sort_order")
       .order("name");
     if (error) throw error;
-    const categories: CategoryRow[] = ((data ?? []) as RawCategoryRow[]).map((row) => ({
+    const rows = (data ?? []) as { id: string; slug: string; name: string; parent_id: string | null; sort_order: number; is_active: boolean }[];
+    const nameById = new Map(rows.map((r) => [r.id, r.name]));
+    const categories: CategoryRow[] = rows.map((row) => ({
       ...row,
-      parent: Array.isArray(row.parent) ? (row.parent[0] ?? null) : row.parent,
+      parentName: row.parent_id ? (nameById.get(row.parent_id) ?? null) : null,
     }));
     return { access: "allowed", categories };
   } catch (e) {
@@ -86,10 +78,10 @@ export default async function AdminCategoriesPage() {
           { key: "name", label: "Name" },
           { key: "slug", label: "Slug" },
           {
-            key: "parent",
+            key: "parentName",
             label: "Parent",
             render: (row) => (
-              <span className="text-sm text-slate-500">{row.parent?.name ?? "—"}</span>
+              <span className="text-sm text-slate-500">{row.parentName ?? "—"}</span>
             ),
           },
           { key: "sort_order", label: "Order" },
