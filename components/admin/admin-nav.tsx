@@ -3,10 +3,13 @@ import Link from "next/link";
 const adminLinks = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/products", label: "Products" },
+  { href: "/admin/categories", label: "Categories" },
   { href: "/admin/content", label: "Content" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/inventory", label: "Inventory" },
+  { href: "/admin/warehouses", label: "Warehouses" },
   { href: "/admin/purchase-orders", label: "Purchase Orders" },
+  { href: "/admin/suppliers", label: "Suppliers" },
   { href: "/admin/refunds", label: "Refunds" },
   { href: "/admin/complaints", label: "Complaints" },
   { href: "/admin/reports", label: "Reports" },
