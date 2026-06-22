@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateCategoryInput } from "./category-actions";
+import { validateCategoryInput, validateCategoryUpdateInput } from "./category-actions";
 
 function makeFormData(fields: Record<string, string>): FormData {
   const fd = new FormData();
@@ -62,6 +62,38 @@ describe("category actions (validation)", () => {
       expect(result.data.sortOrder).toBe(1);
       expect(result.data.isActive).toBe(true);
       expect(result.data.parentId).toBe(null);
+    }
+  });
+});
+
+describe("category update actions (validation)", () => {
+  it("returns error when id is missing", () => {
+    const fd = makeFormData({ name: "Dairy" });
+    const result = validateCategoryUpdateInput(fd);
+    expect(result.success).toBe(false);
+  });
+
+  it("returns error when name is empty", () => {
+    const fd = makeFormData({ id: "a1b2c3d4-e5f6-4a7b-8c9d-000000000001", name: "" });
+    const result = validateCategoryUpdateInput(fd);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toContain("required");
+    }
+  });
+
+  it("accepts valid update input without slug", () => {
+    const fd = makeFormData({
+      id: "a1b2c3d4-e5f6-4a7b-8c9d-000000000001",
+      name: "Dairy Products",
+      sortOrder: "1",
+      isActive: "true",
+    });
+    const result = validateCategoryUpdateInput(fd);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.name).toBe("Dairy Products");
+      expect((result.data as Record<string, unknown>).slug).toBeUndefined();
     }
   });
 });

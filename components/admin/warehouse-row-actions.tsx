@@ -1,12 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { deleteWarehouse } from "@/src/features/inventory/warehouse-actions";
 
 export function WarehouseRowActions({ id, code }: { id: string; code: string }) {
+  const router = useRouter();
+
   async function handleDelete() {
     if (!confirm(`Delete warehouse "${code}"? This cannot be undone.`)) return;
-    await deleteWarehouse(id);
+    try {
+      await deleteWarehouse(id);
+      router.refresh();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Delete failed.");
+    }
   }
 
   return (

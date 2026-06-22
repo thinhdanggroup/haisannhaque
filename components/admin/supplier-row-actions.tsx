@@ -1,12 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { deleteSupplier } from "@/src/features/procurement/supplier-actions";
 
 export function SupplierRowActions({ id, name }: { id: string; name: string }) {
+  const router = useRouter();
+
   async function handleDelete() {
     if (!confirm(`Delete supplier "${name}"? This cannot be undone.`)) return;
-    await deleteSupplier(id);
+    try {
+      await deleteSupplier(id);
+      router.refresh();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Delete failed.");
+    }
   }
 
   return (

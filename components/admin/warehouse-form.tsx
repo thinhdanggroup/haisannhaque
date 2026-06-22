@@ -36,6 +36,7 @@ export function WarehouseForm({ action, initialValues }: WarehouseFormProps) {
           defaultValue={initialValues?.code}
           className={INPUT_CLASS}
           style={{ textTransform: "uppercase" }}
+          onChange={(e) => { e.target.value = e.target.value.toUpperCase(); }}
         />
       </label>
 

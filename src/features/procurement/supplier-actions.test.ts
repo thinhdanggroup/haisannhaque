@@ -1,14 +1,5 @@
 import { describe, it, expect } from "vitest";
-
-function makeInsertClient(error: null | { code: string; message: string }) {
-  return {
-    from: () => ({
-      insert: async () => ({ error }),
-      update: () => ({ eq: async () => ({ error }) }),
-      delete: () => ({ eq: async () => ({ error: null }) }),
-    }),
-  };
-}
+import { validateSupplierInput, createSupplier } from "./supplier-actions";
 
 function makeFormData(fields: Record<string, string>): FormData {
   const fd = new FormData();
@@ -16,19 +7,11 @@ function makeFormData(fields: Record<string, string>): FormData {
   return fd;
 }
 
-// These imports will fail until the file exists — that's expected
-import {
-  validateSupplierInput,
-  createSupplier,
-  updateSupplier,
-  deleteSupplier,
-} from "./supplier-actions";
-
 describe("supplier actions (validation layer)", () => {
   it("returns error when name is empty", () => {
     const fd = makeFormData({ name: "" });
     const result = validateSupplierInput(fd);
-    expect(!result.success).toBe(true);
+    expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0]?.message).toContain("required");
     }
@@ -50,5 +33,11 @@ describe("supplier actions (validation layer)", () => {
       expect(result.data.name).toBe("Acme");
       expect(result.data.isActive).toBe(true);
     }
+  });
+
+  it("createSupplier returns error (not throws) when name is empty", async () => {
+    const fd = makeFormData({ name: "" });
+    const result = await createSupplier(null, fd);
+    expect(result).toEqual({ error: expect.stringContaining("required") });
   });
 });
