@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateCategoryInput, validateCategoryUpdateInput } from "./category-actions";
+import { validateCategoryInput, validateCategoryUpdateInput } from "./category-validation";
 
 function makeFormData(fields: Record<string, string>): FormData {
   const fd = new FormData();

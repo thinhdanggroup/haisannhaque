@@ -17,7 +17,7 @@ const warehouseSchema = z.object({
 
 const warehouseUpdateSchema = warehouseSchema.extend({ id: z.string().uuid("Invalid warehouse id") });
 
-export function validateWarehouseInput(formData: FormData) {
+function validateWarehouseInput(formData: FormData) {
   return warehouseSchema.safeParse({
     code: formData.get("code"),
     name: formData.get("name"),
@@ -26,7 +26,7 @@ export function validateWarehouseInput(formData: FormData) {
   });
 }
 
-export function validateWarehouseUpdateInput(formData: FormData) {
+function validateWarehouseUpdateInput(formData: FormData) {
   return warehouseUpdateSchema.safeParse({
     id: formData.get("id"),
     code: formData.get("code"),

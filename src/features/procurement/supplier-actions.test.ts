@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { validateSupplierInput, createSupplier } from "./supplier-actions";
+import { validateSupplierInput } from "./supplier-validation";
+import { createSupplier } from "./supplier-actions";
 
 function makeFormData(fields: Record<string, string>): FormData {
   const fd = new FormData();
