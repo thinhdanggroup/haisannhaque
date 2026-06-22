@@ -101,13 +101,21 @@ export default async function AdminProductsPage() {
         title="Products"
         description="Manage storefront product records and variant coverage."
         action={
-          <Link
-            href="/admin/products/new"
-            className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            New product
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/products/import"
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Import CSV
+            </Link>
+            <Link
+              href="/admin/products/new"
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              New product
+            </Link>
+          </div>
         }
       />
       <AdminDataTable
