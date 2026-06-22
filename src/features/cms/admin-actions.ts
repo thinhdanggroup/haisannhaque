@@ -300,8 +300,8 @@ export async function createCmsBanner(
 
   if (error) throw error;
 
-  revalidatePath("/admin/content");
-  redirect("/admin/content");
+  revalidatePath("/admin/content/banners");
+  redirect("/admin/content/banners");
 }
 
 export async function updateCmsBanner(
@@ -341,8 +341,8 @@ export async function updateCmsBanner(
 
   if (error) throw error;
 
-  revalidatePath("/admin/content");
-  redirect("/admin/content");
+  revalidatePath("/admin/content/banners");
+  redirect("/admin/content/banners");
 }
 
 export async function deleteCmsBanner(id: string): Promise<void> {
@@ -355,7 +355,7 @@ export async function deleteCmsBanner(id: string): Promise<void> {
   const { error } = await client.from("cms_banners").delete().eq("id", parsed.data);
   if (error) throw error;
 
-  revalidatePath("/admin/content");
+  revalidatePath("/admin/content/banners");
 }
 
 // ── CMS Navigation Items ───────────────────────────────────────────────────

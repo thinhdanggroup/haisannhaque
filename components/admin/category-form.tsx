@@ -14,7 +14,7 @@ type CategoryFormProps = {
   parentOptions: ParentOption[];
   initialValues?: {
     id: string;
-    slug: string;
+    slug?: string;
     name: string;
     description: string;
     imageUrl: string;

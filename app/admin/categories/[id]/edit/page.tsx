@@ -74,7 +74,6 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
         parentOptions={parents ?? []}
         initialValues={{
           id: data.id,
-          slug: data.slug,
           name: data.name,
           description: data.description ?? "",
           imageUrl: data.image_url ?? "",

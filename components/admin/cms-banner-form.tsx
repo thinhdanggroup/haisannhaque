@@ -158,7 +158,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
           {isPending ? "Saving…" : isEdit ? "Save" : "Create banner"}
         </button>
         <Link
-          href="/admin/content"
+          href="/admin/content/banners"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           Cancel
