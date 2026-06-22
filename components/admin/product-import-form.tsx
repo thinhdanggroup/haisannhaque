@@ -16,22 +16,6 @@ const CSV_HEADERS = [
   "sale_price",
 ].join(",");
 
-const CSV_EXAMPLE = [
-  CSV_HEADERS,
-  "Cá hồi tươi,draft,fresh,Na Uy,Cá hồi tươi nhập khẩu,,CA-HOI-001,kg,350000,",
-  "Tôm sú đông lạnh,draft,frozen,Việt Nam,,,TOM-SU-001,con,80000,70000",
-].join("\n");
-
-function downloadTemplate() {
-  const blob = new Blob([CSV_EXAMPLE], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "product-import-template.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 export function ProductImportForm() {
   const [state, action, isPending] = useActionState<ImportResult, FormData>(
     importProducts,
@@ -58,13 +42,13 @@ export function ProductImportForm() {
         <code className="block rounded bg-slate-100 px-3 py-2 text-xs text-slate-600 overflow-x-auto whitespace-nowrap">
           {CSV_HEADERS}
         </code>
-        <button
-          type="button"
-          onClick={downloadTemplate}
+        <a
+          href="/product-import-template.csv"
+          download
           className="text-teal-700 underline text-xs hover:text-teal-800"
         >
           Tải xuống file mẫu
-        </button>
+        </a>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
