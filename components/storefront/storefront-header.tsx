@@ -79,11 +79,11 @@ export function StorefrontHeader({ navItems }: StorefrontHeaderProps) {
 
           <div className="hidden items-center gap-2 md:flex">
             <a
-              href="tel:19000098"
+              href="tel:0867997200"
               className="flex min-h-10 items-center gap-2 rounded-md border border-orange-200 bg-orange-50 px-3 text-sm font-bold text-orange-700"
             >
               <Phone className="h-4 w-4" aria-hidden="true" />
-              <span>1900 0098</span>
+              <span>0867 997 200</span>
             </a>
             <a
               href="#stores"
