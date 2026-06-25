@@ -155,7 +155,7 @@ export async function getAccountWishlist(
 
   if (error || !data) return [];
 
-  const row = data as {
+  const row = data as unknown as {
     wishlist_items: Array<{
       id: string;
       products: { id: string; name: string; slug: string; product_images: Array<{ url: string }> } | null;
