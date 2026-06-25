@@ -10,6 +10,7 @@ type ProductCardRow = {
   sale_price: number | null;
   unit: string | null;
   is_available: boolean;
+  default_variant_id: string | null;
 };
 
 type RelatedProductRow = {
@@ -36,6 +37,7 @@ function mapRelatedProductRowToCard(row: RelatedProductRow): ProductCard {
     compareAtPrice: cheapest?.sale_price ? cheapest.list_price : null,
     isAvailable: activeVariants.length > 0,
     unitLabel: cheapest?.unit ?? null,
+    defaultVariantId: cheapest?.id ?? null,
   };
 }
 
@@ -77,7 +79,7 @@ export function mapProductRowToCard(row: ProductCardRow): ProductCard {
     compareAtPrice: row.sale_price ? row.list_price : null,
     isAvailable: row.is_available,
     unitLabel: row.unit ?? null,
-    soldLabel: "Da ban: 1k+",
+    defaultVariantId: row.default_variant_id ?? null,
   };
 }
 

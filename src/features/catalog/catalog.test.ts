@@ -12,12 +12,13 @@ describe("mapProductRowToCard", () => {
       sale_price: 129000,
       unit: "500g",
       is_available: true,
+      default_variant_id: "variant-1",
     });
 
     expect(card.price).toBe(129000);
     expect(card.compareAtPrice).toBe(150000);
     expect(card.unitLabel).toBe("500g");
-    expect(card.soldLabel).toBe("Da ban: 1k+");
+    expect(card.defaultVariantId).toBe("variant-1");
   });
 
   it("uses list price when sale price is missing", () => {
@@ -30,6 +31,7 @@ describe("mapProductRowToCard", () => {
       sale_price: null,
       unit: null,
       is_available: false,
+      default_variant_id: null,
     });
 
     expect(card.price).toBe(450000);

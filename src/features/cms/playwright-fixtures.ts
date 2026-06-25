@@ -32,6 +32,7 @@ function fixtureProduct({
     badgeText,
     unitLabel,
     soldLabel,
+    defaultVariantId: null,
   };
 }
 

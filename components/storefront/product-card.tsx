@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Plus, ShoppingCart } from "lucide-react";
 import type { ProductCard as ProductCardData } from "@/src/features/catalog/types";
 import type { CmsProductCard } from "@/src/features/cms/types";
 import { calculateDiscountPercent, formatVnd } from "@/src/lib/format";
@@ -8,6 +7,7 @@ import {
   isTextPlaceholderImage,
   StorefrontPlaceholderImage,
 } from "./storefront-placeholder-image";
+import { AddToCartButton } from "./add-to-cart-button";
 
 type StorefrontProductCard = ProductCardData | CmsProductCard;
 
@@ -34,7 +34,6 @@ export function ProductCard({ product }: ProductCardProps) {
   );
   const badgeText = getBadgeText(product);
   const soldLabel = getSoldLabel(product);
-  const chooseOptionsLabel = `Mở ${product.name} để chọn tùy chọn`;
 
   return (
     <article
@@ -101,19 +100,12 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="mt-2 text-xs font-medium text-slate-500">Hết hàng</div>
         ) : null}
       </Link>
-      <button
-        type="button"
-        aria-label={chooseOptionsLabel}
-        disabled
-        title={chooseOptionsLabel}
-        className="absolute bottom-1.5 right-1.5 grid h-8 w-8 place-items-center rounded-full bg-orange-500 text-white shadow-sm transition disabled:cursor-not-allowed"
-      >
-        {product.isAvailable ? (
-          <Plus className="h-4 w-4" aria-hidden="true" />
-        ) : (
-          <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-        )}
-      </button>
+      <AddToCartButton
+        variantId={product.defaultVariantId ?? ""}
+        unitPrice={product.price}
+        isAvailable={product.isAvailable && product.defaultVariantId != null}
+        productName={product.name}
+      />
     </article>
   );
 }

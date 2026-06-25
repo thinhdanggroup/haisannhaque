@@ -9,6 +9,7 @@ export type ProductCard = {
   unitLabel: string | null;
   badgeText?: string | null;
   soldLabel?: string;
+  defaultVariantId: string | null;
 };
 
 export type ProductVariantSummary = {

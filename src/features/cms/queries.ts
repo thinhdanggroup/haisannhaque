@@ -185,6 +185,7 @@ export function mapCmsProductCardRow(row: CmsSectionProductCardRow): CmsProductC
     badgeText: row.badge_text,
     unitLabel: variant.unit,
     soldLabel: "",
+    defaultVariantId: variant.id,
   };
 }
 
