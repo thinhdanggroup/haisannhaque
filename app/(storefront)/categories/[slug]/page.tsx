@@ -19,38 +19,50 @@ type CategoryPageProps = {
   }>;
 };
 
+type CategoryMeta = {
+  name: string;
+  description: string | null;
+};
+
 type CategoryPageData = {
   chrome: StorefrontChrome;
   products: ProductCard[];
+  category: CategoryMeta;
 };
 
 export const dynamic = "force-dynamic";
-
-function formatCategoryTitle(slug: string): string {
-  return slug.replaceAll("-", " ");
-}
 
 async function loadCategoryPageData(slug: string): Promise<CategoryPageData> {
   if (shouldUseStorefrontPlaywrightFixture()) {
     return {
       chrome: playwrightChromeFixture,
       products: [],
+      category: { name: slug.replaceAll("-", " "), description: null },
     };
   }
 
   const client = await createServerClient();
-  const [chrome, products] = await Promise.all([
+  const [chrome, products, categoryResult] = await Promise.all([
     getStorefrontChrome(client),
     getProductsByCategory(client, slug),
+    client
+      .from("categories")
+      .select("name, description")
+      .eq("slug", slug)
+      .eq("is_active", true)
+      .single(),
   ]);
 
-  return { chrome, products };
+  const category: CategoryMeta = categoryResult.data
+    ? { name: categoryResult.data.name, description: categoryResult.data.description ?? null }
+    : { name: slug.replaceAll("-", " "), description: null };
+
+  return { chrome, products, category };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const { chrome, products } = await loadCategoryPageData(slug);
-  const categoryTitle = formatCategoryTitle(slug);
+  const { chrome, products, category } = await loadCategoryPageData(slug);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
@@ -58,13 +70,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <main className="mx-auto max-w-6xl px-4 py-6">
         <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold text-teal-700">Danh muc</p>
-            <h1 className="mt-1 text-2xl font-bold capitalize md:text-3xl">
-              {categoryTitle}
+            <p className="text-sm font-semibold text-teal-700">Danh mục</p>
+            <h1 className="mt-1 text-2xl font-bold md:text-3xl">
+              {category.name}
             </h1>
-            <p className="mt-2 text-sm text-slate-600">
-              Fresh seafood selections prepared for quick browsing.
-            </p>
+            {category.description ? (
+              <p className="mt-2 text-sm text-slate-600">{category.description}</p>
+            ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
             <button
