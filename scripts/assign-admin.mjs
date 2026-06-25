@@ -13,7 +13,7 @@ const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const email = "admin@dao-seafood.vn";
+const email = "admin@haisannhaque.vn";
 
 // Get user ID
 const { data: users } = await supabase.auth.admin.listUsers();

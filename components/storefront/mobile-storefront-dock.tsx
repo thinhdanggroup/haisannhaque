@@ -34,7 +34,7 @@ const fallbackMobileDockItems: CmsNavigationItem[] = [
     placement: "mobile_dock",
     label: "Messenger",
     href: "#messenger",
-    iconKey: "message-circle",
+    iconKey: "messenger",
     sortOrder: 30,
   },
   {
@@ -42,7 +42,7 @@ const fallbackMobileDockItems: CmsNavigationItem[] = [
     placement: "mobile_dock",
     label: "Zalo",
     href: "#zalo",
-    iconKey: "send",
+    iconKey: "zalo",
     sortOrder: 40,
   },
   {

@@ -29,6 +29,8 @@ export async function middleware(request: NextRequest) {
   // and this call — that is the Supabase SSR requirement.
   await supabase.auth.getUser();
 
+  supabaseResponse.headers.set("x-pathname", request.nextUrl.pathname);
+
   return supabaseResponse;
 }
 

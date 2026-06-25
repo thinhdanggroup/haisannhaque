@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { CmsNavigationItem } from "@/src/features/cms/types";
 import { CategoryNav } from "./category-nav";
+import { StoreLogo } from "./store-logo";
 
 type StorefrontHeaderProps = {
   navItems: CmsNavigationItem[];
@@ -36,11 +37,8 @@ export function StorefrontHeader({ navItems }: StorefrontHeaderProps) {
       <div className="bg-white text-slate-950">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-3 py-3 md:flex-row md:items-center md:px-4">
           <div className="flex items-center justify-between gap-3">
-            <Link
-              href="/"
-              className="shrink-0 text-xl font-extrabold tracking-normal text-[#0f766e] md:text-2xl"
-            >
-              Hải Sản Nhà Quê
+            <Link href="/" className="shrink-0" aria-label="Hải Sản Nhà Quê - Trang chủ">
+              <StoreLogo />
             </Link>
             <div className="flex items-center gap-2 md:hidden">
               <Link

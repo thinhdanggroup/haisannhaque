@@ -1,15 +1,25 @@
-import { MessageCircle, Phone, Send } from "lucide-react";
+import { Phone } from "lucide-react";
+import type { ComponentType } from "react";
+import { MessengerIcon, ZaloIcon } from "./brand-icons";
 
-const contactActions = [
+type IconProps = { className?: string };
+
+type ContactAction = {
+  label: string;
+  href: string;
+  icon: ComponentType<IconProps>;
+};
+
+const contactActions: ContactAction[] = [
   {
     label: "Messenger",
     href: "#messenger",
-    icon: MessageCircle,
+    icon: MessengerIcon,
   },
   {
     label: "Zalo",
     href: "#zalo",
-    icon: Send,
+    icon: ZaloIcon,
   },
   {
     label: "Hotline",
@@ -35,7 +45,7 @@ export function FloatingContactActions() {
             href={action.href}
             className="flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-800 shadow-lg transition hover:border-teal-500 hover:text-teal-700"
           >
-            <Icon className="h-4 w-4" aria-hidden="true" />
+            <Icon className="h-4 w-4" />
             <span>{action.label}</span>
           </a>
         );

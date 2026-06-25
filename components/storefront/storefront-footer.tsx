@@ -6,6 +6,7 @@ import type {
   CmsFooterLink,
 } from "@/src/features/cms/types";
 import { isTextPlaceholderImage } from "./storefront-placeholder-image";
+import { StoreLogo } from "./store-logo";
 
 type StorefrontFooterProps = {
   footerLinks: CmsFooterLink[];
@@ -179,9 +180,7 @@ export function StorefrontFooter({
       <div id="company" className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_2fr]">
           <div>
-            <div className="text-2xl font-extrabold text-[#0f766e]">
-              Hải Sản Nhà Quê
-            </div>
+            <StoreLogo showSubtitle={false} />
             <p className="mt-3 max-w-sm text-sm leading-6 text-slate-600">
               Hải Sản Nhà Quê vận hành gian hàng, thanh toán và quy trình
               bán hải sản theo nhịp thương mại Việt Nam.
@@ -239,7 +238,7 @@ export function StorefrontFooter({
 
       <div id="stores" className="bg-[#0f3f46] pb-24 pt-8 text-white md:pb-8">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-[220px_minmax(0,1fr)_180px] md:items-center">
-          <div className="text-2xl font-extrabold text-white">Hải Sản Nhà Quê</div>
+          <StoreLogo variant="light" showSubtitle={false} />
           <div>
             <h2 className="text-sm font-bold uppercase text-orange-200">
               Thông tin công ty

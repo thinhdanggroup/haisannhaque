@@ -18,7 +18,7 @@ const supabase = createClient(
 );
 
 const { data, error } = await supabase.auth.admin.createUser({
-  email: "admin@dao-seafood.vn",
+  email: "admin@haisannhaque.vn",
   password: "Admin@123456",
   email_confirm: true,
 });
@@ -27,6 +27,6 @@ if (error) {
   console.error("Error:", error.message);
 } else {
   console.log("✓ User created:", data.user.email);
-  console.log("  Email:    admin@dao-seafood.vn");
+  console.log("  Email:    admin@haisannhaque.vn");
   console.log("  Password: Admin@123456");
 }

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { CmsNavigationItem } from "@/src/features/cms/types";
+import { MessengerIcon, ZaloIcon } from "./brand-icons";
 
 type CategoryNavProps = {
   items: CmsNavigationItem[];
@@ -88,6 +89,9 @@ export function NavigationItemIcon({
   iconKey,
   className = "h-4 w-4",
 }: NavigationItemIconProps) {
+  if (iconKey === "zalo") return <ZaloIcon className={className} />;
+  if (iconKey === "messenger") return <MessengerIcon className={className} />;
+
   const Icon = iconKey ? navigationIcons[iconKey] ?? Circle : Circle;
 
   return (
