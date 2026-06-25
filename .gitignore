@@ -41,3 +41,5 @@ uploads/
 .idea/
 .vscode/
 .vercel
+
+.playwright-mcp

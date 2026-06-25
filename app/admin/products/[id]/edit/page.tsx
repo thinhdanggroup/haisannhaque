@@ -4,6 +4,7 @@ import { ProductEditForm } from "@/components/admin/product-edit-form";
 import { ProductImagesManager } from "@/components/admin/product-images-manager";
 import { ProductRelatedManager } from "@/components/admin/product-related-manager";
 import { ProductVariantsPricing } from "@/components/admin/product-variants-pricing";
+import { ProductCategoriesManager } from "@/components/admin/product-categories-manager";
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { createServerClient } from "@/src/lib/supabase/server";
 
@@ -29,7 +30,7 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
     throw error;
   }
 
-  const [productResult, imagesResult, variantsResult] = await Promise.all([
+  const [productResult, imagesResult, variantsResult, assignedCategoriesResult, allCategoriesResult] = await Promise.all([
     client
       .from("products")
       .select("id, name, status, short_description, description, origin")
@@ -45,6 +46,15 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
       .select("id, sku, unit, option_summary, list_price, sale_price, is_active")
       .eq("product_id", id)
       .order("list_price", { ascending: true }),
+    client
+      .from("product_categories")
+      .select("category_id, categories(id, name, slug)")
+      .eq("product_id", id),
+    client
+      .from("categories")
+      .select("id, name, slug")
+      .eq("is_active", true)
+      .order("name", { ascending: true }),
   ]);
 
   if (productResult.error || !productResult.data) {
@@ -62,6 +72,20 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
     listPrice: Number(v.list_price),
     salePrice: v.sale_price !== null ? Number(v.sale_price) : null,
     isActive: v.is_active,
+  }));
+
+  type CategoryRow = { categories: { id: string; name: string; slug: string } | Array<{ id: string; name: string; slug: string }> | null };
+  const assignedCategories = ((assignedCategoriesResult.data ?? []) as unknown as CategoryRow[])
+    .map((row) => {
+      const raw = row.categories;
+      return Array.isArray(raw) ? (raw[0] ?? null) : raw;
+    })
+    .filter((c): c is { id: string; name: string; slug: string } => c !== null);
+
+  const allCategories = (allCategoriesResult.data ?? []).map((c) => ({
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
   }));
 
   // Isolated query — table may not exist until migration runs.
@@ -112,6 +136,13 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
         <ProductImagesManager
           productId={product.id}
           images={images.map((img) => ({ id: img.id, url: img.url, altText: img.alt_text ?? null }))}
+        />
+      </div>
+      <div className="mt-8 border-t border-slate-200 pt-8">
+        <ProductCategoriesManager
+          productId={product.id}
+          assigned={assignedCategories}
+          allCategories={allCategories}
         />
       </div>
       <div className="mt-8 border-t border-slate-200 pt-8">

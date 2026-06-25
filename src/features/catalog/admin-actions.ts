@@ -220,6 +220,60 @@ export async function searchProductsForRelated(
   return data ?? [];
 }
 
+export type CategoryAssignmentState = { error: string } | null;
+
+export async function addProductCategory(
+  _prev: CategoryAssignmentState,
+  formData: FormData,
+): Promise<CategoryAssignmentState> {
+  const schema = z.object({
+    productId: z.string().uuid(),
+    categoryId: z.string().uuid(),
+  });
+
+  const result = schema.safeParse({
+    productId: formData.get("productId"),
+    categoryId: formData.get("categoryId"),
+  });
+
+  if (!result.success) {
+    return { error: result.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const client = await createServerClient();
+  await requireAdminPermission(client, "products:update");
+
+  const { error } = await client
+    .from("product_categories")
+    .upsert(
+      { product_id: result.data.productId, category_id: result.data.categoryId },
+      { onConflict: "product_id,category_id" },
+    );
+
+  if (error) return { error: error.message };
+
+  revalidatePath(`/admin/products/${result.data.productId}/edit`);
+  return null;
+}
+
+export async function removeProductCategory(
+  productId: string,
+  categoryId: string,
+): Promise<void> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "products:update");
+
+  const { error } = await client
+    .from("product_categories")
+    .delete()
+    .eq("product_id", productId)
+    .eq("category_id", categoryId);
+
+  if (error) return;
+
+  revalidatePath(`/admin/products/${productId}/edit`);
+}
+
 export type UpdateVariantPricingState = { error: string } | { success: true } | null;
 
 export async function updateVariantPricing(
