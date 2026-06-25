@@ -14,8 +14,8 @@ export default async function AdminProductImportPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Import Products" />
-          <p className="text-sm text-slate-600">You do not have access to import products.</p>
+          <AdminPageHeader title="Nhập sản phẩm" />
+          <p className="text-sm text-slate-600">Bạn không có quyền nhập sản phẩm.</p>
         </div>
       );
     }
@@ -25,8 +25,8 @@ export default async function AdminProductImportPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Import Products"
-        description="Upload a CSV file to create multiple products at once."
+        title="Nhập sản phẩm"
+        description="Tải lên file CSV để tạo nhiều sản phẩm cùng lúc."
       />
       <ProductImportForm />
     </div>

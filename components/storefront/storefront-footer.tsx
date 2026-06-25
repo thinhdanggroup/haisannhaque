@@ -30,7 +30,7 @@ const fallbackFooterLinks: CmsFooterLink[] = [
     id: "fallback-information-stores",
     groupLabel: "Thông tin",
     label: "Hệ thống cửa hàng",
-    href: "#stores",
+    href: "https://maps.app.goo.gl/dDcQBkY8U8aV6TBb9",
     sortOrder: 10,
   },
   {
@@ -186,9 +186,9 @@ export function StorefrontFooter({
               bán hải sản theo nhịp thương mại Việt Nam.
             </p>
             <a
-              href="tel:19000098"
+              href="tel:0867997200"
               className="mt-4 inline-flex min-h-10 items-center rounded-md bg-orange-700 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-orange-800"
-              aria-label="Hotline 1900 0098"
+              aria-label="Hotline 0867 997 200"
             >
               Gọi hotline
             </a>
@@ -203,12 +203,23 @@ export function StorefrontFooter({
                 <ul className="mt-3 space-y-2">
                   {group.links.map((link) => (
                     <li key={link.id}>
-                      <Link
-                        href={link.href}
-                        className="text-sm text-slate-600 transition hover:text-teal-700"
-                      >
-                        {link.label}
-                      </Link>
+                      {link.href.startsWith("http") ? (
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-slate-600 transition hover:text-teal-700"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          className="text-sm text-slate-600 transition hover:text-teal-700"
+                        >
+                          {link.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -246,7 +257,7 @@ export function StorefrontFooter({
             <p className="mt-2 text-sm leading-6 text-teal-50">
               CÔNG TY TNHH HẢI SẢN NHÀ QUÊ. MST: 0319442718. VP: SAV.2-00.04 Tầng trệt,
               Tháp 2, Toà Nhà The Sun Avenue, 28 Mai Chí Thọ, P.Bình Trưng, TP.HCM, Việt Nam.
-              Hotline: 1900 0098. Email: care@haisannhaque.vn.
+              Hotline: 0867 997 200. Email: care@haisannhaque.vn.
             </p>
             <p className="mt-1 text-xs leading-5 text-teal-100">
               Nội dung, hình ảnh và dữ liệu demo trong dự án là tài sản minh họa

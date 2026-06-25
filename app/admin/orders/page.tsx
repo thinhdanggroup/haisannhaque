@@ -72,41 +72,41 @@ export default async function AdminOrdersPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Orders" />
-        <p className="text-sm text-slate-600">You do not have access to orders.</p>
+        <AdminPageHeader title="Đơn hàng" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập đơn hàng.</p>
       </div>
     );
   }
 
   return (
     <div>
-      <AdminPageHeader title="Orders" description="Review recent checkout orders and payment state." />
+      <AdminPageHeader title="Đơn hàng" description="Xem xét đơn hàng gần đây và trạng thái thanh toán." />
       <AdminDataTable
         columns={[
-          { key: "orderNo", label: "Order" },
+          { key: "orderNo", label: "Đơn hàng" },
           {
             key: "status",
-            label: "Status",
+            label: "Trạng thái",
             render: (row) => <StatusChip value={row.status} tone={getOrderStatusTone(row.status)} />,
           },
           {
             key: "payment",
-            label: "Payment",
+            label: "Thanh toán",
             render: (row) => (
               <StatusChip value={row.payment} tone={getPaymentStatusTone(row.payment)} />
             ),
           },
-          { key: "total", label: "Total" },
-          { key: "placedAt", label: "Placed" },
+          { key: "total", label: "Tổng" },
+          { key: "placedAt", label: "Ngày đặt" },
         ]}
         rows={pageData.orders}
-        emptyMessage="No orders yet."
+        emptyMessage="Chưa có đơn hàng nào."
         actionsSlot={(row) => (
           <a
             href={`/admin/orders/${row.id}`}
             className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
           >
-            View
+            Xem
           </a>
         )}
       />

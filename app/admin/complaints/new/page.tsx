@@ -14,8 +14,8 @@ export default async function AdminComplaintNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New Complaint" />
-          <p>You do not have access to create complaints.</p>
+          <AdminPageHeader title="Khiếu nại mới" />
+          <p>Bạn không có quyền tạo khiếu nại.</p>
         </div>
       );
     }
@@ -25,8 +25,8 @@ export default async function AdminComplaintNewPage() {
   return (
     <div>
       <AdminPageHeader
-        title="New Complaint"
-        description="Create a new complaint case for a customer order."
+        title="Khiếu nại mới"
+        description="Tạo trường hợp khiếu nại mới cho đơn hàng của khách."
       />
       <ComplaintCreateForm />
     </div>

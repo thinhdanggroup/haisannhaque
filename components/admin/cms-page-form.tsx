@@ -28,8 +28,8 @@ export function CmsPageForm({ action, initialValues }: CmsPageFormProps) {
 
       {!isEdit && (
         <label className="block text-sm" htmlFor="pageKey">
-          <span className="font-medium text-slate-700">Page key</span>
-          <span className="ml-1 text-xs text-slate-400">(lowercase, hyphens only — e.g. home)</span>
+          <span className="font-medium text-slate-700">Khóa trang</span>
+          <span className="ml-1 text-xs text-slate-400">(chữ thường, chỉ gạch ngang — vd home)</span>
           <input
             id="pageKey"
             name="pageKey"
@@ -41,7 +41,7 @@ export function CmsPageForm({ action, initialValues }: CmsPageFormProps) {
       )}
 
       <label className="block text-sm" htmlFor="title">
-        <span className="font-medium text-slate-700">Title</span>
+        <span className="font-medium text-slate-700">Tiêu đề</span>
         <input
           id="title"
           name="title"
@@ -52,16 +52,16 @@ export function CmsPageForm({ action, initialValues }: CmsPageFormProps) {
       </label>
 
       <label className="block text-sm" htmlFor="status">
-        <span className="font-medium text-slate-700">Status</span>
+        <span className="font-medium text-slate-700">Trạng thái</span>
         <select
           id="status"
           name="status"
           defaultValue={initialValues?.status ?? "draft"}
           className={INPUT_CLASS}
         >
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-          <option value="archived">Archived</option>
+          <option value="draft">Nháp</option>
+          <option value="published">Đã xuất bản</option>
+          <option value="archived">Đã lưu trữ</option>
         </select>
       </label>
 
@@ -71,13 +71,13 @@ export function CmsPageForm({ action, initialValues }: CmsPageFormProps) {
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : isEdit ? "Save" : "Create page"}
+          {isPending ? "Đang lưu…" : isEdit ? "Lưu" : "Tạo trang"}
         </button>
         <Link
           href="/admin/content"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

@@ -51,8 +51,8 @@ export default async function AdminDashboardPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Operations dashboard" />
-        <p className="text-sm text-slate-600">You do not have access to the operations dashboard.</p>
+        <AdminPageHeader title="Bảng điều hành" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập bảng điều hành.</p>
       </div>
     );
   }
@@ -60,8 +60,8 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Operations dashboard"
-        description="Live operating metrics for orders, inventory, support, procurement, and sales."
+        title="Bảng điều hành"
+        description="Số liệu vận hành trực tiếp về đơn hàng, kho hàng, hỗ trợ, mua hàng và doanh số."
       />
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {pageData.metrics.map((metric) => (

@@ -14,10 +14,10 @@ export function AdminShell({ children }: AdminShellProps) {
           <div className="mb-4 px-3 text-lg font-semibold">Admin</div>
           <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
             <p className="text-[11px] font-semibold uppercase tracking-normal text-slate-500">
-              Branch context
+              Chi nhánh
             </p>
             <p className="mt-1 text-sm font-semibold text-slate-900">HCM-01</p>
-            <p className="text-xs text-slate-600">Primary warehouse</p>
+            <p className="text-xs text-slate-600">Kho chính</p>
           </div>
           <AdminNav />
         </aside>

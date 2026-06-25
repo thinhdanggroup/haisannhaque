@@ -30,13 +30,13 @@ type BannerRecord = {
 };
 
 const COLUMNS: AdminDataTableColumn<BannerRow>[] = [
-  { key: "title", label: "Title" },
-  { key: "section", label: "Section" },
+  { key: "title", label: "Tiêu đề" },
+  { key: "section", label: "Phần" },
   { key: "cta", label: "CTA" },
-  { key: "sortOrder", label: "Order" },
+  { key: "sortOrder", label: "Thứ tự" },
   {
     key: "status",
-    label: "Status",
+    label: "Trạng thái",
     render: (row) => (
       <StatusChip value={row.status} tone={row.status === "active" ? "success" : "neutral"} />
     ),
@@ -57,7 +57,7 @@ export default async function CmsBannersPage() {
       return (
         <div>
           <AdminPageHeader title="Banners" />
-          <p className="text-sm text-slate-600">You do not have access to banner management.</p>
+          <p className="text-sm text-slate-600">Bạn không có quyền quản lý banner.</p>
         </div>
       );
     }
@@ -87,14 +87,14 @@ export default async function CmsBannersPage() {
     <div className="space-y-4">
       <AdminPageHeader
         title="Banners"
-        description="Manage banners displayed across CMS sections."
+        description="Quản lý banner hiển thị trên các phần CMS."
         action={
           <Link
             href="/admin/content/banners/new"
             className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white hover:bg-teal-800"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            New banner
+            Thêm banner
           </Link>
         }
       />

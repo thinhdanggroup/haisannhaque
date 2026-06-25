@@ -56,9 +56,9 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
 
       {!isEdit && (
         <label className="block text-sm" htmlFor="pageKey">
-          <span className="font-medium text-slate-700">Page</span>
+          <span className="font-medium text-slate-700">Trang</span>
           <select id="pageKey" name="pageKey" required className={INPUT_CLASS}>
-            <option value="">Select a page…</option>
+            <option value="">Chọn trang…</option>
             {pages.map((p) => (
               <option key={p.pageKey} value={p.pageKey}>
                 {p.title} ({p.pageKey})
@@ -69,8 +69,8 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
       )}
 
       <label className="block text-sm" htmlFor="sectionKey">
-        <span className="font-medium text-slate-700">Section key</span>
-        <span className="ml-1 text-xs text-slate-400">(lowercase, hyphens only)</span>
+        <span className="font-medium text-slate-700">Khóa phần</span>
+        <span className="ml-1 text-xs text-slate-400">(chữ thường, chỉ gạch ngang)</span>
         <input
           id="sectionKey"
           name="sectionKey"
@@ -81,7 +81,7 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
       </label>
 
       <label className="block text-sm" htmlFor="sectionType">
-        <span className="font-medium text-slate-700">Section type</span>
+        <span className="font-medium text-slate-700">Loại phần</span>
         <select
           id="sectionType"
           name="sectionType"
@@ -97,7 +97,7 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
       </label>
 
       <label className="block text-sm" htmlFor="title">
-        <span className="font-medium text-slate-700">Title (optional)</span>
+        <span className="font-medium text-slate-700">Tiêu đề (tuỳ chọn)</span>
         <input
           id="title"
           name="title"
@@ -107,7 +107,7 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
       </label>
 
       <label className="block text-sm" htmlFor="subtitle">
-        <span className="font-medium text-slate-700">Subtitle (optional)</span>
+        <span className="font-medium text-slate-700">Phụ đề (tuỳ chọn)</span>
         <input
           id="subtitle"
           name="subtitle"
@@ -117,7 +117,7 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
       </label>
 
       <label className="block text-sm" htmlFor="layout">
-        <span className="font-medium text-slate-700">Layout</span>
+        <span className="font-medium text-slate-700">Bố cục</span>
         <input
           id="layout"
           name="layout"
@@ -127,7 +127,7 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
       </label>
 
       <label className="block text-sm" htmlFor="sortOrder">
-        <span className="font-medium text-slate-700">Sort order</span>
+        <span className="font-medium text-slate-700">Thứ tự</span>
         <input
           id="sortOrder"
           name="sortOrder"
@@ -139,15 +139,15 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
       </label>
 
       <label className="block text-sm" htmlFor="isActive">
-        <span className="font-medium text-slate-700">Status</span>
+        <span className="font-medium text-slate-700">Trạng thái</span>
         <select
           id="isActive"
           name="isActive"
           defaultValue={initialValues ? String(initialValues.isActive) : "true"}
           className={INPUT_CLASS}
         >
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
+          <option value="true">Hoạt động</option>
+          <option value="false">Không hoạt động</option>
         </select>
       </label>
 
@@ -157,13 +157,13 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : isEdit ? "Save" : "Create section"}
+          {isPending ? "Đang lưu…" : isEdit ? "Lưu" : "Tạo phần"}
         </button>
         <Link
           href="/admin/content"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

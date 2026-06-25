@@ -35,14 +35,14 @@ export function RefundCreateForm() {
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error ?? "Failed to create refund.");
+        setError(json.error ?? "Không tạo được hoàn tiền.");
         return;
       }
 
       router.push("/admin/refunds");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError("Lỗi mạng. Vui lòng thử lại.");
     } finally {
       setIsPending(false);
     }
@@ -57,7 +57,7 @@ export function RefundCreateForm() {
       )}
 
       <label className="block text-sm" htmlFor="orderId">
-        <span className="font-medium text-slate-700">Order ID (UUID)</span>
+        <span className="font-medium text-slate-700">Mã đơn hàng (UUID)</span>
         <input
           id="orderId"
           name="orderId"
@@ -69,7 +69,7 @@ export function RefundCreateForm() {
       </label>
 
       <label className="block text-sm" htmlFor="paymentId">
-        <span className="font-medium text-slate-700">Payment ID (optional)</span>
+        <span className="font-medium text-slate-700">Mã thanh toán (tuỳ chọn)</span>
         <input
           id="paymentId"
           name="paymentId"
@@ -80,7 +80,7 @@ export function RefundCreateForm() {
       </label>
 
       <label className="block text-sm" htmlFor="amount">
-        <span className="font-medium text-slate-700">Amount (VND)</span>
+        <span className="font-medium text-slate-700">Số tiền (VNĐ)</span>
         <input
           id="amount"
           name="amount"
@@ -93,7 +93,7 @@ export function RefundCreateForm() {
       </label>
 
       <label className="block text-sm" htmlFor="refundMethod">
-        <span className="font-medium text-slate-700">Refund method</span>
+        <span className="font-medium text-slate-700">Phương thức hoàn tiền</span>
         <select
           id="refundMethod"
           name="refundMethod"
@@ -110,7 +110,7 @@ export function RefundCreateForm() {
       </label>
 
       <label className="block text-sm" htmlFor="reason">
-        <span className="font-medium text-slate-700">Reason</span>
+        <span className="font-medium text-slate-700">Lý do</span>
         <textarea
           id="reason"
           name="reason"
@@ -127,13 +127,13 @@ export function RefundCreateForm() {
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Creating…" : "Create refund"}
+          {isPending ? "Đang tạo…" : "Tạo hoàn tiền"}
         </button>
         <a
           href="/admin/refunds"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </a>
       </div>
     </form>

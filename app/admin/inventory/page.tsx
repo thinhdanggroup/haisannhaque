@@ -42,8 +42,8 @@ export default async function AdminInventoryPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Inventory" />
-        <p className="text-sm text-slate-600">You do not have access to inventory.</p>
+        <AdminPageHeader title="Tồn kho" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập tồn kho.</p>
       </div>
     );
   }
@@ -51,24 +51,24 @@ export default async function AdminInventoryPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Inventory"
-        description="Available sellable quantity by active SKU and branch warehouse."
+        title="Tồn kho"
+        description="Số lượng có thể bán theo SKU và kho hàng chi nhánh."
       />
       <AdminDataTable
         columns={[
           { key: "sku", label: "SKU" },
-          { key: "product", label: "Product" },
-          { key: "warehouse", label: "Warehouse" },
-          { key: "available", label: "Available" },
-          { key: "unit", label: "Unit" },
+          { key: "product", label: "Sản phẩm" },
+          { key: "warehouse", label: "Kho" },
+          { key: "available", label: "Tồn kho" },
+          { key: "unit", label: "Đơn vị" },
           {
             key: "quality",
-            label: "Quality",
+            label: "Chất lượng",
             render: (row) => <StatusChip value={row.quality} tone="success" />,
           },
         ]}
         rows={pageData.inventoryRows}
-        emptyMessage="No inventory records yet."
+        emptyMessage="Chưa có dữ liệu tồn kho."
         actionsSlot={(row) => (
           <InventoryAdjustmentForm sku={row.sku} warehouseCode={row.warehouseCode} />
         )}

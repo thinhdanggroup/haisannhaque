@@ -44,8 +44,8 @@ export default async function AdminPurchaseOrderDetailPage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Purchase Order" />
-          <p className="text-sm text-slate-600">You do not have access.</p>
+          <AdminPageHeader title="Đơn nhập hàng" />
+          <p className="text-sm text-slate-600">Bạn không có quyền truy cập.</p>
         </div>
       );
     }
@@ -95,7 +95,7 @@ export default async function AdminPurchaseOrderDetailPage({ params }: Props) {
               href={`/admin/purchase-orders/${id}/receive`}
               className="inline-flex min-h-10 items-center rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white hover:bg-teal-800"
             >
-              Record receipt
+              Ghi nhận nhận hàng
             </Link>
           ) : undefined
         }
@@ -103,35 +103,35 @@ export default async function AdminPurchaseOrderDetailPage({ params }: Props) {
 
       <div className="grid grid-cols-2 gap-4 rounded-lg border border-slate-200 bg-white p-4 text-sm sm:grid-cols-4">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Status</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Trạng thái</p>
           <StatusChip value={po.status} tone="neutral" />
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Ordered</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Đã đặt</p>
           <p className="mt-1 font-semibold text-slate-800">{String(po.ordered_total)}</p>
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Received</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Đã nhận</p>
           <p className="mt-1 font-semibold text-slate-800">{String(po.received_total)}</p>
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Expected</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Dự kiến</p>
           <p className="mt-1 text-slate-700">{po.expected_at ? po.expected_at.slice(0, 10) : "—"}</p>
         </div>
       </div>
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold text-slate-800">Line items</h2>
+        <h2 className="mb-2 text-sm font-semibold text-slate-800">Chi tiết đơn</h2>
         <AdminDataTable
           columns={[
             { key: "sku", label: "SKU" },
-            { key: "unit", label: "Unit" },
-            { key: "orderedQty", label: "Ordered" },
-            { key: "receivedQty", label: "Received" },
-            { key: "unitCost", label: "Cost" },
+            { key: "unit", label: "Đơn vị" },
+            { key: "orderedQty", label: "Đã đặt" },
+            { key: "receivedQty", label: "Đã nhận" },
+            { key: "unitCost", label: "Chi phí" },
           ]}
           rows={lines}
-          emptyMessage="No lines."
+          emptyMessage="Không có dòng nào."
         />
       </section>
     </div>

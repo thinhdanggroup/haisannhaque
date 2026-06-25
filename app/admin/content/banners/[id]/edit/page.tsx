@@ -19,8 +19,8 @@ export default async function CmsBannerEditPage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit banner" />
-          <p className="text-sm text-slate-600">You do not have access to edit banners.</p>
+          <AdminPageHeader title="Sửa banner" />
+          <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa banner.</p>
         </div>
       );
     }
@@ -50,7 +50,7 @@ export default async function CmsBannerEditPage({ params }: Props) {
 
   return (
     <div>
-      <AdminPageHeader title="Edit banner" description={b.title} />
+      <AdminPageHeader title="Sửa banner" description={b.title} />
       <CmsBannerForm
         action={updateCmsBanner}
         sections={sections}

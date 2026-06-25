@@ -1,18 +1,18 @@
 import Link from "next/link";
 
 const adminLinks = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/products", label: "Products" },
-  { href: "/admin/categories", label: "Categories" },
-  { href: "/admin/content", label: "Content" },
-  { href: "/admin/orders", label: "Orders" },
-  { href: "/admin/inventory", label: "Inventory" },
-  { href: "/admin/warehouses", label: "Warehouses" },
-  { href: "/admin/purchase-orders", label: "Purchase Orders" },
-  { href: "/admin/suppliers", label: "Suppliers" },
-  { href: "/admin/refunds", label: "Refunds" },
-  { href: "/admin/complaints", label: "Complaints" },
-  { href: "/admin/reports", label: "Reports" },
+  { href: "/admin", label: "Bảng điều hành" },
+  { href: "/admin/products", label: "Sản phẩm" },
+  { href: "/admin/categories", label: "Danh mục" },
+  { href: "/admin/content", label: "Nội dung" },
+  { href: "/admin/orders", label: "Đơn hàng" },
+  { href: "/admin/inventory", label: "Tồn kho" },
+  { href: "/admin/warehouses", label: "Kho hàng" },
+  { href: "/admin/purchase-orders", label: "Đơn nhập hàng" },
+  { href: "/admin/suppliers", label: "Nhà cung cấp" },
+  { href: "/admin/refunds", label: "Hoàn tiền" },
+  { href: "/admin/complaints", label: "Khiếu nại" },
+  { href: "/admin/reports", label: "Báo cáo" },
 ];
 
 export function AdminNav() {

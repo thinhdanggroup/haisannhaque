@@ -2,19 +2,15 @@ import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement> & { className?: string };
 
-export function ZaloIcon({ className, ...props }: IconProps) {
+export function ZaloIcon({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/zalo-icon.png"
+      alt="Zalo"
       aria-hidden="true"
-      {...props}
-    >
-      <rect width="32" height="32" rx="7" fill="#0068FF" />
-      <path d="M7 8h18v3.5L13 20.5h12V24H7v-3.5L19 11.5H7z" fill="white" />
-    </svg>
+      className={className}
+    />
   );
 }
 

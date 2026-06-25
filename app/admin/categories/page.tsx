@@ -52,8 +52,8 @@ export default async function AdminCategoriesPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Categories" />
-        <p className="text-sm text-slate-600">You do not have access to categories.</p>
+        <AdminPageHeader title="Danh mục" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập danh mục.</p>
       </div>
     );
   }
@@ -61,33 +61,33 @@ export default async function AdminCategoriesPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Categories"
-        description="Manage the product taxonomy used for browsing and filtering."
+        title="Danh mục"
+        description="Quản lý phân loại sản phẩm dùng để duyệt và lọc."
         action={
           <Link
             href="/admin/categories/new"
             className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            New category
+            Thêm danh mục
           </Link>
         }
       />
       <AdminDataTable
         columns={[
-          { key: "name", label: "Name" },
+          { key: "name", label: "Tên" },
           { key: "slug", label: "Slug" },
           {
             key: "parentName",
-            label: "Parent",
+            label: "Danh mục cha",
             render: (row) => (
               <span className="text-sm text-slate-500">{row.parentName ?? "—"}</span>
             ),
           },
-          { key: "sort_order", label: "Order" },
+          { key: "sort_order", label: "Thứ tự" },
           {
             key: "is_active",
-            label: "Status",
+            label: "Trạng thái",
             render: (row) => (
               <StatusChip
                 value={row.is_active ? "active" : "inactive"}
@@ -97,7 +97,7 @@ export default async function AdminCategoriesPage() {
           },
         ]}
         rows={pageData.categories}
-        emptyMessage="No categories yet."
+        emptyMessage="Chưa có danh mục nào."
         actionsSlot={(row) => <CategoryRowActions id={row.id} name={row.name} />}
       />
     </div>

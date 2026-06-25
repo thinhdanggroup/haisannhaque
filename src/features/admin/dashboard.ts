@@ -48,12 +48,12 @@ export function shouldUseAdminPlaywrightFixture(): boolean {
 
 export function createDashboardMetrics(counts: DashboardMetricCounts): DashboardMetric[] {
   return [
-    { label: "Open orders", value: String(counts.openOrders), detail: "Needs review" },
-    { label: "Low stock SKUs", value: String(counts.lowStockSkus), detail: "Below threshold" },
-    { label: "Pending refunds", value: String(counts.pendingRefunds), detail: "Finance queue" },
-    { label: "Open complaints", value: String(counts.openComplaints), detail: "Support queue" },
-    { label: "Purchase orders", value: String(counts.purchaseOrders), detail: "Procurement" },
-    { label: "Sales today", value: formatDashboardVnd(counts.revenueToday), detail: "Completed orders" },
+    { label: "Đơn chờ xử lý", value: String(counts.openOrders), detail: "Cần xem xét" },
+    { label: "SKU sắp hết hàng", value: String(counts.lowStockSkus), detail: "Dưới ngưỡng" },
+    { label: "Hoàn tiền chờ xử lý", value: String(counts.pendingRefunds), detail: "Hàng đợi tài chính" },
+    { label: "Khiếu nại đang mở", value: String(counts.openComplaints), detail: "Hàng đợi hỗ trợ" },
+    { label: "Đơn nhập hàng", value: String(counts.purchaseOrders), detail: "Mua hàng" },
+    { label: "Doanh số hôm nay", value: formatDashboardVnd(counts.revenueToday), detail: "Đơn hoàn thành" },
   ];
 }
 

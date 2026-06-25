@@ -113,8 +113,8 @@ export default async function AdminPurchaseOrdersPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Purchase Orders" />
-        <p className="text-sm text-slate-600">You do not have access to purchase orders.</p>
+        <AdminPageHeader title="Đơn nhập hàng" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập đơn nhập hàng.</p>
       </div>
     );
   }
@@ -122,47 +122,47 @@ export default async function AdminPurchaseOrdersPage() {
   return (
     <div className="space-y-4">
       <AdminPageHeader
-        title="Purchase Orders"
-        description="Track supplier orders, destination warehouses, and receiving progress."
+        title="Đơn nhập hàng"
+        description="Theo dõi đơn nhập từ nhà cung cấp, kho đích và tiến độ nhận hàng."
         action={
           <Link
             href="/admin/purchase-orders/new"
             className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            New purchase order
+            Tạo đơn nhập
           </Link>
         }
       />
       <FilterBar>
         <span className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">
-          Procurement queue
+          Hàng đợi mua hàng
         </span>
-        <span className="text-xs text-slate-600">Latest 50 supplier purchase orders</span>
+        <span className="text-xs text-slate-600">50 đơn nhập gần nhất</span>
       </FilterBar>
       <AdminDataTable
         columns={[
-          { key: "poNo", label: "PO" },
-          { key: "supplier", label: "Supplier" },
-          { key: "warehouse", label: "Warehouse" },
+          { key: "poNo", label: "Mã PO" },
+          { key: "supplier", label: "Nhà cung cấp" },
+          { key: "warehouse", label: "Kho" },
           {
             key: "status",
-            label: "Status",
+            label: "Trạng thái",
             render: (row) => (
               <StatusChip value={row.status} tone={getPurchaseOrderStatusTone(row.status)} />
             ),
           },
-          { key: "orderedTotal", label: "Ordered" },
-          { key: "receivedTotal", label: "Received" },
+          { key: "orderedTotal", label: "Đã đặt" },
+          { key: "receivedTotal", label: "Đã nhận" },
         ]}
         rows={pageData.purchaseOrders}
-        emptyMessage="No purchase orders yet."
+        emptyMessage="Chưa có đơn nhập nào."
         actionsSlot={(row) => (
           <a
             href={`/admin/purchase-orders/${row.id}`}
             className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
           >
-            View
+            Xem
           </a>
         )}
       />

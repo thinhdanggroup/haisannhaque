@@ -43,8 +43,8 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
       )}
 
       <label className="block text-sm" htmlFor="assetKey">
-        <span className="font-medium text-slate-700">Asset key</span>
-        <span className="ml-1 text-xs text-slate-400">(unique within placement)</span>
+        <span className="font-medium text-slate-700">Khóa tài nguyên</span>
+        <span className="ml-1 text-xs text-slate-400">(duy nhất trong vị trí)</span>
         <input
           id="assetKey"
           name="assetKey"
@@ -55,7 +55,7 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
       </label>
 
       <label className="block text-sm" htmlFor="placement">
-        <span className="font-medium text-slate-700">Placement</span>
+        <span className="font-medium text-slate-700">Vị trí</span>
         <select
           id="placement"
           name="placement"
@@ -72,7 +72,7 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
       </label>
 
       <label className="block text-sm" htmlFor="imageUrl">
-        <span className="font-medium text-slate-700">Image URL</span>
+        <span className="font-medium text-slate-700">URL hình ảnh</span>
         <input
           id="imageUrl"
           name="imageUrl"
@@ -84,7 +84,7 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
       </label>
 
       <label className="block text-sm" htmlFor="altText">
-        <span className="font-medium text-slate-700">Alt text</span>
+        <span className="font-medium text-slate-700">Văn bản thay thế</span>
         <input
           id="altText"
           name="altText"
@@ -95,7 +95,7 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
       </label>
 
       <label className="block text-sm" htmlFor="href">
-        <span className="font-medium text-slate-700">Href (optional)</span>
+        <span className="font-medium text-slate-700">Đường dẫn (tuỳ chọn)</span>
         <input
           id="href"
           name="href"
@@ -105,7 +105,7 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
       </label>
 
       <label className="block text-sm" htmlFor="sortOrder">
-        <span className="font-medium text-slate-700">Sort order</span>
+        <span className="font-medium text-slate-700">Thứ tự</span>
         <input
           id="sortOrder"
           name="sortOrder"
@@ -117,15 +117,15 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
       </label>
 
       <label className="block text-sm" htmlFor="isActive">
-        <span className="font-medium text-slate-700">Status</span>
+        <span className="font-medium text-slate-700">Trạng thái</span>
         <select
           id="isActive"
           name="isActive"
           defaultValue={initialValues ? String(initialValues.isActive) : "true"}
           className={INPUT_CLASS}
         >
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
+          <option value="true">Hoạt động</option>
+          <option value="false">Không hoạt động</option>
         </select>
       </label>
 
@@ -135,13 +135,13 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : isEdit ? "Save" : "Create asset"}
+          {isPending ? "Đang lưu…" : isEdit ? "Lưu" : "Tạo tài nguyên"}
         </button>
         <Link
           href="/admin/content"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

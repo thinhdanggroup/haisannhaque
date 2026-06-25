@@ -35,14 +35,14 @@ export function ComplaintCreateForm() {
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error ?? "Failed to create complaint.");
+        setError(json.error ?? "Không tạo được khiếu nại.");
         return;
       }
 
       router.push("/admin/complaints");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError("Lỗi mạng. Vui lòng thử lại.");
     } finally {
       setIsPending(false);
     }
@@ -57,7 +57,7 @@ export function ComplaintCreateForm() {
       )}
 
       <label className="block text-sm" htmlFor="orderId">
-        <span className="font-medium text-slate-700">Order ID (optional)</span>
+        <span className="font-medium text-slate-700">Mã đơn hàng (tuỳ chọn)</span>
         <input
           id="orderId"
           name="orderId"
@@ -68,7 +68,7 @@ export function ComplaintCreateForm() {
       </label>
 
       <label className="block text-sm" htmlFor="customerId">
-        <span className="font-medium text-slate-700">Customer ID (optional)</span>
+        <span className="font-medium text-slate-700">Mã khách hàng (tuỳ chọn)</span>
         <input
           id="customerId"
           name="customerId"
@@ -79,7 +79,7 @@ export function ComplaintCreateForm() {
       </label>
 
       <label className="block text-sm" htmlFor="reason">
-        <span className="font-medium text-slate-700">Reason</span>
+        <span className="font-medium text-slate-700">Lý do</span>
         <textarea
           id="reason"
           name="reason"
@@ -96,13 +96,13 @@ export function ComplaintCreateForm() {
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Creating…" : "Create complaint"}
+          {isPending ? "Đang tạo…" : "Tạo khiếu nại"}
         </button>
         <Link
           href="/admin/complaints"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

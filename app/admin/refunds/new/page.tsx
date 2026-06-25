@@ -14,8 +14,8 @@ export default async function AdminRefundNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New Refund" />
-          <p>You do not have access to create refunds.</p>
+          <AdminPageHeader title="Hoàn tiền mới" />
+          <p>Bạn không có quyền tạo hoàn tiền.</p>
         </div>
       );
     }
@@ -25,8 +25,8 @@ export default async function AdminRefundNewPage() {
   return (
     <div>
       <AdminPageHeader
-        title="New Refund"
-        description="Create a refund request for an order."
+        title="Hoàn tiền mới"
+        description="Tạo yêu cầu hoàn tiền cho đơn hàng."
       />
       <RefundCreateForm />
     </div>

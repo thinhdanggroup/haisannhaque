@@ -43,7 +43,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       )}
 
       <label className="block text-sm" htmlFor="sectionId">
-        <span className="font-medium text-slate-700">Section</span>
+        <span className="font-medium text-slate-700">Phần</span>
         <select
           id="sectionId"
           name="sectionId"
@@ -51,7 +51,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
           defaultValue={initialValues?.sectionId ?? ""}
           className={INPUT_CLASS}
         >
-          <option value="">Select a section…</option>
+          <option value="">Chọn phần…</option>
           {sections.map((s) => (
             <option key={s.id} value={s.id}>
               {s.pageKey} / {s.sectionKey}
@@ -61,7 +61,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       </label>
 
       <label className="block text-sm" htmlFor="title">
-        <span className="font-medium text-slate-700">Title</span>
+        <span className="font-medium text-slate-700">Tiêu đề</span>
         <input
           id="title"
           name="title"
@@ -72,7 +72,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       </label>
 
       <label className="block text-sm" htmlFor="subtitle">
-        <span className="font-medium text-slate-700">Subtitle (optional)</span>
+        <span className="font-medium text-slate-700">Phụ đề (tuỳ chọn)</span>
         <input
           id="subtitle"
           name="subtitle"
@@ -82,7 +82,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       </label>
 
       <label className="block text-sm" htmlFor="imageUrl">
-        <span className="font-medium text-slate-700">Image URL</span>
+        <span className="font-medium text-slate-700">URL hình ảnh</span>
         <input
           id="imageUrl"
           name="imageUrl"
@@ -94,7 +94,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       </label>
 
       <label className="block text-sm" htmlFor="mobileImageUrl">
-        <span className="font-medium text-slate-700">Mobile image URL (optional)</span>
+        <span className="font-medium text-slate-700">URL hình mobile (tuỳ chọn)</span>
         <input
           id="mobileImageUrl"
           name="mobileImageUrl"
@@ -105,7 +105,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       </label>
 
       <label className="block text-sm" htmlFor="ctaLabel">
-        <span className="font-medium text-slate-700">CTA label (optional)</span>
+        <span className="font-medium text-slate-700">Nhãn CTA (tuỳ chọn)</span>
         <input
           id="ctaLabel"
           name="ctaLabel"
@@ -115,7 +115,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       </label>
 
       <label className="block text-sm" htmlFor="ctaHref">
-        <span className="font-medium text-slate-700">CTA href (optional)</span>
+        <span className="font-medium text-slate-700">Đường dẫn CTA (tuỳ chọn)</span>
         <input
           id="ctaHref"
           name="ctaHref"
@@ -125,7 +125,7 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       </label>
 
       <label className="block text-sm" htmlFor="sortOrder">
-        <span className="font-medium text-slate-700">Sort order</span>
+        <span className="font-medium text-slate-700">Thứ tự</span>
         <input
           id="sortOrder"
           name="sortOrder"
@@ -137,15 +137,15 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
       </label>
 
       <label className="block text-sm" htmlFor="isActive">
-        <span className="font-medium text-slate-700">Status</span>
+        <span className="font-medium text-slate-700">Trạng thái</span>
         <select
           id="isActive"
           name="isActive"
           defaultValue={initialValues ? String(initialValues.isActive) : "true"}
           className={INPUT_CLASS}
         >
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
+          <option value="true">Hoạt động</option>
+          <option value="false">Không hoạt động</option>
         </select>
       </label>
 
@@ -155,13 +155,13 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : isEdit ? "Save" : "Create banner"}
+          {isPending ? "Đang lưu…" : isEdit ? "Lưu" : "Tạo banner"}
         </button>
         <Link
           href="/admin/content/banners"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

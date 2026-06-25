@@ -11,7 +11,7 @@ export default async function NewWarehousePage() {
   if (shouldUseAdminPlaywrightFixture()) {
     return (
       <div>
-        <AdminPageHeader title="New warehouse" />
+        <AdminPageHeader title="Kho mới" />
         <WarehouseForm action={createWarehouse} />
       </div>
     );
@@ -24,8 +24,8 @@ export default async function NewWarehousePage() {
     if (e instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New warehouse" />
-          <p className="text-sm text-slate-600">You do not have access to create warehouses.</p>
+          <AdminPageHeader title="Kho mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo kho.</p>
         </div>
       );
     }
@@ -34,7 +34,7 @@ export default async function NewWarehousePage() {
 
   return (
     <div>
-      <AdminPageHeader title="New warehouse" />
+      <AdminPageHeader title="Kho mới" />
       <WarehouseForm action={createWarehouse} />
     </div>
   );

@@ -36,8 +36,8 @@ export default async function AdminSuppliersPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Suppliers" />
-        <p className="text-sm text-slate-600">You do not have access to suppliers.</p>
+        <AdminPageHeader title="Nhà cung cấp" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập nhà cung cấp.</p>
       </div>
     );
   }
@@ -45,34 +45,34 @@ export default async function AdminSuppliersPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Suppliers"
-        description="Manage procurement supplier records."
+        title="Nhà cung cấp"
+        description="Quản lý hồ sơ nhà cung cấp."
         action={
           <Link
             href="/admin/suppliers/new"
             className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            New supplier
+            Thêm nhà cung cấp
           </Link>
         }
       />
       <AdminDataTable
         columns={[
-          { key: "name", label: "Name" },
-          { key: "contact_name", label: "Contact" },
-          { key: "phone", label: "Phone" },
+          { key: "name", label: "Tên" },
+          { key: "contact_name", label: "Người liên hệ" },
+          { key: "phone", label: "Điện thoại" },
           { key: "email", label: "Email" },
           {
             key: "is_active",
-            label: "Status",
+            label: "Trạng thái",
             render: (row) => (
               <StatusChip value={row.is_active ? "active" : "inactive"} tone={row.is_active ? "success" : "neutral"} />
             ),
           },
         ]}
         rows={pageData.suppliers}
-        emptyMessage="No suppliers yet. Add one to start creating purchase orders."
+        emptyMessage="Chưa có nhà cung cấp. Thêm nhà cung cấp để bắt đầu tạo đơn nhập."
         actionsSlot={(row) => <SupplierRowActions id={row.id} name={row.name} />}
       />
     </div>

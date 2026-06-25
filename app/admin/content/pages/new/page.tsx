@@ -15,8 +15,8 @@ export default async function CmsPageNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New page" />
-          <p className="text-sm text-slate-600">You do not have access to create pages.</p>
+          <AdminPageHeader title="Trang mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo trang.</p>
         </div>
       );
     }
@@ -25,7 +25,7 @@ export default async function CmsPageNewPage() {
 
   return (
     <div>
-      <AdminPageHeader title="New page" description="Create a new CMS page." />
+      <AdminPageHeader title="Trang mới" description="Tạo trang CMS mới." />
       <CmsPageForm action={createCmsPage} />
     </div>
   );

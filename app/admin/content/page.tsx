@@ -307,8 +307,8 @@ export default async function AdminContentPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Content" />
-        <p className="text-sm text-slate-600">You do not have access to content management.</p>
+        <AdminPageHeader title="Nội dung" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập quản lý nội dung.</p>
       </div>
     );
   }
@@ -316,36 +316,36 @@ export default async function AdminContentPage() {
   return (
     <div className="space-y-5">
       <AdminPageHeader
-        title="Content"
-        description="Review and manage storefront CMS records, navigation, footer links, and brand assets."
+        title="Nội dung"
+        description="Quản lý nội dung CMS, điều hướng, liên kết footer và tài nguyên thương hiệu."
         action={
           <Link
             href="/admin/content/pages/new"
             className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            New page
+            Thêm trang
           </Link>
         }
       />
       <div className="grid gap-5 xl:grid-cols-2">
         <CmsTableSection
-          title="CMS pages"
+          title="Trang CMS"
           newHref="/admin/content/pages/new"
           columns={[
-            { key: "pageKey", label: "Page" },
-            { key: "title", label: "Title" },
+            { key: "pageKey", label: "Trang" },
+            { key: "title", label: "Tiêu đề" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => (
                 <StatusChip value={row.status} tone={getPublicationStatusTone(row.status)} />
               ),
             },
-            { key: "updatedAt", label: "Updated" },
+            { key: "updatedAt", label: "Cập nhật" },
           ]}
           rows={pageData.rows.pages}
-          emptyMessage="No CMS pages yet."
+          emptyMessage="Chưa có trang CMS nào."
           actionsSlot={(row) => (
             <CmsRowActions
               editHref={`/admin/content/pages/${row.pageKey}/edit`}
@@ -355,22 +355,22 @@ export default async function AdminContentPage() {
           )}
         />
         <CmsTableSection
-          title="CMS sections"
+          title="Phần CMS"
           newHref="/admin/content/sections/new"
           columns={[
-            { key: "pageKey", label: "Page" },
-            { key: "sectionKey", label: "Section" },
-            { key: "type", label: "Type" },
+            { key: "pageKey", label: "Trang" },
+            { key: "sectionKey", label: "Phần" },
+            { key: "type", label: "Loại" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => (
                 <StatusChip value={row.status} tone={getActiveStatusTone(row.status)} />
               ),
             },
           ]}
           rows={pageData.rows.sections}
-          emptyMessage="No CMS sections yet."
+          emptyMessage="Chưa có phần CMS nào."
           actionsSlot={(row) => (
             <CmsRowActions
               editHref={`/admin/content/sections/${row.id}/edit`}
@@ -380,22 +380,22 @@ export default async function AdminContentPage() {
           )}
         />
         <CmsTableSection
-          title="Banners"
+          title="Banner"
           newHref="/admin/content/banners/new"
           columns={[
-            { key: "title", label: "Title" },
-            { key: "section", label: "Section" },
+            { key: "title", label: "Tiêu đề" },
+            { key: "section", label: "Phần" },
             { key: "cta", label: "CTA" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => (
                 <StatusChip value={row.status} tone={getActiveStatusTone(row.status)} />
               ),
             },
           ]}
           rows={pageData.rows.banners}
-          emptyMessage="No banners yet."
+          emptyMessage="Chưa có banner nào."
           actionsSlot={(row) => (
             <CmsRowActions
               editHref={`/admin/content/banners/${row.id}/edit`}
@@ -405,22 +405,22 @@ export default async function AdminContentPage() {
           )}
         />
         <CmsTableSection
-          title="Navigation"
+          title="Điều hướng"
           newHref="/admin/content/navigation/new"
           columns={[
-            { key: "placement", label: "Placement" },
-            { key: "label", label: "Label" },
-            { key: "href", label: "Href" },
+            { key: "placement", label: "Vị trí" },
+            { key: "label", label: "Nhãn" },
+            { key: "href", label: "Đường dẫn" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => (
                 <StatusChip value={row.status} tone={getActiveStatusTone(row.status)} />
               ),
             },
           ]}
           rows={pageData.rows.navigation}
-          emptyMessage="No navigation items yet."
+          emptyMessage="Chưa có mục điều hướng nào."
           actionsSlot={(row) => (
             <CmsRowActions
               editHref={`/admin/content/navigation/${row.id}/edit`}
@@ -430,22 +430,22 @@ export default async function AdminContentPage() {
           )}
         />
         <CmsTableSection
-          title="Footer links"
+          title="Liên kết footer"
           newHref="/admin/content/footer-links/new"
           columns={[
-            { key: "group", label: "Group" },
-            { key: "label", label: "Label" },
-            { key: "href", label: "Href" },
+            { key: "group", label: "Nhóm" },
+            { key: "label", label: "Nhãn" },
+            { key: "href", label: "Đường dẫn" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => (
                 <StatusChip value={row.status} tone={getActiveStatusTone(row.status)} />
               ),
             },
           ]}
           rows={pageData.rows.footerLinks}
-          emptyMessage="No footer links yet."
+          emptyMessage="Chưa có liên kết footer nào."
           actionsSlot={(row) => (
             <CmsRowActions
               editHref={`/admin/content/footer-links/${row.id}/edit`}
@@ -455,22 +455,22 @@ export default async function AdminContentPage() {
           )}
         />
         <CmsTableSection
-          title="Brand assets"
+          title="Tài nguyên thương hiệu"
           newHref="/admin/content/brand-assets/new"
           columns={[
-            { key: "assetKey", label: "Asset" },
-            { key: "placement", label: "Placement" },
-            { key: "altText", label: "Alt text" },
+            { key: "assetKey", label: "Tài nguyên" },
+            { key: "placement", label: "Vị trí" },
+            { key: "altText", label: "Văn bản thay thế" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => (
                 <StatusChip value={row.status} tone={getActiveStatusTone(row.status)} />
               ),
             },
           ]}
           rows={pageData.rows.brandAssets}
-          emptyMessage="No brand assets yet."
+          emptyMessage="Chưa có tài nguyên thương hiệu nào."
           actionsSlot={(row) => (
             <CmsRowActions
               editHref={`/admin/content/brand-assets/${row.id}/edit`}

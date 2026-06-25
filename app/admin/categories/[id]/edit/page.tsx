@@ -14,7 +14,7 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
   if (shouldUseAdminPlaywrightFixture()) {
     return (
       <div>
-        <AdminPageHeader title="Edit category" />
+        <AdminPageHeader title="Sửa danh mục" />
         <CategoryForm
           action={updateCategory}
           parentOptions={[]}
@@ -41,8 +41,8 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
     if (e instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit category" />
-          <p className="text-sm text-slate-600">You do not have access to edit categories.</p>
+          <AdminPageHeader title="Sửa danh mục" />
+          <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa danh mục.</p>
         </div>
       );
     }
@@ -68,7 +68,7 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
 
   return (
     <div>
-      <AdminPageHeader title={`Edit ${data.name}`} />
+      <AdminPageHeader title={`Sửa ${data.name}`} />
       <CategoryForm
         action={updateCategory}
         parentOptions={parents ?? []}

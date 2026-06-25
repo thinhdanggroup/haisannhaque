@@ -14,7 +14,7 @@ export function OrderTransitionButton({ orderId, nextStatus }: OrderTransitionBu
   const [error, setError] = useState<string | null>(null);
 
   async function handleClick() {
-    if (!confirm(`Transition order to "${nextStatus}"?`)) return;
+    if (!confirm(`Chuyển đơn sang "${nextStatus}"?`)) return;
     setIsPending(true);
     setError(null);
 
@@ -27,13 +27,13 @@ export function OrderTransitionButton({ orderId, nextStatus }: OrderTransitionBu
 
       if (!res.ok) {
         const json = await res.json();
-        setError(json.error ?? "Transition failed.");
+        setError(json.error ?? "Chuyển trạng thái thất bại.");
         return;
       }
 
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError("Lỗi mạng. Vui lòng thử lại.");
     } finally {
       setIsPending(false);
     }

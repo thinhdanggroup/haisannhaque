@@ -22,8 +22,8 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit Product" />
-          <p className="text-sm text-slate-600">You do not have access to edit products.</p>
+          <AdminPageHeader title="Sửa sản phẩm" />
+          <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa sản phẩm.</p>
         </div>
       );
     }
@@ -118,7 +118,7 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
   return (
     <div>
       <AdminPageHeader
-        title="Edit Product"
+        title="Sửa sản phẩm"
         description={product.name}
       />
       <ProductEditForm

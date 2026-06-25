@@ -19,8 +19,8 @@ export default async function CmsPageEditPage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit page" />
-          <p className="text-sm text-slate-600">You do not have access to edit pages.</p>
+          <AdminPageHeader title="Sửa trang" />
+          <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa trang.</p>
         </div>
       );
     }
@@ -37,7 +37,7 @@ export default async function CmsPageEditPage({ params }: Props) {
 
   return (
     <div>
-      <AdminPageHeader title="Edit page" description={data.title} />
+      <AdminPageHeader title="Sửa trang" description={data.title} />
       <CmsPageForm
         action={updateCmsPage}
         initialValues={{ pageKey: data.page_key, title: data.title, status: data.status }}

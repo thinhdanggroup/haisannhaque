@@ -19,9 +19,9 @@ export default async function CmsNavItemEditPage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit navigation item" />
+          <AdminPageHeader title="Sửa mục điều hướng" />
           <p className="text-sm text-slate-600">
-            You do not have access to edit navigation items.
+            Bạn không có quyền chỉnh sửa mục điều hướng.
           </p>
         </div>
       );
@@ -39,7 +39,7 @@ export default async function CmsNavItemEditPage({ params }: Props) {
 
   return (
     <div>
-      <AdminPageHeader title="Edit navigation item" description={data.label} />
+      <AdminPageHeader title="Sửa mục điều hướng" description={data.label} />
       <CmsNavItemForm
         action={updateCmsNavItem}
         initialValues={{

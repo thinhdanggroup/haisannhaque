@@ -110,8 +110,8 @@ export default async function AdminComplaintsPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Complaints" />
-        <p className="text-sm text-slate-600">You do not have access to complaints.</p>
+        <AdminPageHeader title="Khiếu nại" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập khiếu nại.</p>
       </div>
     );
   }
@@ -119,40 +119,40 @@ export default async function AdminComplaintsPage() {
   return (
     <div className="space-y-4">
       <AdminPageHeader
-        title="Complaints"
-        description="Track customer complaint cases from intake through resolution."
+        title="Khiếu nại"
+        description="Theo dõi khiếu nại của khách hàng từ tiếp nhận đến giải quyết."
         action={
           <Link
             href="/admin/complaints/new"
             className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            New complaint
+            Tạo khiếu nại
           </Link>
         }
       />
       <FilterBar>
         <span className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">
-          Support queue
+          Hàng đợi hỗ trợ
         </span>
-        <span className="text-xs text-slate-600">Latest 50 complaint cases</span>
+        <span className="text-xs text-slate-600">50 khiếu nại gần nhất</span>
       </FilterBar>
       <AdminDataTable
         columns={[
-          { key: "orderNo", label: "Order" },
-          { key: "customer", label: "Customer" },
+          { key: "orderNo", label: "Đơn hàng" },
+          { key: "customer", label: "Khách hàng" },
           {
             key: "status",
-            label: "Status",
+            label: "Trạng thái",
             render: (row) => (
               <StatusChip value={row.status} tone={getComplaintStatusTone(row.status)} />
             ),
           },
-          { key: "reason", label: "Reason" },
-          { key: "resolution", label: "Resolution" },
+          { key: "reason", label: "Lý do" },
+          { key: "resolution", label: "Giải quyết" },
         ]}
         rows={pageData.complaints}
-        emptyMessage="No complaints yet."
+        emptyMessage="Chưa có khiếu nại nào."
         actionsSlot={(row) => <Link href={`/admin/complaints/${row.id}`}>View</Link>}
       />
     </div>

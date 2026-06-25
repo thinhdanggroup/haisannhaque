@@ -15,8 +15,8 @@ export default async function CmsFooterLinkNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New footer link" />
-          <p className="text-sm text-slate-600">You do not have access to create footer links.</p>
+          <AdminPageHeader title="Liên kết footer mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo liên kết footer.</p>
         </div>
       );
     }
@@ -25,7 +25,7 @@ export default async function CmsFooterLinkNewPage() {
 
   return (
     <div>
-      <AdminPageHeader title="New footer link" description="Add a link to the site footer." />
+      <AdminPageHeader title="Liên kết footer mới" description="Thêm liên kết vào footer trang web." />
       <CmsFooterLinkForm action={createCmsFooterLink} />
     </div>
   );

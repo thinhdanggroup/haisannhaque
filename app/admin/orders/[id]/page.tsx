@@ -31,8 +31,8 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Order Detail" />
-          <p className="text-sm text-slate-600">You do not have access to orders.</p>
+          <AdminPageHeader title="Chi tiết đơn hàng" />
+          <p className="text-sm text-slate-600">Bạn không có quyền truy cập đơn hàng.</p>
         </div>
       );
     }
@@ -48,30 +48,30 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title={`Order ${order.orderNo}`} description={`Customer: ${order.customer}`} />
+      <AdminPageHeader title={`Đơn ${order.orderNo}`} description={`Khách hàng: ${order.customer}`} />
 
       <div className="grid grid-cols-2 gap-4 rounded-lg border border-slate-200 bg-white p-4 text-sm sm:grid-cols-4">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Status</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Trạng thái</p>
           <StatusChip value={order.status} tone="neutral" />
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Payment</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Thanh toán</p>
           <StatusChip value={order.paymentStatus} tone="neutral" />
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Total</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Tổng</p>
           <p className="mt-1 font-semibold text-slate-800">{order.grandTotal}</p>
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Placed</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Ngày đặt</p>
           <p className="mt-1 text-slate-700">{order.placedAt}</p>
         </div>
       </div>
 
       {nextStatuses.length > 0 && (
         <div className="rounded-lg border border-slate-200 bg-white p-4">
-          <p className="mb-3 text-sm font-semibold text-slate-700">Transition status</p>
+          <p className="mb-3 text-sm font-semibold text-slate-700">Chuyển trạng thái</p>
           <div className="flex flex-wrap gap-2">
             {nextStatuses.map((s) => (
               <OrderTransitionButton key={s} orderId={id} nextStatus={s} />
@@ -81,35 +81,35 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
       )}
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold text-slate-800">Order items</h2>
+        <h2 className="mb-2 text-sm font-semibold text-slate-800">Sản phẩm đặt</h2>
         <AdminDataTable
           columns={[
-            { key: "productName", label: "Product" },
+            { key: "productName", label: "Sản phẩm" },
             { key: "sku", label: "SKU" },
-            { key: "quantity", label: "Qty" },
-            { key: "unitPrice", label: "Unit price" },
+            { key: "quantity", label: "SL" },
+            { key: "unitPrice", label: "Đơn giá" },
           ]}
           rows={order.items}
-          emptyMessage="No items."
+          emptyMessage="Không có sản phẩm."
         />
       </section>
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold text-slate-800">Payments</h2>
+        <h2 className="mb-2 text-sm font-semibold text-slate-800">Thanh toán</h2>
         <AdminDataTable
           columns={[
-            { key: "provider", label: "Provider" },
-            { key: "method", label: "Method" },
-            { key: "amount", label: "Amount" },
+            { key: "provider", label: "Cổng" },
+            { key: "method", label: "Phương thức" },
+            { key: "amount", label: "Số tiền" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => <StatusChip value={row.status} tone="neutral" />,
             },
-            { key: "createdAt", label: "Date" },
+            { key: "createdAt", label: "Ngày" },
           ]}
           rows={order.payments}
-          emptyMessage="No payments."
+          emptyMessage="Không có thanh toán."
         />
       </section>
     </div>

@@ -29,8 +29,8 @@ export default async function AdminPurchaseOrderReceivePage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Record Receipt" />
-          <p className="text-sm text-slate-600">You do not have access.</p>
+          <AdminPageHeader title="Ghi nhận nhận hàng" />
+          <p className="text-sm text-slate-600">Bạn không có quyền truy cập.</p>
         </div>
       );
     }
@@ -54,7 +54,7 @@ export default async function AdminPurchaseOrderReceivePage({ params }: Props) {
       <div>
         <AdminPageHeader title="Record Receipt" description={po.po_no} />
         <p className="text-sm text-slate-600">
-          This PO cannot receive goods in its current status ({po.status}).
+          Đơn này không thể nhận hàng ở trạng thái hiện tại ({po.status}).
         </p>
       </div>
     );
@@ -74,8 +74,8 @@ export default async function AdminPurchaseOrderReceivePage({ params }: Props) {
   return (
     <div>
       <AdminPageHeader
-        title="Record Receipt"
-        description={`Recording goods received for ${po.po_no}`}
+        title="Ghi nhận nhận hàng"
+        description={`Ghi nhận hàng nhận cho ${po.po_no}`}
       />
       <PurchaseOrderReceiveForm purchaseOrderId={id} lines={lines} />
     </div>

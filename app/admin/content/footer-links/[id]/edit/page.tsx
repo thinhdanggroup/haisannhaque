@@ -19,8 +19,8 @@ export default async function CmsFooterLinkEditPage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit footer link" />
-          <p className="text-sm text-slate-600">You do not have access to edit footer links.</p>
+          <AdminPageHeader title="Sửa liên kết footer" />
+          <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa liên kết footer.</p>
         </div>
       );
     }
@@ -37,7 +37,7 @@ export default async function CmsFooterLinkEditPage({ params }: Props) {
 
   return (
     <div>
-      <AdminPageHeader title="Edit footer link" description={data.label} />
+      <AdminPageHeader title="Sửa liên kết footer" description={data.label} />
       <CmsFooterLinkForm
         action={updateCmsFooterLink}
         initialValues={{

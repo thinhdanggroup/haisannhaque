@@ -15,8 +15,8 @@ export default async function CmsBrandAssetNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New brand asset" />
-          <p className="text-sm text-slate-600">You do not have access to create brand assets.</p>
+          <AdminPageHeader title="Tài nguyên thương hiệu mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo tài nguyên thương hiệu.</p>
         </div>
       );
     }
@@ -25,7 +25,7 @@ export default async function CmsBrandAssetNewPage() {
 
   return (
     <div>
-      <AdminPageHeader title="New brand asset" description="Add a partner, payment, or trust logo." />
+      <AdminPageHeader title="Tài nguyên thương hiệu mới" description="Thêm logo đối tác, thanh toán hoặc uy tín." />
       <CmsBrandAssetForm action={createCmsBrandAsset} />
     </div>
   );

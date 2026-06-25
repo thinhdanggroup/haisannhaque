@@ -46,15 +46,15 @@ export default async function EditWarehousePage({ params }: { params: Promise<{ 
   if (data.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Edit warehouse" />
-        <p className="text-sm text-slate-600">You do not have access to edit warehouses.</p>
+        <AdminPageHeader title="Sửa kho" />
+        <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa kho.</p>
       </div>
     );
   }
 
   return (
     <div>
-      <AdminPageHeader title={`Edit ${data.code}`} />
+      <AdminPageHeader title={`Sửa ${data.code}`} />
       <WarehouseForm
         action={updateWarehouse}
         initialValues={{

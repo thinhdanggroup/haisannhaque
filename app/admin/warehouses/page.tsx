@@ -36,8 +36,8 @@ export default async function AdminWarehousesPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Warehouses" />
-        <p className="text-sm text-slate-600">You do not have access to warehouses.</p>
+        <AdminPageHeader title="Kho hàng" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập kho hàng.</p>
       </div>
     );
   }
@@ -45,33 +45,33 @@ export default async function AdminWarehousesPage() {
   return (
     <div>
       <AdminPageHeader
-        title="Warehouses"
-        description="Manage storage locations for inventory and purchase orders."
+        title="Kho hàng"
+        description="Quản lý địa điểm lưu kho và đơn nhập hàng."
         action={
           <Link
             href="/admin/warehouses/new"
             className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            New warehouse
+            Thêm kho
           </Link>
         }
       />
       <AdminDataTable
         columns={[
-          { key: "code", label: "Code" },
-          { key: "name", label: "Name" },
-          { key: "address", label: "Address" },
+          { key: "code", label: "Mã" },
+          { key: "name", label: "Tên" },
+          { key: "address", label: "Địa chỉ" },
           {
             key: "is_active",
-            label: "Status",
+            label: "Trạng thái",
             render: (row) => (
               <StatusChip value={row.is_active ? "active" : "inactive"} tone={row.is_active ? "success" : "neutral"} />
             ),
           },
         ]}
         rows={pageData.warehouses}
-        emptyMessage="No warehouses yet."
+        emptyMessage="Chưa có kho nào."
         actionsSlot={(row) => <WarehouseRowActions id={row.id} code={row.code} />}
       />
     </div>

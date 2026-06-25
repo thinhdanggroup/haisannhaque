@@ -28,7 +28,7 @@ export function InventoryAdjustmentForm({ sku, warehouseCode }: InventoryAdjustm
         onClick={() => setOpen(true)}
         className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
       >
-        Adjust
+        Điều chỉnh
       </button>
     );
   }
@@ -58,16 +58,16 @@ export function InventoryAdjustmentForm({ sku, warehouseCode }: InventoryAdjustm
       </label>
 
       <label className="flex items-center gap-2">
-        <span className="w-24 shrink-0 font-medium text-slate-700">Reason</span>
+        <span className="w-24 shrink-0 font-medium text-slate-700">Lý do</span>
         <select
           name="reasonCode"
           defaultValue="count"
           className="rounded border border-slate-300 px-2 py-1 text-sm outline-none focus:border-teal-600"
         >
-          <option value="count">Count</option>
-          <option value="damage">Damage</option>
-          <option value="return">Return</option>
-          <option value="correction">Correction</option>
+          <option value="count">Kiểm kê</option>
+          <option value="damage">Hư hỏng</option>
+          <option value="return">Trả hàng</option>
+          <option value="correction">Điều chỉnh</option>
         </select>
       </label>
 
@@ -77,14 +77,14 @@ export function InventoryAdjustmentForm({ sku, warehouseCode }: InventoryAdjustm
           disabled={isPending}
           className="rounded bg-teal-700 px-3 py-1 text-xs font-semibold text-white hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "…" : "Save"}
+          {isPending ? "…" : "Lưu"}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </button>
       </div>
     </form>

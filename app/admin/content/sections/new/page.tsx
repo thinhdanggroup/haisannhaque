@@ -15,8 +15,8 @@ export default async function CmsSectionNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New section" />
-          <p className="text-sm text-slate-600">You do not have access to create sections.</p>
+          <AdminPageHeader title="Phần mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo phần.</p>
         </div>
       );
     }
@@ -32,7 +32,7 @@ export default async function CmsSectionNewPage() {
 
   return (
     <div>
-      <AdminPageHeader title="New section" description="Add a section to a CMS page." />
+      <AdminPageHeader title="Phần mới" description="Thêm phần vào trang CMS." />
       <CmsSectionForm action={createCmsSection} pages={pages} />
     </div>
   );

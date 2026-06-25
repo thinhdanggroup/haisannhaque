@@ -15,19 +15,19 @@ export function ProductRowActions({ id, name }: ProductRowActionsProps) {
         href={`/admin/products/${id}/edit`}
         className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
       >
-        Edit
+        Sửa
       </Link>
       <form
         action={archiveProduct.bind(null, id)}
         onSubmit={(e) => {
-          if (!confirm(`Archive "${name}"?`)) e.preventDefault();
+          if (!confirm(`Lưu trữ "${name}"?`)) e.preventDefault();
         }}
       >
         <button
           type="submit"
           className="rounded-md border border-red-200 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
         >
-          Archive
+          Lưu trữ
         </button>
       </form>
     </div>

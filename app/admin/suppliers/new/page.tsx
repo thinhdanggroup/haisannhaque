@@ -11,7 +11,7 @@ export default async function NewSupplierPage() {
   if (shouldUseAdminPlaywrightFixture()) {
     return (
       <div>
-        <AdminPageHeader title="New supplier" />
+        <AdminPageHeader title="Nhà cung cấp mới" />
         <SupplierForm action={createSupplier} />
       </div>
     );
@@ -24,8 +24,8 @@ export default async function NewSupplierPage() {
     if (e instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New supplier" />
-          <p className="text-sm text-slate-600">You do not have access to create suppliers.</p>
+          <AdminPageHeader title="Nhà cung cấp mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo nhà cung cấp.</p>
         </div>
       );
     }
@@ -34,7 +34,7 @@ export default async function NewSupplierPage() {
 
   return (
     <div>
-      <AdminPageHeader title="New supplier" />
+      <AdminPageHeader title="Nhà cung cấp mới" />
       <SupplierForm action={createSupplier} />
     </div>
   );

@@ -27,8 +27,8 @@ export function WarehouseForm({ action, initialValues }: WarehouseFormProps) {
       )}
 
       <label className="block text-sm" htmlFor="code">
-        <span className="font-medium text-slate-700">Code</span>
-        <span className="ml-1 text-xs text-slate-400">(uppercase, e.g. WH-HN-01)</span>
+        <span className="font-medium text-slate-700">Mã</span>
+        <span className="ml-1 text-xs text-slate-400">(in hoa, vd WH-HN-01)</span>
         <input
           id="code"
           name="code"
@@ -41,25 +41,25 @@ export function WarehouseForm({ action, initialValues }: WarehouseFormProps) {
       </label>
 
       <label className="block text-sm" htmlFor="name">
-        <span className="font-medium text-slate-700">Name</span>
+        <span className="font-medium text-slate-700">Tên</span>
         <input id="name" name="name" required defaultValue={initialValues?.name} className={INPUT_CLASS} />
       </label>
 
       <label className="block text-sm" htmlFor="address">
-        <span className="font-medium text-slate-700">Address</span>
+        <span className="font-medium text-slate-700">Địa chỉ</span>
         <input id="address" name="address" defaultValue={initialValues?.address} className={INPUT_CLASS} />
       </label>
 
       <label className="block text-sm" htmlFor="isActive">
-        <span className="font-medium text-slate-700">Status</span>
+        <span className="font-medium text-slate-700">Trạng thái</span>
         <select
           id="isActive"
           name="isActive"
           defaultValue={initialValues?.isActive === false ? "false" : "true"}
           className={INPUT_CLASS}
         >
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
+          <option value="true">Hoạt động</option>
+          <option value="false">Không hoạt động</option>
         </select>
       </label>
 
@@ -69,13 +69,13 @@ export function WarehouseForm({ action, initialValues }: WarehouseFormProps) {
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : isEdit ? "Save" : "Create warehouse"}
+          {isPending ? "Đang lưu…" : isEdit ? "Lưu" : "Tạo kho"}
         </button>
         <Link
           href="/admin/warehouses"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

@@ -39,7 +39,7 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
       )}
 
       <label className="block text-sm" htmlFor="name">
-        <span className="font-medium text-slate-700">Name</span>
+        <span className="font-medium text-slate-700">Tên</span>
         <input
           id="name"
           name="name"
@@ -52,7 +52,7 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
       {!isEdit && (
         <label className="block text-sm" htmlFor="slug">
           <span className="font-medium text-slate-700">Slug</span>
-          <span className="ml-1 text-xs text-slate-400">(lowercase, hyphens only)</span>
+          <span className="ml-1 text-xs text-slate-400">(chữ thường, chỉ dùng dấu gạch ngang)</span>
           <input
             id="slug"
             name="slug"
@@ -64,14 +64,14 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
       )}
 
       <label className="block text-sm" htmlFor="parentId">
-        <span className="font-medium text-slate-700">Parent category</span>
+        <span className="font-medium text-slate-700">Danh mục cha</span>
         <select
           id="parentId"
           name="parentId"
           defaultValue={initialValues?.parentId ?? ""}
           className={INPUT_CLASS}
         >
-          <option value="">— None (top level) —</option>
+          <option value="">— Không có (cấp cao nhất) —</option>
           {parentOptions.map((opt) => (
             <option key={opt.id} value={opt.id}>
               {opt.name}
@@ -81,7 +81,7 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
       </label>
 
       <label className="block text-sm" htmlFor="description">
-        <span className="font-medium text-slate-700">Description</span>
+        <span className="font-medium text-slate-700">Mô tả</span>
         <textarea
           id="description"
           name="description"
@@ -92,7 +92,7 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
       </label>
 
       <label className="block text-sm" htmlFor="imageUrl">
-        <span className="font-medium text-slate-700">Image URL</span>
+        <span className="font-medium text-slate-700">URL hình ảnh</span>
         <input
           id="imageUrl"
           name="imageUrl"
@@ -102,7 +102,7 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
       </label>
 
       <label className="block text-sm" htmlFor="sortOrder">
-        <span className="font-medium text-slate-700">Sort order</span>
+        <span className="font-medium text-slate-700">Thứ tự hiển thị</span>
         <input
           id="sortOrder"
           name="sortOrder"
@@ -114,15 +114,15 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
       </label>
 
       <label className="block text-sm" htmlFor="isActive">
-        <span className="font-medium text-slate-700">Status</span>
+        <span className="font-medium text-slate-700">Trạng thái</span>
         <select
           id="isActive"
           name="isActive"
           defaultValue={initialValues?.isActive === false ? "false" : "true"}
           className={INPUT_CLASS}
         >
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
+          <option value="true">Hoạt động</option>
+          <option value="false">Không hoạt động</option>
         </select>
       </label>
 
@@ -132,13 +132,13 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : isEdit ? "Save" : "Create category"}
+          {isPending ? "Đang lưu…" : isEdit ? "Lưu" : "Tạo danh mục"}
         </button>
         <Link
           href="/admin/categories"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

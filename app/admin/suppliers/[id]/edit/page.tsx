@@ -14,7 +14,7 @@ export default async function EditSupplierPage({ params }: { params: Promise<{ i
   if (shouldUseAdminPlaywrightFixture()) {
     return (
       <div>
-        <AdminPageHeader title="Edit supplier" />
+        <AdminPageHeader title="Sửa nhà cung cấp" />
         <SupplierForm
           action={updateSupplier}
           initialValues={{
@@ -40,8 +40,8 @@ export default async function EditSupplierPage({ params }: { params: Promise<{ i
     if (e instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit supplier" />
-          <p className="text-sm text-slate-600">You do not have access to edit suppliers.</p>
+          <AdminPageHeader title="Sửa nhà cung cấp" />
+          <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa nhà cung cấp.</p>
         </div>
       );
     }
@@ -58,7 +58,7 @@ export default async function EditSupplierPage({ params }: { params: Promise<{ i
 
   return (
     <div>
-      <AdminPageHeader title={`Edit ${data.name}`} />
+      <AdminPageHeader title={`Sửa ${data.name}`} />
       <SupplierForm
         action={updateSupplier}
         initialValues={{

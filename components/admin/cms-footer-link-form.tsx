@@ -39,7 +39,7 @@ export function CmsFooterLinkForm({ action, initialValues }: CmsFooterLinkFormPr
       )}
 
       <label className="block text-sm" htmlFor="groupLabel">
-        <span className="font-medium text-slate-700">Group label</span>
+        <span className="font-medium text-slate-700">Nhóm</span>
         <input
           id="groupLabel"
           name="groupLabel"
@@ -50,7 +50,7 @@ export function CmsFooterLinkForm({ action, initialValues }: CmsFooterLinkFormPr
       </label>
 
       <label className="block text-sm" htmlFor="label">
-        <span className="font-medium text-slate-700">Label</span>
+        <span className="font-medium text-slate-700">Nhãn</span>
         <input
           id="label"
           name="label"
@@ -61,7 +61,7 @@ export function CmsFooterLinkForm({ action, initialValues }: CmsFooterLinkFormPr
       </label>
 
       <label className="block text-sm" htmlFor="href">
-        <span className="font-medium text-slate-700">Href</span>
+        <span className="font-medium text-slate-700">Đường dẫn</span>
         <input
           id="href"
           name="href"
@@ -72,7 +72,7 @@ export function CmsFooterLinkForm({ action, initialValues }: CmsFooterLinkFormPr
       </label>
 
       <label className="block text-sm" htmlFor="sortOrder">
-        <span className="font-medium text-slate-700">Sort order</span>
+        <span className="font-medium text-slate-700">Thứ tự</span>
         <input
           id="sortOrder"
           name="sortOrder"
@@ -84,15 +84,15 @@ export function CmsFooterLinkForm({ action, initialValues }: CmsFooterLinkFormPr
       </label>
 
       <label className="block text-sm" htmlFor="isActive">
-        <span className="font-medium text-slate-700">Status</span>
+        <span className="font-medium text-slate-700">Trạng thái</span>
         <select
           id="isActive"
           name="isActive"
           defaultValue={initialValues ? String(initialValues.isActive) : "true"}
           className={INPUT_CLASS}
         >
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
+          <option value="true">Hoạt động</option>
+          <option value="false">Không hoạt động</option>
         </select>
       </label>
 
@@ -102,13 +102,13 @@ export function CmsFooterLinkForm({ action, initialValues }: CmsFooterLinkFormPr
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : isEdit ? "Save" : "Create link"}
+          {isPending ? "Đang lưu…" : isEdit ? "Lưu" : "Tạo liên kết"}
         </button>
         <Link
           href="/admin/content"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

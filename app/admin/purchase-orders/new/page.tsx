@@ -14,8 +14,8 @@ export default async function AdminPurchaseOrderNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New Purchase Order" />
-          <p className="text-sm text-slate-600">You do not have access.</p>
+          <AdminPageHeader title="Đơn nhập hàng mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền truy cập.</p>
         </div>
       );
     }
@@ -54,8 +54,8 @@ export default async function AdminPurchaseOrderNewPage() {
   return (
     <div>
       <AdminPageHeader
-        title="New Purchase Order"
-        description="Create a supplier purchase order with line items."
+        title="Đơn nhập hàng mới"
+        description="Tạo đơn nhập hàng từ nhà cung cấp với các dòng sản phẩm."
       />
       <PurchaseOrderCreateForm
         suppliers={suppliers}

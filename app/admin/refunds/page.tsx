@@ -65,8 +65,8 @@ export default async function AdminRefundsPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Refunds" />
-        <p className="text-sm text-slate-600">You do not have access to refunds.</p>
+        <AdminPageHeader title="Hoàn tiền" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập hoàn tiền.</p>
       </div>
     );
   }
@@ -74,40 +74,40 @@ export default async function AdminRefundsPage() {
   return (
     <div className="space-y-4">
       <AdminPageHeader
-        title="Refunds"
-        description="Review refund requests, methods, and processing state."
+        title="Hoàn tiền"
+        description="Xem xét yêu cầu hoàn tiền, phương thức và trạng thái xử lý."
         action={
           <Link
             href="/admin/refunds/new"
             className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            New refund
+            Tạo hoàn tiền
           </Link>
         }
       />
       <FilterBar>
         <span className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">
-          Finance queue
+          Hàng đợi tài chính
         </span>
-        <span className="text-xs text-slate-600">Latest 50 refund records</span>
+        <span className="text-xs text-slate-600">50 bản ghi hoàn tiền gần nhất</span>
       </FilterBar>
       <AdminDataTable
         columns={[
-          { key: "orderNo", label: "Order" },
-          { key: "amount", label: "Amount" },
-          { key: "method", label: "Method" },
+          { key: "orderNo", label: "Đơn hàng" },
+          { key: "amount", label: "Số tiền" },
+          { key: "method", label: "Phương thức" },
           {
             key: "status",
-            label: "Status",
+            label: "Trạng thái",
             render: (row) => (
               <StatusChip value={row.status} tone={getRefundStatusTone(row.status)} />
             ),
           },
-          { key: "reason", label: "Reason" },
+          { key: "reason", label: "Lý do" },
         ]}
         rows={pageData.refunds}
-        emptyMessage="No refunds yet."
+        emptyMessage="Chưa có hoàn tiền nào."
       />
     </div>
   );

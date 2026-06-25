@@ -51,7 +51,7 @@ export function PurchaseOrderReceiveForm({
     };
 
     if (payload.lines.length === 0) {
-      setError("Enter a received quantity for at least one line.");
+      setError("Nhập số lượng nhận cho ít nhất một dòng.");
       return;
     }
 
@@ -68,14 +68,14 @@ export function PurchaseOrderReceiveForm({
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error ?? "Receipt failed.");
+        setError(json.error ?? "Ghi nhận thất bại.");
         return;
       }
 
       router.push(`/admin/purchase-orders/${purchaseOrderId}`);
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError("Lỗi mạng. Vui lòng thử lại.");
     } finally {
       setIsPending(false);
     }
@@ -94,10 +94,10 @@ export function PurchaseOrderReceiveForm({
           <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-4 py-2 text-left">SKU</th>
-              <th className="px-4 py-2 text-left">Ordered</th>
-              <th className="px-4 py-2 text-left">Received qty</th>
-              <th className="px-4 py-2 text-left">Lot no.</th>
-              <th className="px-4 py-2 text-left">Expiry</th>
+              <th className="px-4 py-2 text-left">Đã đặt</th>
+              <th className="px-4 py-2 text-left">SL nhận</th>
+              <th className="px-4 py-2 text-left">Số lô</th>
+              <th className="px-4 py-2 text-left">Hết hạn</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -125,7 +125,7 @@ export function PurchaseOrderReceiveForm({
                 <td className="px-4 py-2">
                   <input
                     type="text"
-                    placeholder="optional"
+                    placeholder="tuỳ chọn"
                     value={state[line.lineId]?.lotNo ?? ""}
                     onChange={(e) =>
                       setState((prev) => ({
@@ -156,7 +156,7 @@ export function PurchaseOrderReceiveForm({
       </div>
 
       <label className="block text-sm" htmlFor="notes">
-        <span className="font-medium text-slate-700">Notes (optional)</span>
+        <span className="font-medium text-slate-700">Ghi chú (tuỳ chọn)</span>
         <textarea
           id="notes"
           value={notes}
@@ -172,13 +172,13 @@ export function PurchaseOrderReceiveForm({
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : "Record receipt"}
+          {isPending ? "Đang lưu…" : "Ghi nhận nhận hàng"}
         </button>
         <Link
           href={`/admin/purchase-orders/${purchaseOrderId}`}
           className="min-h-10 flex items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

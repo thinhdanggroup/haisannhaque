@@ -15,8 +15,8 @@ export default async function CmsBannerNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New banner" />
-          <p className="text-sm text-slate-600">You do not have access to create banners.</p>
+          <AdminPageHeader title="Banner mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo banner.</p>
         </div>
       );
     }
@@ -36,7 +36,7 @@ export default async function CmsBannerNewPage() {
 
   return (
     <div>
-      <AdminPageHeader title="New banner" description="Add a banner to a CMS section." />
+      <AdminPageHeader title="Banner mới" description="Thêm banner vào phần CMS." />
       <CmsBannerForm action={createCmsBanner} sections={sections} />
     </div>
   );

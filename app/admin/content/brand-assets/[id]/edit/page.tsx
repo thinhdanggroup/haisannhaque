@@ -19,8 +19,8 @@ export default async function CmsBrandAssetEditPage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit brand asset" />
-          <p className="text-sm text-slate-600">You do not have access to edit brand assets.</p>
+          <AdminPageHeader title="Sửa tài nguyên thương hiệu" />
+          <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa tài nguyên thương hiệu.</p>
         </div>
       );
     }
@@ -37,7 +37,7 @@ export default async function CmsBrandAssetEditPage({ params }: Props) {
 
   return (
     <div>
-      <AdminPageHeader title="Edit brand asset" description={data.asset_key} />
+      <AdminPageHeader title="Sửa tài nguyên thương hiệu" description={data.asset_key} />
       <CmsBrandAssetForm
         action={updateCmsBrandAsset}
         initialValues={{

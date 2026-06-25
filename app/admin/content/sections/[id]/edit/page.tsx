@@ -19,8 +19,8 @@ export default async function CmsSectionEditPage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Edit section" />
-          <p className="text-sm text-slate-600">You do not have access to edit sections.</p>
+          <AdminPageHeader title="Sửa phần" />
+          <p className="text-sm text-slate-600">Bạn không có quyền chỉnh sửa phần.</p>
         </div>
       );
     }
@@ -44,7 +44,7 @@ export default async function CmsSectionEditPage({ params }: Props) {
 
   return (
     <div>
-      <AdminPageHeader title="Edit section" description={s.section_key} />
+      <AdminPageHeader title="Sửa phần" description={s.section_key} />
       <CmsSectionForm
         action={updateCmsSection}
         pages={(pagesResult.data ?? []).map((p) => ({ pageKey: p.page_key, title: p.title }))}

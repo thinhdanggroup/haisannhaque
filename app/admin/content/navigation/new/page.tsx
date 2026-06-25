@@ -15,9 +15,9 @@ export default async function CmsNavItemNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New navigation item" />
+          <AdminPageHeader title="Mục điều hướng mới" />
           <p className="text-sm text-slate-600">
-            You do not have access to create navigation items.
+            Bạn không có quyền tạo mục điều hướng.
           </p>
         </div>
       );
@@ -28,8 +28,8 @@ export default async function CmsNavItemNewPage() {
   return (
     <div>
       <AdminPageHeader
-        title="New navigation item"
-        description="Add an item to a navigation placement."
+        title="Mục điều hướng mới"
+        description="Thêm mục vào vị trí điều hướng."
       />
       <CmsNavItemForm action={createCmsNavItem} />
     </div>

@@ -14,8 +14,8 @@ export default async function AdminProductNewPage() {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New Product" />
-          <p className="text-sm text-slate-600">You do not have access to create products.</p>
+          <AdminPageHeader title="Sản phẩm mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo sản phẩm.</p>
         </div>
       );
     }
@@ -24,7 +24,7 @@ export default async function AdminProductNewPage() {
 
   return (
     <div>
-      <AdminPageHeader title="New Product" description="Create a new storefront product." />
+      <AdminPageHeader title="Sản phẩm mới" description="Tạo sản phẩm mới trên cửa hàng." />
       <ProductCreateForm />
     </div>
   );

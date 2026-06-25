@@ -11,7 +11,7 @@ export default async function NewCategoryPage() {
   if (shouldUseAdminPlaywrightFixture()) {
     return (
       <div>
-        <AdminPageHeader title="New category" />
+        <AdminPageHeader title="Danh mục mới" />
         <CategoryForm action={createCategory} parentOptions={[]} />
       </div>
     );
@@ -25,8 +25,8 @@ export default async function NewCategoryPage() {
     if (e instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="New category" />
-          <p className="text-sm text-slate-600">You do not have access to create categories.</p>
+          <AdminPageHeader title="Danh mục mới" />
+          <p className="text-sm text-slate-600">Bạn không có quyền tạo danh mục.</p>
         </div>
       );
     }
@@ -42,7 +42,7 @@ export default async function NewCategoryPage() {
 
   return (
     <div>
-      <AdminPageHeader title="New category" />
+      <AdminPageHeader title="Danh mục mới" />
       <CategoryForm action={createCategory} parentOptions={data ?? []} />
     </div>
   );

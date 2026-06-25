@@ -75,14 +75,14 @@ export function PurchaseOrderCreateForm({
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error ?? "Failed to create purchase order.");
+        setError(json.error ?? "Không tạo được đơn nhập.");
         return;
       }
 
       router.push("/admin/purchase-orders");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError("Lỗi mạng. Vui lòng thử lại.");
     } finally {
       setIsPending(false);
     }
@@ -97,14 +97,14 @@ export function PurchaseOrderCreateForm({
       )}
 
       <label className="block text-sm" htmlFor="supplierId">
-        <span className="font-medium text-slate-700">Supplier</span>
+        <span className="font-medium text-slate-700">Nhà cung cấp</span>
         <select
           id="supplierId"
           name="supplierId"
           required
           className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         >
-          <option value="">— Select supplier —</option>
+          <option value="">— Chọn nhà cung cấp —</option>
           {suppliers.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -114,14 +114,14 @@ export function PurchaseOrderCreateForm({
       </label>
 
       <label className="block text-sm" htmlFor="destinationWarehouseId">
-        <span className="font-medium text-slate-700">Destination warehouse</span>
+        <span className="font-medium text-slate-700">Kho đích</span>
         <select
           id="destinationWarehouseId"
           name="destinationWarehouseId"
           required
           className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         >
-          <option value="">— Select warehouse —</option>
+          <option value="">— Chọn kho —</option>
           {warehouses.map((w) => (
             <option key={w.id} value={w.id}>
               {w.code}
@@ -131,7 +131,7 @@ export function PurchaseOrderCreateForm({
       </label>
 
       <label className="block text-sm" htmlFor="expectedAt">
-        <span className="font-medium text-slate-700">Expected delivery (optional)</span>
+        <span className="font-medium text-slate-700">Ngày giao dự kiến (tuỳ chọn)</span>
         <input
           id="expectedAt"
           name="expectedAt"
@@ -141,7 +141,7 @@ export function PurchaseOrderCreateForm({
       </label>
 
       <div>
-        <p className="mb-2 text-sm font-medium text-slate-700">Line items</p>
+        <p className="mb-2 text-sm font-medium text-slate-700">Chi tiết đơn</p>
         <div className="space-y-2">
           {lines.map((line, i) => (
             <div key={i} className="flex gap-2">
@@ -165,7 +165,7 @@ export function PurchaseOrderCreateForm({
                 min="0.001"
                 step="any"
                 required
-                placeholder="Qty"
+                placeholder="SL"
                 className="min-h-9 w-24 rounded-lg border border-slate-300 px-2 text-sm outline-none focus:border-teal-600"
               />
               <input
@@ -175,7 +175,7 @@ export function PurchaseOrderCreateForm({
                 min="0"
                 step="any"
                 required
-                placeholder="Unit cost"
+                placeholder="Đơn giá"
                 className="min-h-9 w-28 rounded-lg border border-slate-300 px-2 text-sm outline-none focus:border-teal-600"
               />
               {lines.length > 1 && (
@@ -196,7 +196,7 @@ export function PurchaseOrderCreateForm({
           className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-teal-700 hover:text-teal-900"
         >
           <Plus className="h-4 w-4" />
-          Add line
+          Thêm dòng
         </button>
       </div>
 
@@ -206,13 +206,13 @@ export function PurchaseOrderCreateForm({
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Creating…" : "Create purchase order"}
+          {isPending ? "Đang tạo…" : "Tạo đơn nhập"}
         </button>
         <Link
           href="/admin/purchase-orders"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

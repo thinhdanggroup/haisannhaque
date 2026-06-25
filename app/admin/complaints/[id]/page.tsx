@@ -34,8 +34,8 @@ export default async function AdminComplaintDetailPage({ params }: Props) {
     if (error instanceof AdminAuthorizationError) {
       return (
         <div>
-          <AdminPageHeader title="Complaint" />
-          <p>You do not have access to complaints.</p>
+          <AdminPageHeader title="Khiếu nại" />
+          <p>Bạn không có quyền truy cập khiếu nại.</p>
         </div>
       );
     }
@@ -59,12 +59,12 @@ export default async function AdminComplaintDetailPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="Complaint Detail"
-        description={`Order ${order?.order_no ?? "—"} · ${customer?.full_name ?? "Unknown customer"}`}
+        title="Chi tiết khiếu nại"
+        description={`Đơn ${order?.order_no ?? "—"} · ${customer?.full_name ?? "Khách hàng không xác định"}`}
       />
 
       <div className="max-w-2xl rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reason</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Lý do</p>
         <p className="mt-1 text-sm text-slate-800">{complaint.reason}</p>
       </div>
 

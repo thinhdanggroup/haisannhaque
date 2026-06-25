@@ -288,8 +288,8 @@ export default async function AdminReportsPage() {
   if (pageData.access === "denied") {
     return (
       <div>
-        <AdminPageHeader title="Reports" />
-        <p className="text-sm text-slate-600">You do not have access to reports.</p>
+        <AdminPageHeader title="Báo cáo" />
+        <p className="text-sm text-slate-600">Bạn không có quyền truy cập báo cáo.</p>
       </div>
     );
   }
@@ -297,120 +297,120 @@ export default async function AdminReportsPage() {
   return (
     <div className="space-y-5">
       <AdminPageHeader
-        title="Reports"
-        description="Operational reporting for sales, stock, procurement, and refund activity."
+        title="Báo cáo"
+        description="Báo cáo vận hành về doanh số, kho hàng, mua hàng và hoàn tiền."
       />
       <FilterBar>
         <span className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-700">
-          Last 7 days
+          7 ngày qua
         </span>
-        <span className="text-xs text-slate-600">Sales and operations reports from RPCs</span>
+        <span className="text-xs text-slate-600">Báo cáo bán hàng và vận hành</span>
       </FilterBar>
       <div className="grid gap-5 xl:grid-cols-2">
         <ReportSection
-          title="Daily Sales"
+          title="Doanh số theo ngày"
           columns={[
-            { key: "date", label: "Date" },
-            { key: "orders", label: "Orders" },
-            { key: "items", label: "Items" },
-            { key: "revenue", label: "Revenue" },
-            { key: "refunds", label: "Refunds" },
+            { key: "date", label: "Ngày" },
+            { key: "orders", label: "Đơn hàng" },
+            { key: "items", label: "Sản phẩm" },
+            { key: "revenue", label: "Doanh thu" },
+            { key: "refunds", label: "Hoàn tiền" },
           ]}
           rows={pageData.rows.daily}
-          emptyMessage="No daily sales rows yet."
+          emptyMessage="Chưa có dữ liệu doanh số theo ngày."
         />
         <ReportSection
-          title="Product Sales"
+          title="Doanh số sản phẩm"
           columns={[
             { key: "sku", label: "SKU" },
-            { key: "product", label: "Product" },
-            { key: "quantity", label: "Quantity" },
-            { key: "revenue", label: "Revenue" },
+            { key: "product", label: "Sản phẩm" },
+            { key: "quantity", label: "Số lượng" },
+            { key: "revenue", label: "Doanh thu" },
           ]}
           rows={pageData.rows.products}
-          emptyMessage="No product sales rows yet."
+          emptyMessage="Chưa có dữ liệu doanh số sản phẩm."
         />
         <ReportSection
-          title="Promotion Usage"
+          title="Sử dụng khuyến mãi"
           columns={[
-            { key: "code", label: "Code" },
-            { key: "uses", label: "Uses" },
-            { key: "discount", label: "Discount" },
+            { key: "code", label: "Mã" },
+            { key: "uses", label: "Lần dùng" },
+            { key: "discount", label: "Giảm giá" },
           ]}
           rows={pageData.rows.promotions}
-          emptyMessage="No promotion usage rows yet."
+          emptyMessage="Chưa có dữ liệu sử dụng khuyến mãi."
         />
         <ReportSection
-          title="Low Stock"
+          title="Sắp hết hàng"
           columns={[
             { key: "sku", label: "SKU" },
-            { key: "product", label: "Product" },
-            { key: "warehouse", label: "Warehouse" },
-            { key: "available", label: "Available" },
+            { key: "product", label: "Sản phẩm" },
+            { key: "warehouse", label: "Kho" },
+            { key: "available", label: "Tồn kho" },
           ]}
           rows={pageData.rows.lowStock}
-          emptyMessage="No low stock rows yet."
+          emptyMessage="Chưa có dữ liệu sắp hết hàng."
         />
         <ReportSection
-          title="Expiring Stock"
+          title="Sắp hết hạn"
           columns={[
             { key: "sku", label: "SKU" },
-            { key: "warehouse", label: "Warehouse" },
-            { key: "lot", label: "Lot" },
-            { key: "expiry", label: "Expiry" },
-            { key: "onHand", label: "On hand" },
+            { key: "warehouse", label: "Kho" },
+            { key: "lot", label: "Lô" },
+            { key: "expiry", label: "Ngày hết hạn" },
+            { key: "onHand", label: "Tồn kho" },
           ]}
           rows={pageData.rows.expiringStock}
-          emptyMessage="No expiring stock rows yet."
+          emptyMessage="Chưa có dữ liệu sắp hết hạn."
         />
         <ReportSection
-          title="Stock Adjustments"
+          title="Điều chỉnh tồn kho"
           columns={[
             { key: "sku", label: "SKU" },
-            { key: "warehouse", label: "Warehouse" },
-            { key: "movement", label: "Movement" },
-            { key: "quantity", label: "Quantity" },
-            { key: "source", label: "Source" },
+            { key: "warehouse", label: "Kho" },
+            { key: "movement", label: "Loại" },
+            { key: "quantity", label: "Số lượng" },
+            { key: "source", label: "Nguồn" },
           ]}
           rows={pageData.rows.stockAdjustments}
-          emptyMessage="No stock adjustment rows yet."
+          emptyMessage="Chưa có dữ liệu điều chỉnh tồn kho."
         />
         <ReportSection
-          title="Purchase Orders"
+          title="Đơn nhập hàng"
           columns={[
-            { key: "poNo", label: "PO" },
-            { key: "supplier", label: "Supplier" },
-            { key: "warehouse", label: "Warehouse" },
+            { key: "poNo", label: "Mã PO" },
+            { key: "supplier", label: "Nhà cung cấp" },
+            { key: "warehouse", label: "Kho" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => (
                 <StatusChip value={row.status} tone={getPurchaseOrderStatusTone(row.status)} />
               ),
             },
-            { key: "ordered", label: "Ordered" },
-            { key: "received", label: "Received" },
+            { key: "ordered", label: "Đã đặt" },
+            { key: "received", label: "Đã nhận" },
           ]}
           rows={pageData.rows.purchaseOrders}
-          emptyMessage="No purchase order rows yet."
+          emptyMessage="Chưa có dữ liệu đơn nhập hàng."
         />
         <ReportSection
-          title="Refunds"
+          title="Hoàn tiền"
           columns={[
-            { key: "orderNo", label: "Order" },
-            { key: "amount", label: "Amount" },
-            { key: "method", label: "Method" },
+            { key: "orderNo", label: "Đơn hàng" },
+            { key: "amount", label: "Số tiền" },
+            { key: "method", label: "Phương thức" },
             {
               key: "status",
-              label: "Status",
+              label: "Trạng thái",
               render: (row) => (
                 <StatusChip value={row.status} tone={getRefundStatusTone(row.status)} />
               ),
             },
-            { key: "reason", label: "Reason" },
+            { key: "reason", label: "Lý do" },
           ]}
           rows={pageData.rows.refunds}
-          emptyMessage="No refund rows yet."
+          emptyMessage="Chưa có dữ liệu hoàn tiền."
         />
       </div>
     </div>

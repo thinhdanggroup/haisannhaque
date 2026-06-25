@@ -27,7 +27,7 @@ export function ComplaintUpdateForm({ id, status, resolution }: ComplaintUpdateF
       )}
 
       <label className="block text-sm" htmlFor="status">
-        <span className="font-medium text-slate-700">Status</span>
+        <span className="font-medium text-slate-700">Trạng thái</span>
         <select
           id="status"
           name="status"
@@ -42,7 +42,7 @@ export function ComplaintUpdateForm({ id, status, resolution }: ComplaintUpdateF
       </label>
 
       <label className="block text-sm" htmlFor="resolution">
-        <span className="font-medium text-slate-700">Resolution</span>
+        <span className="font-medium text-slate-700">Giải quyết</span>
         <textarea
           id="resolution"
           name="resolution"
@@ -58,13 +58,13 @@ export function ComplaintUpdateForm({ id, status, resolution }: ComplaintUpdateF
           disabled={isPending}
           className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
         >
-          {isPending ? "Saving…" : "Save changes"}
+          {isPending ? "Đang lưu…" : "Lưu thay đổi"}
         </button>
         <Link
           href="/admin/complaints"
           className="flex min-h-10 items-center rounded-lg border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
-          Cancel
+          Hủy
         </Link>
       </div>
     </form>

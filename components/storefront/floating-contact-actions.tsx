@@ -13,17 +13,17 @@ type ContactAction = {
 const contactActions: ContactAction[] = [
   {
     label: "Messenger",
-    href: "#messenger",
+    href: "https://www.facebook.com/haisannq/?locale=vi_VN",
     icon: MessengerIcon,
   },
   {
     label: "Zalo",
-    href: "#zalo",
+    href: "https://zalo.me/0867997200",
     icon: ZaloIcon,
   },
   {
     label: "Hotline",
-    href: "tel:19000098",
+    href: "tel:0867997200",
     icon: Phone,
   },
 ];

@@ -15,19 +15,19 @@ export function CmsRowActions({ editHref, deleteAction, label }: CmsRowActionsPr
         href={editHref}
         className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
       >
-        Edit
+        Sửa
       </Link>
       <form
         action={deleteAction}
         onSubmit={(e) => {
-          if (!confirm(`Delete "${label}"?`)) e.preventDefault();
+          if (!confirm(`Xóa "${label}"?`)) e.preventDefault();
         }}
       >
         <button
           type="submit"
           className="rounded-md border border-red-200 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
         >
-          Delete
+          Xóa
         </button>
       </form>
     </div>
