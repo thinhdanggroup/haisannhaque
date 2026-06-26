@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { ArrowUpDown, SlidersHorizontal } from "lucide-react";
+import { Breadcrumb } from "@/components/storefront/breadcrumb";
 import { MobileStorefrontDock } from "@/components/storefront/mobile-storefront-dock";
 import { ProductGrid } from "@/components/storefront/product-grid";
 import { StorefrontFooter } from "@/components/storefront/storefront-footer";
@@ -31,6 +33,19 @@ type CategoryPageData = {
 };
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const { category } = await loadCategoryPageData(slug);
+
+  return {
+    title: category.name,
+    description:
+      category.description ??
+      `Mua ${category.name} tươi ngon tại Hải Sản Nhà Quê. Giao lạnh tận nhà.`,
+    alternates: { canonical: `/categories/${slug}` },
+  };
+}
 
 async function loadCategoryPageData(slug: string): Promise<CategoryPageData> {
   if (shouldUseStorefrontPlaywrightFixture()) {
@@ -68,6 +83,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <StorefrontHeader navItems={chrome.headerNav} />
       <main className="mx-auto max-w-6xl px-4 py-6">
+        <Breadcrumb
+          items={[
+            { label: "Trang chủ", href: "/" },
+            { label: category.name, href: `/categories/${slug}` },
+          ]}
+        />
         <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold text-teal-700">Danh mục</p>

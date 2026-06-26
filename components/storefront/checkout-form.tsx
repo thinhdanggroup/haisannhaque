@@ -16,6 +16,8 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
               id="receiverName"
               name="receiverName"
               autoComplete="name"
+              required
+              minLength={2}
               className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
             />
           </label>
@@ -25,6 +27,9 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
               id="phone"
               name="phone"
               autoComplete="tel"
+              required
+              minLength={8}
+              pattern="[0-9+\s\-]{8,15}"
               className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
             />
           </label>
@@ -36,6 +41,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
               id="province"
               name="province"
               autoComplete="address-level1"
+              required
               className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
             />
           </label>
@@ -45,6 +51,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
               id="district"
               name="district"
               autoComplete="address-level2"
+              required
               className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
             />
           </label>
@@ -53,6 +60,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
             <input
               id="ward"
               name="ward"
+              required
               className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
             />
           </label>
@@ -63,11 +71,23 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
             id="addressLine"
             name="addressLine"
             autoComplete="street-address"
+            required
+            minLength={3}
             className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
           />
         </label>
       </CheckoutPanel>
       <CheckoutPanel title="Payment information">
+        <div className="mb-4 flex flex-wrap gap-2">
+          {["COD", "Chuyển khoản", "MoMo", "VNPAY"].map((method) => (
+            <span
+              key={method}
+              className="flex h-8 items-center rounded-md border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 shadow-sm"
+            >
+              {method}
+            </span>
+          ))}
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block text-sm" htmlFor="deliveryMethod">
             <span className="font-medium text-slate-700">Delivery method</span>

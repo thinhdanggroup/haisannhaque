@@ -18,8 +18,32 @@ const dancingScript = Dancing_Script({
   weight: ["700"],
 });
 
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "GroceryStore",
+  "@id": "https://haisannhaque.com",
+  name: "Hải Sản Nhà Quê",
+  url: "https://haisannhaque.com",
+  logo: "https://haisannhaque.com/store-logo.png",
+  description: "Nền tảng thương mại hải sản trực tuyến",
+  telephone: "+84867997200",
+  email: "care@haisannhaque.vn",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress:
+      "SAV.2-00.04 Tầng trệt, Tháp 2, Toà Nhà The Sun Avenue, 28 Mai Chí Thọ",
+    addressLocality: "Thành phố Hồ Chí Minh",
+    addressCountry: "VN",
+  },
+  priceRange: "$$",
+};
+
 export const metadata: Metadata = {
-  title: "Hải Sản Nhà Quê",
+  metadataBase: new URL("https://haisannhaque.com"),
+  title: {
+    default: "Hải Sản Nhà Quê",
+    template: "%s | Hải Sản Nhà Quê",
+  },
   description: "Nền tảng thương mại hải sản trực tuyến",
 };
 
@@ -33,7 +57,16 @@ export default function RootLayout({
       lang="vi"
       className={`${geistSans.variable} ${geistMono.variable} ${dancingScript.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
+
+
+
