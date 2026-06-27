@@ -12,6 +12,23 @@ type DockLinkProps = {
   children: ReactNode;
 };
 
+export const CONTACT_URLS = {
+  messenger: "https://www.facebook.com/haisannq/?locale=vi_VN",
+  zalo: "https://zalo.me/0867997200",
+  phone: "tel:0867997200",
+} as const;
+
+// Maps placeholder/anchor hrefs that CMS may store to canonical contact URLs.
+const CONTACT_HREF_MAP: Record<string, string> = {
+  "#messenger": CONTACT_URLS.messenger,
+  "#zalo": CONTACT_URLS.zalo,
+  "tel:19000098": CONTACT_URLS.phone,
+};
+
+export function normalizeContactHref(href: string): string {
+  return CONTACT_HREF_MAP[href] ?? href;
+}
+
 const fallbackMobileDockItems: CmsNavigationItem[] = [
   {
     id: "fallback-dock-category",
@@ -25,7 +42,7 @@ const fallbackMobileDockItems: CmsNavigationItem[] = [
     id: "fallback-dock-hours",
     placement: "mobile_dock",
     label: "8h - 21h",
-    href: "tel:0867997200",
+    href: CONTACT_URLS.phone,
     iconKey: "phone",
     sortOrder: 20,
   },
@@ -33,7 +50,7 @@ const fallbackMobileDockItems: CmsNavigationItem[] = [
     id: "fallback-dock-messenger",
     placement: "mobile_dock",
     label: "Messenger",
-    href: "https://www.facebook.com/haisannq/?locale=vi_VN",
+    href: CONTACT_URLS.messenger,
     iconKey: "messenger",
     sortOrder: 30,
   },
@@ -41,7 +58,7 @@ const fallbackMobileDockItems: CmsNavigationItem[] = [
     id: "fallback-dock-zalo",
     placement: "mobile_dock",
     label: "Zalo",
-    href: "https://zalo.me/0867997200",
+    href: CONTACT_URLS.zalo,
     iconKey: "zalo",
     sortOrder: 40,
   },
@@ -56,11 +73,13 @@ const fallbackMobileDockItems: CmsNavigationItem[] = [
 ];
 
 function getDockItems(items: CmsNavigationItem[]): CmsNavigationItem[] {
-  return items.length > 0 ? items : fallbackMobileDockItems;
+  const source = items.length > 0 ? items : fallbackMobileDockItems;
+  return source.map((item) => ({ ...item, href: normalizeContactHref(item.href) }));
 }
 
 function DockLink({ item, children }: DockLinkProps) {
-  const className = "flex min-h-14 flex-col items-center justify-center gap-1 text-[11px] font-semibold text-slate-700";
+  const className =
+    "flex min-h-14 flex-col items-center justify-center gap-1 text-[11px] font-semibold text-slate-700";
 
   if (item.href.startsWith("/")) {
     return (
@@ -70,8 +89,15 @@ function DockLink({ item, children }: DockLinkProps) {
     );
   }
 
+  const isExternal =
+    item.href.startsWith("https://") || item.href.startsWith("http://");
+
   return (
-    <a href={item.href} className={className}>
+    <a
+      href={item.href}
+      className={className}
+      {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
       {children}
     </a>
   );
