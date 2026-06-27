@@ -249,7 +249,14 @@ export function StorefrontFooter({
 
       <div id="stores" className="bg-[#0f3f46] pb-24 pt-8 text-white md:pb-8">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-[220px_minmax(0,1fr)_180px] md:items-center">
-          <StoreLogo variant="light" showSubtitle={false} />
+          <div className="flex flex-col gap-1">
+            <span className="text-base font-extrabold uppercase tracking-wider text-white">
+              HẢI SẢN NHÀ QUÊ
+            </span>
+            <span className="text-[10px] italic tracking-wide text-teal-300">
+              &ldquo;TƯƠI NHƯ Ở SÔNG - RẺ NHƯ Ở CHỢ&rdquo;
+            </span>
+          </div>
           <div>
             <h2 className="text-sm font-bold uppercase text-orange-200">
               Thông tin công ty
