@@ -98,11 +98,11 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
       </section>
 
       <section className="rounded-lg border border-slate-200 bg-white p-5">
-        <h2 className="text-xl font-bold text-slate-950">Mo ta san pham</h2>
+        <h2 className="text-xl font-bold text-slate-950">Mô tả sản phẩm</h2>
         <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-700">
           {product.description ??
             product.shortDescription ??
-            "Mo ta san pham dang duoc cap nhat."}
+            "Mô tả sản phẩm đang được cập nhật."}
         </p>
       </section>
 
