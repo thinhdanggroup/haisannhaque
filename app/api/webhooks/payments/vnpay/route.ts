@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { handlePaymentWebhook, verifyWebhookSignature } from "@/src/features/payments/webhook";
 import { createServerClient } from "@/src/lib/supabase/server";
 
+export const preferredRegion = "sin1";
+
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
   const payload = JSON.parse(rawBody) as Record<string, unknown>;

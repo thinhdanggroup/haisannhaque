@@ -38,6 +38,8 @@ const localBusinessJsonLd = {
   priceRange: "$$",
 };
 
+export const preferredRegion = "sin1";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://haisannhaque.com"),
   title: {
