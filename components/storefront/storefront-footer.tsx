@@ -194,7 +194,7 @@ export function StorefrontFooter({
             </a>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3">
             {footerGroups.map((group) => (
               <div key={group.groupLabel}>
                 <h2 className="text-sm font-bold text-slate-950">
@@ -228,7 +228,7 @@ export function StorefrontFooter({
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 border-t border-slate-200 pt-8 md:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-6 border-t border-slate-200 pt-8 sm:grid-cols-3">
           <AssetGroup
             title="Thanh toán"
             assets={paymentAssets}
