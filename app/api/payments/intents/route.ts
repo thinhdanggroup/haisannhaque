@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createServerClient } from "@/src/lib/supabase/server";
 
+export const preferredRegion = "sin1";
+
 const paymentIntentSchema = z.object({
   orderId: z.string().uuid(),
   paymentMethod: z.enum(["cod", "bank_transfer", "momo", "vnpay"]),
