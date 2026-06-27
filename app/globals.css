@@ -44,3 +44,51 @@ textarea {
 img {
   max-width: 100%;
 }
+
+/* ─── Storefront entrance animations ─────────────────────────────────────── */
+
+@keyframes sf-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sf-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Applied to the full-page shell on every storefront navigation */
+.sf-page-enter {
+  animation: sf-slide-up 0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Applied to each product card; delay set via --sf-card-delay */
+.sf-card-enter {
+  animation: sf-scale-in 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation-delay: var(--sf-card-delay, 0ms);
+}
+
+/* Applied to the product-detail content block */
+.sf-detail-enter {
+  animation: sf-slide-up 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-page-enter,
+  .sf-card-enter,
+  .sf-detail-enter {
+    animation: none;
+  }
+}

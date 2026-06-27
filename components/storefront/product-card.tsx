@@ -13,6 +13,7 @@ type StorefrontProductCard = ProductCardData | CmsProductCard;
 
 type ProductCardProps = {
   product: StorefrontProductCard;
+  index?: number;
 };
 
 function getBadgeText(product: StorefrontProductCard): string | null {
@@ -27,18 +28,20 @@ function getSoldLabel(product: StorefrontProductCard): string | null {
   return product.soldLabel || null;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const discountPercent = calculateDiscountPercent(
     product.price,
     product.compareAtPrice,
   );
   const badgeText = getBadgeText(product);
   const soldLabel = getSoldLabel(product);
+  const cardDelay = Math.min(index, 15) * 45;
 
   return (
     <article
       data-testid="homepage-product-card"
-      className="group relative h-full overflow-hidden rounded-lg border border-slate-200 bg-white p-1.5 pb-10 shadow-[0_6px_18px_rgba(15,23,42,0.05)] transition hover:border-teal-300 hover:shadow-[0_12px_28px_rgba(15,74,76,0.12)]"
+      className="sf-card-enter group relative h-full overflow-hidden rounded-lg border border-slate-200 bg-white p-1.5 pb-10 shadow-[0_6px_18px_rgba(15,23,42,0.05)] transition hover:border-teal-300 hover:shadow-[0_12px_28px_rgba(15,74,76,0.12)]"
+      style={{ "--sf-card-delay": `${cardDelay}ms` } as React.CSSProperties}
     >
       <Link href={`/products/${product.slug}`} className="block">
         <div className="relative aspect-square overflow-hidden rounded-md bg-[#eff8f6]">

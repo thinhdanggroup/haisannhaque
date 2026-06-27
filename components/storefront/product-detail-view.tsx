@@ -45,7 +45,7 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
   const variants = getDisplayVariants(product.variants);
 
   return (
-    <div className="space-y-8">
+    <div className="sf-detail-enter space-y-8">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_430px]">
         <ProductImageGallery images={images} productName={product.name} />
 
