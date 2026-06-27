@@ -180,7 +180,7 @@ export function StorefrontFooter({
       <div id="company" className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_2fr]">
           <div>
-            <StoreLogo showSubtitle={false} />
+            <StoreLogo showSubtitle={false} src="/store-logo-circle.png" />
             <p className="mt-3 max-w-sm text-sm leading-6 text-slate-600">
               Hải Sản Nhà Quê vận hành gian hàng, thanh toán và quy trình
               bán hải sản theo nhịp thương mại Việt Nam.

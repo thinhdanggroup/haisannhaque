@@ -38,7 +38,7 @@ export function CartLineItem({ item }: CartLineItemProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-slate-500">
-            No image
+            Không có ảnh
           </div>
         )}
       </div>
@@ -55,7 +55,7 @@ export function CartLineItem({ item }: CartLineItemProps) {
           <button
             onClick={handleRemove}
             disabled={isPending}
-            aria-label="Remove item"
+            aria-label="Xóa sản phẩm"
             className="shrink-0 rounded p-1 text-slate-400 transition hover:text-red-500 disabled:pointer-events-none"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -69,19 +69,19 @@ export function CartLineItem({ item }: CartLineItemProps) {
         <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-3">
           <div>
             <span className="block text-xs font-semibold uppercase text-slate-500">
-              Unit price
+              Đơn giá
             </span>
             <span className="font-medium text-slate-900">{unitPrice}đ</span>
           </div>
           <div>
             <span className="block text-xs font-semibold uppercase text-slate-500">
-              Quantity
+              Số lượng
             </span>
             <div className="mt-1 flex items-center gap-1">
               <button
                 onClick={() => handleQuantityChange(-1)}
                 disabled={isPending || item.quantity <= 1}
-                aria-label="Decrease quantity"
+                aria-label="Giảm số lượng"
                 className="flex h-7 w-7 items-center justify-center rounded border border-slate-200 text-slate-600 transition hover:bg-slate-100 disabled:opacity-40"
               >
                 −
@@ -92,7 +92,7 @@ export function CartLineItem({ item }: CartLineItemProps) {
               <button
                 onClick={() => handleQuantityChange(1)}
                 disabled={isPending}
-                aria-label="Increase quantity"
+                aria-label="Tăng số lượng"
                 className="flex h-7 w-7 items-center justify-center rounded border border-slate-200 text-slate-600 transition hover:bg-slate-100 disabled:opacity-40"
               >
                 +
@@ -101,7 +101,7 @@ export function CartLineItem({ item }: CartLineItemProps) {
           </div>
           <div className="sm:text-right">
             <span className="block text-xs font-semibold uppercase text-slate-500">
-              Line total
+              Thành tiền
             </span>
             <span className="font-semibold text-red-600">
               {lineTotal.toLocaleString("vi-VN")}đ

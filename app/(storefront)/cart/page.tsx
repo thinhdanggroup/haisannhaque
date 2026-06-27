@@ -104,10 +104,10 @@ export default async function CartPage() {
       <StorefrontHeader navItems={chrome.headerNav} />
       <main className="mx-auto grid max-w-6xl gap-6 px-4 py-6 md:grid-cols-[minmax(0,1fr)_360px]">
         <section>
-          <p className="text-sm font-semibold text-teal-700">Cart</p>
-          <h1 className="mt-1 text-3xl font-semibold">Shopping cart</h1>
+          <p className="text-sm font-semibold text-teal-700">Giỏ hàng</p>
+          <h1 className="mt-1 text-3xl font-semibold">Giỏ hàng của bạn</h1>
           <p className="mt-2 text-sm text-slate-600">
-            Review your seafood selections before checkout.
+            Xem lại các mặt hàng hải sản trước khi thanh toán.
           </p>
           <div className="mt-6 space-y-3">
             {items.length > 0 ? (
@@ -115,16 +115,16 @@ export default async function CartPage() {
             ) : (
               <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-10 text-center">
                 <p className="text-sm font-medium text-slate-700">
-                  Your cart is empty.
+                  Giỏ hàng của bạn đang trống.
                 </p>
                 <p className="mt-2 text-sm text-slate-500">
-                  Add fresh seafood to start an order.
+                  Thêm hải sản tươi để bắt đầu đơn hàng.
                 </p>
                 <Link
                   href="/search"
                   className="mt-4 inline-flex min-h-10 items-center rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white transition hover:bg-teal-800"
                 >
-                  Continue shopping
+                  Tiếp tục mua sắm
                 </Link>
               </div>
             )}

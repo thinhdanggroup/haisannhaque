@@ -1,4 +1,5 @@
 import { CheckoutPanel } from "./checkout-panel";
+import { submitCheckout } from "@/app/(storefront)/checkout/actions";
 
 type CheckoutFormProps = {
   cartId?: string;
@@ -6,12 +7,12 @@ type CheckoutFormProps = {
 
 export function CheckoutForm({ cartId }: CheckoutFormProps) {
   return (
-    <form className="space-y-5">
+    <form action={submitCheckout} className="space-y-5">
       <input type="hidden" name="cartId" value={cartId ?? ""} />
-      <CheckoutPanel title="Delivery information">
+      <CheckoutPanel title="Thông tin giao hàng">
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block text-sm" htmlFor="receiverName">
-            <span className="font-medium text-slate-700">Receiver name</span>
+            <span className="font-medium text-slate-700">Họ và tên người nhận</span>
             <input
               id="receiverName"
               name="receiverName"
@@ -22,7 +23,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
             />
           </label>
           <label className="block text-sm" htmlFor="phone">
-            <span className="font-medium text-slate-700">Phone number</span>
+            <span className="font-medium text-slate-700">Số điện thoại</span>
             <input
               id="phone"
               name="phone"
@@ -36,7 +37,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
         </div>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           <label className="block text-sm" htmlFor="province">
-            <span className="font-medium text-slate-700">Province / City</span>
+            <span className="font-medium text-slate-700">Tỉnh / Thành phố</span>
             <input
               id="province"
               name="province"
@@ -46,7 +47,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
             />
           </label>
           <label className="block text-sm" htmlFor="district">
-            <span className="font-medium text-slate-700">District</span>
+            <span className="font-medium text-slate-700">Quận / Huyện</span>
             <input
               id="district"
               name="district"
@@ -56,7 +57,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
             />
           </label>
           <label className="block text-sm" htmlFor="ward">
-            <span className="font-medium text-slate-700">Ward</span>
+            <span className="font-medium text-slate-700">Phường / Xã</span>
             <input
               id="ward"
               name="ward"
@@ -66,7 +67,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
           </label>
         </div>
         <label className="mt-4 block text-sm" htmlFor="addressLine">
-          <span className="font-medium text-slate-700">Street address</span>
+          <span className="font-medium text-slate-700">Địa chỉ cụ thể</span>
           <input
             id="addressLine"
             name="addressLine"
@@ -76,8 +77,18 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
             className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
           />
         </label>
+        <label className="mt-4 block text-sm" htmlFor="orderNote">
+          <span className="font-medium text-slate-700">Ghi chú đơn hàng</span>
+          <textarea
+            id="orderNote"
+            name="orderNote"
+            rows={2}
+            placeholder="Yêu cầu đặc biệt, giờ giao hàng..."
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-teal-600"
+          />
+        </label>
       </CheckoutPanel>
-      <CheckoutPanel title="Payment information">
+      <CheckoutPanel title="Thông tin thanh toán">
         <div className="mb-4 flex flex-wrap gap-2">
           {["COD", "Chuyển khoản", "MoMo", "VNPAY"].map((method) => (
             <span
@@ -90,28 +101,28 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block text-sm" htmlFor="deliveryMethod">
-            <span className="font-medium text-slate-700">Delivery method</span>
+            <span className="font-medium text-slate-700">Phương thức giao hàng</span>
             <select
               id="deliveryMethod"
               name="deliveryMethod"
               defaultValue="local_delivery"
               className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
             >
-              <option value="local_delivery">Local express delivery</option>
-              <option value="branch_pickup">Store pickup</option>
-              <option value="nationwide_shipping">Nationwide shipping</option>
+              <option value="local_delivery">Giao nhanh nội thành</option>
+              <option value="branch_pickup">Nhận tại cửa hàng</option>
+              <option value="nationwide_shipping">Giao toàn quốc</option>
             </select>
           </label>
           <label className="block text-sm" htmlFor="paymentMethod">
-            <span className="font-medium text-slate-700">Payment method</span>
+            <span className="font-medium text-slate-700">Phương thức thanh toán</span>
             <select
               id="paymentMethod"
               name="paymentMethod"
               defaultValue="cod"
               className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
             >
-              <option value="cod">Cash on delivery</option>
-              <option value="bank_transfer">Bank transfer</option>
+              <option value="cod">Tiền mặt khi nhận hàng</option>
+              <option value="bank_transfer">Chuyển khoản ngân hàng</option>
               <option value="momo">MoMo</option>
               <option value="vnpay">VNPAY</option>
             </select>
@@ -119,12 +130,10 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
         </div>
       </CheckoutPanel>
       <button
-        type="button"
-        disabled
-        title="Order submission is wired through the checkout integration slice."
-        className="min-h-11 w-full rounded-lg bg-red-600 px-4 text-sm font-semibold text-white opacity-70 disabled:cursor-not-allowed"
+        type="submit"
+        className="min-h-11 w-full rounded-lg bg-red-600 px-4 text-sm font-semibold text-white transition hover:bg-red-700"
       >
-        Place order
+        Đặt hàng
       </button>
     </form>
   );
