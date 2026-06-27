@@ -25,6 +25,7 @@ type SearchPageData = {
 };
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "sin1";
 
 async function loadSearchPageData(query: string): Promise<SearchPageData> {
   if (shouldUseStorefrontPlaywrightFixture()) {

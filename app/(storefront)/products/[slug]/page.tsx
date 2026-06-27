@@ -28,6 +28,7 @@ type ProductPageData = {
 };
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "sin1";
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;

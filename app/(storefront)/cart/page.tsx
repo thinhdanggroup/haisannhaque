@@ -17,6 +17,7 @@ import { createServerClient } from "@/src/lib/supabase/server";
 import { createAdminClient } from "@/src/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "sin1";
 
 async function loadStorefrontChrome(): Promise<StorefrontChrome> {
   if (shouldUseStorefrontPlaywrightFixture()) {

@@ -13,6 +13,7 @@ import type { StorefrontChrome } from "@/src/features/cms/types";
 import { createServerClient } from "@/src/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "sin1";
 
 async function loadStorefrontChrome(): Promise<StorefrontChrome> {
   if (shouldUseStorefrontPlaywrightFixture()) {

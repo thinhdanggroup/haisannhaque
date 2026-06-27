@@ -33,6 +33,7 @@ type CategoryPageData = {
 };
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "sin1";
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;

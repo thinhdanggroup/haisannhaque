@@ -27,6 +27,7 @@ import { createServerClient } from "@/src/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
+export const preferredRegion = "sin1";
 
 async function loadStorefrontChrome(
   client: SupabaseClient,
