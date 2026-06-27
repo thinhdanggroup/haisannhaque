@@ -30,7 +30,12 @@ function formatCurrency(value: number): string {
   return `${value.toLocaleString("vi-VN")}đ`;
 }
 
-export default async function CheckoutPage() {
+export default async function CheckoutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const chrome = await loadStorefrontChrome();
 
   const cookieStore = await cookies();
@@ -95,6 +100,11 @@ export default async function CheckoutPage() {
         <p className="mt-2 text-sm text-slate-600">
           Nhập thông tin giao hàng và thanh toán để đặt hải sản.
         </p>
+        {error && (
+          <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            {error}
+          </div>
+        )}
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <CheckoutForm cartId={cartId} />
           <CheckoutPanel title="Tóm tắt đơn hàng">
