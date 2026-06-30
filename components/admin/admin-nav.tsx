@@ -5,6 +5,7 @@ const adminLinks = [
   { href: "/admin/products", label: "Sản phẩm" },
   { href: "/admin/categories", label: "Danh mục" },
   { href: "/admin/content", label: "Nội dung" },
+  { href: "/admin/flash-sales", label: "Flash Sale" },
   { href: "/admin/orders", label: "Đơn hàng" },
   { href: "/admin/inventory", label: "Tồn kho" },
   { href: "/admin/warehouses", label: "Kho hàng" },
