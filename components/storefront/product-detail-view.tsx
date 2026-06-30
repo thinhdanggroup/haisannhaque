@@ -91,7 +91,7 @@ export function ProductDetailView({ product, flashSale }: ProductDetailViewProps
               <span className="text-sm font-semibold text-red-700">
                 🔥 {flashSale.name}: {formatVnd(flashSalePrice!)}
               </span>
-              <span className="text-xs text-slate-500 line-through">{formatVnd(listPrice)}</span>
+              <span className="text-xs text-slate-500 line-through">{formatVnd(cheapestVariant?.salePrice ?? listPrice)}</span>
               <span className="ml-auto">
                 <FlashSaleCountdown endAt={flashSale.endAt} />
               </span>
