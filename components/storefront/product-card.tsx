@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ProductCard as ProductCardData } from "@/src/features/catalog/types";
 import type { CmsProductCard } from "@/src/features/cms/types";
 import { calculateDiscountPercent, formatVnd } from "@/src/lib/format";
+import { applyFlashSalePrice } from "@/src/features/flash-sales/price-utils";
 import { FlashSaleCountdown } from "./flash-sale-countdown";
 import {
   isTextPlaceholderImage,
@@ -38,7 +39,7 @@ export function ProductCard({ product, index = 0, flashSale }: ProductCardProps)
   // list_price is compareAtPrice (if already on sale) or price
   const listPrice = product.compareAtPrice ?? product.price;
   const flashSalePrice =
-    flashSale != null ? Math.round(listPrice * (1 - flashSale.discountPct / 100)) : null;
+    flashSale != null ? applyFlashSalePrice(listPrice, flashSale.discountPct) : null;
   // Only apply flash sale discount if it's actually cheaper than the current price
   const effectiveFlashSale =
     flashSalePrice != null && flashSalePrice < product.price ? flashSale : null;
