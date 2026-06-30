@@ -89,7 +89,7 @@ export function ProductDetailView({ product, flashSale }: ProductDetailViewProps
           {showFlashSale && flashSale && (
             <div className="mt-3 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
               <span className="text-sm font-semibold text-red-700">
-                🔥 Flash Sale: {formatVnd(flashSalePrice!)}
+                🔥 {flashSale.name}: {formatVnd(flashSalePrice!)}
               </span>
               <span className="text-xs text-slate-500 line-through">{formatVnd(listPrice)}</span>
               <span className="ml-auto">
