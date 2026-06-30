@@ -9,12 +9,17 @@ import type {
   ProductDetail,
   ProductVariantSummary,
 } from "@/src/features/catalog/types";
+import { applyFlashSalePrice } from "@/src/features/flash-sales/price-utils";
+import type { ActiveFlashSale } from "@/src/features/flash-sales/types";
+import { formatVnd } from "@/src/lib/format";
 import { AddToCartControls } from "./add-to-cart-controls";
+import { FlashSaleCountdown } from "./flash-sale-countdown";
 import { ProductCard } from "./product-card";
 import { ProductImageGallery } from "./product-image-gallery";
 
 type ProductDetailViewProps = {
   product: ProductDetail;
+  flashSale?: ActiveFlashSale | null;
 };
 
 function getDisplayVariants(
@@ -40,9 +45,18 @@ function getDisplayVariants(
     });
 }
 
-export function ProductDetailView({ product }: ProductDetailViewProps) {
+export function ProductDetailView({ product, flashSale }: ProductDetailViewProps) {
   const images = product.images;
   const variants = getDisplayVariants(product.variants);
+  const cheapestVariant = variants[0] ?? null;
+  const listPrice = cheapestVariant?.listPrice ?? 0;
+  const flashSalePrice =
+    flashSale != null && cheapestVariant != null
+      ? applyFlashSalePrice(listPrice, flashSale.discountPct)
+      : null;
+  const showFlashSale =
+    flashSalePrice != null &&
+    flashSalePrice < (cheapestVariant?.salePrice ?? listPrice);
 
   return (
     <div className="sf-detail-enter space-y-8">
@@ -71,6 +85,18 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
               {product.shortDescription}
             </p>
           ) : null}
+
+          {showFlashSale && flashSale && (
+            <div className="mt-3 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+              <span className="text-sm font-semibold text-red-700">
+                🔥 Flash Sale: {formatVnd(flashSalePrice!)}
+              </span>
+              <span className="text-xs text-slate-500 line-through">{formatVnd(listPrice)}</span>
+              <span className="ml-auto">
+                <FlashSaleCountdown endAt={flashSale.endAt} />
+              </span>
+            </div>
+          )}
 
           <div className="mt-5">
             <AddToCartControls variants={variants} />

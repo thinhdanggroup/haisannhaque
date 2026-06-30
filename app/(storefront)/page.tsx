@@ -23,6 +23,8 @@ import type {
   HomePageContent,
   StorefrontChrome,
 } from "@/src/features/cms/types";
+import { getActiveFlashSale } from "@/src/features/flash-sales/queries";
+import type { ActiveFlashSale } from "@/src/features/flash-sales/types";
 import { createServerClient } from "@/src/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -47,7 +49,7 @@ async function loadHomePageContent(client: SupabaseClient): Promise<HomePageCont
   return getHomePageContent(client);
 }
 
-function renderHomeSection(section: CmsSection) {
+function renderHomeSection(section: CmsSection, flashSale: ActiveFlashSale | null) {
   switch (section.type) {
     case "hero":
       return <HeroMerchandisingGrid key={section.id} section={section} />;
@@ -59,7 +61,7 @@ function renderHomeSection(section: CmsSection) {
       return <PromoBand key={section.id} section={section} />;
     case "product_rail":
     case "flash_sale":
-      return <ProductRail key={section.id} section={section} />;
+      return <ProductRail key={section.id} section={section} flashSale={flashSale} />;
     case "recommendation_tabs":
       return <RecommendationTabs key={section.id} section={section} />;
     case "content_highlights":
@@ -73,9 +75,10 @@ function renderHomeSection(section: CmsSection) {
 
 export default async function StorefrontHomePage() {
   const client = await createServerClient();
-  const [chrome, home] = await Promise.all([
+  const [chrome, home, flashSale] = await Promise.all([
     loadStorefrontChrome(client),
     loadHomePageContent(client),
+    getActiveFlashSale(client),
   ]);
 
   return (
@@ -89,7 +92,7 @@ export default async function StorefrontHomePage() {
         <div className={storefrontTheme.mainWrap}>
           <CategorySidebar items={chrome.sidebarNav} />
           <div className={storefrontTheme.contentStack}>
-            {home.sections.map(renderHomeSection)}
+            {home.sections.map((section) => renderHomeSection(section, flashSale))}
           </div>
         </div>
       </main>

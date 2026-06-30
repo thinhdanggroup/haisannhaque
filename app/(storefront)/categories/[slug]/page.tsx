@@ -8,6 +8,8 @@ import { StorefrontHeader } from "@/components/storefront/storefront-header";
 import { getProductsByCategory } from "@/src/features/catalog/queries";
 import type { ProductCard } from "@/src/features/catalog/types";
 import { getStorefrontChrome } from "@/src/features/cms/queries";
+import { getActiveFlashSale } from "@/src/features/flash-sales/queries";
+import type { ActiveFlashSale } from "@/src/features/flash-sales/types";
 import {
   playwrightChromeFixture,
   shouldUseStorefrontPlaywrightFixture,
@@ -30,6 +32,7 @@ type CategoryPageData = {
   chrome: StorefrontChrome;
   products: ProductCard[];
   category: CategoryMeta;
+  flashSale: ActiveFlashSale | null;
 };
 
 export const dynamic = "force-dynamic";
@@ -54,11 +57,12 @@ async function loadCategoryPageData(slug: string): Promise<CategoryPageData> {
       chrome: playwrightChromeFixture,
       products: [],
       category: { name: slug.replaceAll("-", " "), description: null },
+      flashSale: null,
     };
   }
 
   const client = await createServerClient();
-  const [chrome, products, categoryResult] = await Promise.all([
+  const [chrome, products, categoryResult, flashSale] = await Promise.all([
     getStorefrontChrome(client),
     getProductsByCategory(client, slug),
     client
@@ -67,18 +71,19 @@ async function loadCategoryPageData(slug: string): Promise<CategoryPageData> {
       .eq("slug", slug)
       .eq("is_active", true)
       .single(),
+    getActiveFlashSale(client),
   ]);
 
   const category: CategoryMeta = categoryResult.data
     ? { name: categoryResult.data.name, description: categoryResult.data.description ?? null }
     : { name: slug.replaceAll("-", " "), description: null };
 
-  return { chrome, products, category };
+  return { chrome, products, category, flashSale };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const { chrome, products, category } = await loadCategoryPageData(slug);
+  const { chrome, products, category, flashSale } = await loadCategoryPageData(slug);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
@@ -125,6 +130,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             products={products}
             density="dense"
             emptyMessage="Chua co san pham trong danh muc nay."
+            flashSale={flashSale}
           />
         </div>
       </main>

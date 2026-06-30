@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { CmsSection } from "@/src/features/cms/types";
+import type { ActiveFlashSale } from "@/src/features/flash-sales/types";
 import { ProductGrid } from "./product-grid";
 import { storefrontTheme } from "./storefront-theme";
 
 type ProductRailProps = {
   section: CmsSection;
+  flashSale?: ActiveFlashSale | null;
 };
 
 type ViewMoreLinkProps = {
@@ -135,7 +137,7 @@ function ViewMoreLink({ href, label }: ViewMoreLinkProps) {
   );
 }
 
-export function ProductRail({ section }: ProductRailProps) {
+export function ProductRail({ section, flashSale }: ProductRailProps) {
   const headingId = `home-section-${section.id}`;
   const title = section.title ?? section.key;
   const isFlashSale = section.type === "flash_sale";
@@ -176,6 +178,7 @@ export function ProductRail({ section }: ProductRailProps) {
         products={section.products}
         density="dense"
         emptyMessage="Chưa có sản phẩm trong khu vực này."
+        flashSale={flashSale}
       />
     </section>
   );

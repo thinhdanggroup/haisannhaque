@@ -8,6 +8,8 @@ import { StorefrontHeader } from "@/components/storefront/storefront-header";
 import { getProductBySlug } from "@/src/features/catalog/queries";
 import type { ProductDetail } from "@/src/features/catalog/types";
 import { getStorefrontChrome } from "@/src/features/cms/queries";
+import { getActiveFlashSale } from "@/src/features/flash-sales/queries";
+import type { ActiveFlashSale } from "@/src/features/flash-sales/types";
 import {
   playwrightChromeFixture,
   shouldUseStorefrontPlaywrightFixture,
@@ -25,6 +27,7 @@ type ProductPageProps = {
 type ProductPageData = {
   chrome: StorefrontChrome;
   product: ProductDetail | null;
+  flashSale: ActiveFlashSale | null;
 };
 
 export const dynamic = "force-dynamic";
@@ -123,25 +126,30 @@ async function loadProductPageData(slug: string): Promise<ProductPageData> {
     return {
       chrome: playwrightChromeFixture,
       product: createPlaywrightProductFixture(slug),
+      flashSale: null,
     };
   }
 
   const client = await createServerClient();
-  const [chrome, product] = await Promise.all([
+  const [chrome, product, flashSale] = await Promise.all([
     getStorefrontChrome(client),
     getProductBySlug(client, slug),
+    getActiveFlashSale(client),
   ]);
 
-  return { chrome, product };
+  return { chrome, product, flashSale };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const { chrome, product } = await loadProductPageData(slug);
+  const { chrome, product, flashSale } = await loadProductPageData(slug);
 
   if (!product) {
     notFound();
   }
+
+  const productInFlashSale =
+    flashSale != null && flashSale.productIds.includes(product.id) ? flashSale : null;
 
   const cheapestVariant = product.variants
     .filter((v) => v.isActive)
@@ -176,7 +184,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             { label: product.name, href: `/products/${slug}` },
           ]}
         />
-        <ProductDetailView product={product} />
+        <ProductDetailView product={product} flashSale={productInFlashSale} />
       </main>
       <MobileStorefrontDock items={chrome.mobileDock} />
       <StorefrontFooter
