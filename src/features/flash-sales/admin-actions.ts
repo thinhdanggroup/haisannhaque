@@ -91,10 +91,11 @@ export async function updateFlashSaleEvent(
   if (updateError) throw updateError;
 
   // Replace all product associations
-  await client
+  const { error: delError } = await client
     .from("flash_sale_event_products" as never)
     .delete()
     .eq("event_id", result.data.id);
+  if (delError) throw delError;
 
   const productIds = formData.getAll("productIds").map(String).filter(Boolean);
   if (productIds.length > 0) {
@@ -110,11 +111,11 @@ export async function updateFlashSaleEvent(
 }
 
 export async function deleteFlashSaleEvent(id: string): Promise<void> {
-  const parsed = z.string().uuid().safeParse(id);
-  if (!parsed.success) throw new Error("Invalid flash sale event ID.");
-
   const client = await createServerClient();
   await requireAdminPermission(client, "flash_sales:manage");
+
+  const parsed = z.string().uuid().safeParse(id);
+  if (!parsed.success) throw new Error("ID sự kiện flash sale không hợp lệ.");
 
   const { error } = await client
     .from("flash_sale_events" as never)
