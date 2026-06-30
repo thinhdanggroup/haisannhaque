@@ -9,6 +9,12 @@ import { flashSaleEventSchema, flashSaleEventUpdateSchema } from "./schema";
 
 export type FlashSaleEventState = { error: string } | null;
 
+function toUtcIso(datetimeLocal: string): string {
+  // datetime-local gives "YYYY-MM-DDTHH:MM" with no timezone
+  // Treat as ICT (UTC+7) and convert to UTC ISO string
+  return new Date(datetimeLocal + ":00+07:00").toISOString();
+}
+
 export async function createFlashSaleEvent(
   _prev: FlashSaleEventState,
   formData: FormData,
@@ -33,8 +39,8 @@ export async function createFlashSaleEvent(
     .insert({
       name: result.data.name,
       discount_pct: result.data.discountPct,
-      start_at: result.data.startAt,
-      end_at: result.data.endAt,
+      start_at: toUtcIso(result.data.startAt),
+      end_at: toUtcIso(result.data.endAt),
       is_active: result.data.isActive,
     })
     .select("id")
@@ -82,8 +88,8 @@ export async function updateFlashSaleEvent(
     .update({
       name: result.data.name,
       discount_pct: result.data.discountPct,
-      start_at: result.data.startAt,
-      end_at: result.data.endAt,
+      start_at: toUtcIso(result.data.startAt),
+      end_at: toUtcIso(result.data.endAt),
       is_active: result.data.isActive,
     } as never)
     .eq("id", result.data.id);

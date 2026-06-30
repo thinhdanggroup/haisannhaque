@@ -24,8 +24,11 @@ type FlashSaleFormProps = {
 };
 
 function toDatetimeLocal(iso: string): string {
-  // Converts ISO 8601 to the value format expected by <input type="datetime-local">
-  return iso.slice(0, 16);
+  // Convert UTC ISO to ICT (UTC+7) for datetime-local input
+  const date = new Date(iso);
+  const ictMs = date.getTime() + 7 * 60 * 60 * 1000;
+  const ict = new Date(ictMs);
+  return ict.toISOString().slice(0, 16);
 }
 
 export function FlashSaleForm({ action, products, initialValues }: FlashSaleFormProps) {
