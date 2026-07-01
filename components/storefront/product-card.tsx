@@ -96,7 +96,7 @@ export function ProductCard({ product, index = 0, flashSale }: ProductCardProps)
           </div>
           {effectiveFlashSale && (
             <div className="absolute bottom-0 left-0 right-0 flex justify-center bg-red-600/80 py-0.5">
-              <FlashSaleCountdown endAt={effectiveFlashSale.endAt} />
+              <FlashSaleCountdown endAt={effectiveFlashSale.endAt} className="text-white" />
             </div>
           )}
         </div>

@@ -6,9 +6,10 @@ import { formatCountdown, getRemainingSeconds } from "@/src/features/flash-sales
 type FlashSaleCountdownProps = {
   endAt: string;
   label?: string;
+  className?: string;
 };
 
-export function FlashSaleCountdown({ endAt, label }: FlashSaleCountdownProps) {
+export function FlashSaleCountdown({ endAt, label, className = "text-red-600" }: FlashSaleCountdownProps) {
   const [remaining, setRemaining] = useState(() => getRemainingSeconds(endAt, Date.now()));
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export function FlashSaleCountdown({ endAt, label }: FlashSaleCountdownProps) {
   }
 
   return (
-    <span className="font-mono text-sm font-bold tabular-nums text-red-600">
+    <span className={`font-mono text-sm font-bold tabular-nums ${className}`}>
       {label && (
         <span className="mr-1 font-sans font-medium text-slate-700">{label}</span>
       )}

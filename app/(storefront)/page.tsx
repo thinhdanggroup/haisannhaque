@@ -1,7 +1,6 @@
 import { CategorySidebar } from "@/components/storefront/category-sidebar";
 import { CategoryShortcutStrip } from "@/components/storefront/category-shortcut-strip";
 import { ContentHighlights } from "@/components/storefront/content-highlights";
-import { FloatingContactActions } from "@/components/storefront/floating-contact-actions";
 import { HeroMerchandisingGrid } from "@/components/storefront/hero-merchandising-grid";
 import { MobileStorefrontDock } from "@/components/storefront/mobile-storefront-dock";
 import { PartnerStrip } from "@/components/storefront/partner-strip";
@@ -96,7 +95,6 @@ export default async function StorefrontHomePage() {
           </div>
         </div>
       </main>
-      <FloatingContactActions />
       <MobileStorefrontDock items={chrome.mobileDock} />
       <StorefrontFooter
         footerLinks={chrome.footerLinks}

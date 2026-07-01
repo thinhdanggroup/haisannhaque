@@ -32,7 +32,7 @@ export function FloatingContactActions() {
   return (
     <div
       id="messenger"
-      className="fixed right-4 bottom-6 z-40 hidden flex-col gap-2 md:flex"
+      className="fixed right-4 bottom-6 z-40 flex flex-col gap-2"
       aria-label="Liên hệ nhanh"
     >
       {contactActions.map((action) => {

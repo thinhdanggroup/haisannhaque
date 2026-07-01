@@ -9,7 +9,7 @@ import {
   UserRound,
 } from "lucide-react";
 import type { CmsNavigationItem } from "@/src/features/cms/types";
-import { CategoryNav } from "./category-nav";
+import { CategoryNav } from "./category-nav-client";
 import { StoreLogo } from "./store-logo";
 
 type StorefrontHeaderProps = {

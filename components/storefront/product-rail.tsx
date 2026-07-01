@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { CmsSection } from "@/src/features/cms/types";
 import type { ActiveFlashSale } from "@/src/features/flash-sales/types";
+import { FlashSaleCountdown } from "./flash-sale-countdown";
 import { ProductGrid } from "./product-grid";
 import { storefrontTheme } from "./storefront-theme";
 
@@ -78,9 +79,19 @@ function getFlashCountdownItems(section: CmsSection): FlashCountdownItem[] {
     .slice(0, 3);
 }
 
-function FlashSaleMeta({ section }: ProductRailProps) {
+function FlashSaleMeta({ section, flashSale }: ProductRailProps) {
   if (section.type !== "flash_sale") {
     return null;
+  }
+
+  if (flashSale) {
+    return (
+      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+        <span className="rounded-md bg-red-600 px-2 py-1 text-white">Đang giảm</span>
+        <span className="text-slate-600">Kết thúc sau</span>
+        <FlashSaleCountdown endAt={flashSale.endAt} />
+      </div>
+    );
   }
 
   const saleBadge = getMetadataString(section.metadata, "saleBadge") ?? "Flash sale";
@@ -169,7 +180,7 @@ export function ProductRail({ section, flashSale }: ProductRailProps) {
           ) : null}
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <FlashSaleMeta section={section} />
+          <FlashSaleMeta section={section} flashSale={flashSale} />
           <ViewMoreLink href={getViewMoreHref(section)} label={title} />
         </div>
       </div>
