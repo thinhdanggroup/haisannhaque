@@ -1,0 +1,144 @@
+---
+# Provision and deploy haisannhaque. Mirrors deploy/provision.sh.
+#
+#   ansible-playbook -i inventory.ini site.yml
+#   ansible-playbook -i inventory.ini site.yml --tags tls
+#
+# Everything runs as the unprivileged deploy user — `become` is never used.
+# Docker itself runs as root, so the nginx container can still bind :80/:443.
+- name: Deploy haisannhaque
+  hosts: web
+  gather_facts: true
+  become: false
+
+  vars:
+    app_dir: "{{ ansible_env.HOME }}/haisannhaque"
+    repo_url: https://github.com/thinhdanggroup/haisannhaque.git
+    repo_branch: main
+    compose_version: v5.4.0
+    compose_plugin_path: "{{ ansible_env.HOME }}/.docker/cli-plugins/docker-compose"
+    letsencrypt_email: thinh.dang2@trustingsocial.com
+    letsencrypt_domain: haisannhaque.com
+    # nginx_mode is http until a certificate exists; the tls tag flips it to ssl.
+    nginx_mode: http
+    # Supply these from an ansible-vault file — never commit them. See README.md.
+    # supabase_url, supabase_anon_key, supabase_service_role_key
+
+  pre_tasks:
+    - name: Require the Supabase credentials
+      ansible.builtin.assert:
+        that:
+          - supabase_url | default('') | length > 0
+          - supabase_anon_key | default('') | length > 0
+          - supabase_service_role_key | default('') | length > 0
+        fail_msg: >-
+          supabase_url, supabase_anon_key and supabase_service_role_key must be
+          defined (put them in an ansible-vault file, see deploy/ansible/README.md).
+      tags: [always]
+
+    - name: Check the deploy user can reach the docker daemon
+      # `docker info` rather than `docker --version`: it is the socket
+      # permission that matters, and it fails without docker group membership.
+      ansible.builtin.command: docker info --format '{{ "{{" }}.ServerVersion{{ "}}" }}'
+      register: docker_info
+      changed_when: false
+      failed_when: docker_info.rc != 0
+
+    - name: Warn when the host has little memory and no swap
+      ansible.builtin.debug:
+        msg: >-
+          {{ ansible_memtotal_mb }}MB RAM and {{ ansible_swaptotal_mb }}MB swap —
+          `next build` may be OOM-killed. See docs/DEPLOYMENT.md for the
+          build-locally fallback.
+      when: ansible_memtotal_mb < 3000 and ansible_swaptotal_mb == 0
+
+  tasks:
+    - name: Create the docker cli-plugins directory
+      ansible.builtin.file:
+        path: "{{ compose_plugin_path | dirname }}"
+        state: directory
+        mode: "0755"
+
+    - name: Install docker compose v2 as a user plugin
+      ansible.builtin.get_url:
+        url: >-
+          https://github.com/docker/compose/releases/download/{{ compose_version
+          }}/docker-compose-linux-{{ 'x86_64' if ansible_architecture == 'x86_64' else 'aarch64' }}
+        dest: "{{ compose_plugin_path }}"
+        mode: "0755"
+
+    - name: Check out the application source
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: "{{ repo_branch }}"
+        force: true
+      register: checkout
+
+    - name: Create the certbot bind-mount directories
+      # Must exist before the stack starts, or Docker creates them root-owned
+      # and certbot cannot write its challenge files.
+      ansible.builtin.file:
+        path: "{{ app_dir }}/{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - certbot/conf
+        - certbot/www
+
+    - name: Read the current nginx mode
+      # Never downgrade a live TLS site back to plain HTTP on a re-run.
+      ansible.builtin.slurp:
+        src: "{{ app_dir }}/.env"
+      register: existing_env
+      failed_when: false
+
+    - name: Preserve ssl mode if already enabled
+      ansible.builtin.set_fact:
+        nginx_mode: ssl
+      when:
+        - existing_env.content is defined
+        - "'NGINX_MODE=ssl' in (existing_env.content | b64decode)"
+
+    - name: Write the environment file
+      ansible.builtin.template:
+        src: env.j2
+        dest: "{{ app_dir }}/.env"
+        mode: "0600"
+      register: env_file
+      no_log: true
+
+    - name: Build and start the stack
+      ansible.builtin.command:
+        cmd: docker compose -f docker-compose.prod.yml up -d --build
+        chdir: "{{ app_dir }}"
+      environment:
+        PATH: "{{ ansible_env.PATH }}"
+      register: compose_up
+      changed_when: "'Started' in compose_up.stderr or 'Created' in compose_up.stderr"
+
+    - name: Wait for the app to answer through nginx
+      ansible.builtin.uri:
+        url: http://127.0.0.1/
+        headers:
+          Host: "{{ letsencrypt_domain }}"
+        status_code: 200
+      register: health
+      retries: 30
+      delay: 2
+      until: health.status == 200
+
+    - name: Report
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} is serving the app on port 80 (nginx mode: {{ nginx_mode }})"
+
+  post_tasks:
+    - name: Issue the Let's Encrypt certificate
+      # Tagged `never` so a routine deploy cannot accidentally spend a
+      # rate-limited issuance attempt. Run explicitly with --tags tls.
+      ansible.builtin.command:
+        cmd: ./scripts/init-letsencrypt.sh
+        chdir: "{{ app_dir }}"
+      register: le
+      changed_when: "'Congratulations' in le.stdout or 'Switching nginx' in le.stdout"
+      tags: [never, tls]
