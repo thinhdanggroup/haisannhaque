@@ -8,3 +8,14 @@ coverage
 .env.*
 !.env.example
 .DS_Store
+
+# Not needed to build the app, and large enough to slow the build context
+# transfer noticeably on a small server.
+docs
+tests
+uploads
+certbot
+.playwright-mcp
+.superpowers
+.vercel
+*.png

@@ -13,6 +13,37 @@ services:
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       SUPABASE_INTERNAL_URL: ${SUPABASE_INTERNAL_URL:-${NEXT_PUBLIC_SUPABASE_URL}}
+      MOMO_WEBHOOK_SECRET: ${MOMO_WEBHOOK_SECRET:-}
+      VNPAY_WEBHOOK_SECRET: ${VNPAY_WEBHOOK_SECRET:-}
+    # Deliberately not published to the host: nginx is the only way in.
+    expose:
+      - "3000"
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      - web
     ports:
-      - "3000:3000"
+      - "80:80"
+      - "443:443"
+    volumes:
+      # NGINX_MODE selects http/ (no cert yet) or ssl/ (cert issued).
+      - ./docker/nginx/${NGINX_MODE:-http}:/etc/nginx/conf.d:ro
+      - ./docker/nginx/snippets:/etc/nginx/snippets:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    # Reload every 6h so a renewed certificate is picked up without a restart.
+    command: >-
+      /bin/sh -c "while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g 'daemon off;'"
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Attempt renewal twice a day; certbot no-ops until the cert is near expiry.
+    entrypoint: >-
+      /bin/sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"
     restart: unless-stopped

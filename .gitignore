@@ -15,6 +15,9 @@ tsconfig.tsbuildinfo
 .env.*
 !.env.example
 
+# Let's Encrypt state on the deployment server
+certbot/
+
 # Supabase local artifacts
 .branches/
 .temp/
