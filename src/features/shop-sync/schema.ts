@@ -1,9 +1,17 @@
+import cron from "node-cron";
 import { z } from "zod";
 
 export const shopSyncSettingsSchema = z.object({
   sourceUrl: z.string().url("sourceUrl must be a valid URL"),
   enabled: z.boolean(),
-  cronExpression: z.string().min(1, "cronExpression is required"),
+  // An unparseable expression would make cron.schedule() throw at server
+  // boot, so reject it at the form boundary instead of persisting it.
+  cronExpression: z
+    .string()
+    .min(1, "cronExpression is required")
+    .refine((value) => cron.validate(value), {
+      message: "cronExpression must be a valid cron expression",
+    }),
   targetCatalog: z.boolean(),
   targetShopInfo: z.boolean(),
 });

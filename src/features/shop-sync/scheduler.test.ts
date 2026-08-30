@@ -47,7 +47,39 @@ describe("startShopSyncScheduler", () => {
   it("schedules the job on the configured cron expression when enabled", async () => {
     mockGetShopSyncSettings.mockResolvedValue({ id: "s1", enabled: true, cronExpression: "0 3 * * *" });
     await startShopSyncScheduler();
-    expect(mockSchedule).toHaveBeenCalledWith("0 3 * * *", expect.any(Function));
+    expect(mockSchedule).toHaveBeenCalledWith("0 3 * * *", expect.any(Function), {
+      timezone: "Asia/Ho_Chi_Minh",
+    });
+  });
+
+  it("does not throw when the stored cron expression is invalid", async () => {
+    mockGetShopSyncSettings.mockResolvedValue({ id: "s1", enabled: true, cronExpression: "not a cron" });
+    mockSchedule.mockImplementationOnce(() => {
+      throw new Error("Invalid cron expression: not a cron");
+    });
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(startShopSyncScheduler()).resolves.toBeUndefined();
+    expect(consoleError).toHaveBeenCalled();
+
+    consoleError.mockRestore();
+  });
+
+  it("swallows and logs an error thrown inside the scheduled callback", async () => {
+    mockGetShopSyncSettings.mockResolvedValue({ id: "s1", enabled: true, cronExpression: "* * * * *" });
+    mockRunSync.mockRejectedValue(new Error("supabase unreachable"));
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await startShopSyncScheduler();
+    const scheduledFn = mockSchedule.mock.calls[0][1] as () => Promise<void>;
+
+    await expect(scheduledFn()).resolves.toBeUndefined();
+    expect(consoleError).toHaveBeenCalledWith(
+      "[shop-sync] scheduled run failed:",
+      expect.any(Error),
+    );
+
+    consoleError.mockRestore();
   });
 
   it("does not throw or reject and does not schedule a job when the startup settings fetch fails", async () => {

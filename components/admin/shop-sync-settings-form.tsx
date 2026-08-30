@@ -59,6 +59,11 @@ export function ShopSyncSettingsForm({ action, initialValues }: ShopSyncSettings
         <span className="font-medium text-slate-700">Bật đồng bộ tự động</span>
       </label>
 
+      <p className="text-xs text-slate-500">
+        Lưu ý: bật đồng bộ hoặc thay đổi lịch chạy cần khởi động lại máy chủ để có hiệu lực. Lịch chạy
+        theo giờ Việt Nam (UTC+7).
+      </p>
+
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" name="targetCatalog" defaultChecked={initialValues.targetCatalog} />
         <span className="font-medium text-slate-700">Đồng bộ sản phẩm (menu)</span>

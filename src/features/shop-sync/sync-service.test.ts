@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { runSync } from "./sync-service";
+import { downloadAndStoreImage } from "./image-store";
 import type { ShopSourceAdapter, ScrapedShop } from "./adapters/types";
 import type { ShopSyncSettings } from "./types";
 
@@ -9,6 +10,31 @@ vi.mock("./image-store", () => ({
 
 function fakeAdapter(shop: ScrapedShop): ShopSourceAdapter {
   return { fetchShop: vi.fn().mockResolvedValue(shop) };
+}
+
+function shopWithOneItem(overrides: Partial<ScrapedShop["items"][number]> = {}): ScrapedShop {
+  return {
+    shopInfo: {
+      name: "Shop",
+      logoUrl: null,
+      coverImageUrl: null,
+      description: null,
+      address: null,
+      openingHours: null,
+    },
+    items: [
+      {
+        externalId: "293255211",
+        name: "Cá Chẽm hấp Hồng kông",
+        description: "Ngon",
+        priceVnd: 350000,
+        imageUrl: "https://mms.img.susercontent.com/x.jpg",
+        categoryName: "Hải sản hấp",
+        isAvailable: true,
+        ...overrides,
+      },
+    ],
+  };
 }
 
 function baseSettings(overrides: Partial<ShopSyncSettings> = {}): ShopSyncSettings {
@@ -40,6 +66,10 @@ function makeAdminClientMock() {
     .fn()
     .mockResolvedValue({ data: { id: "product-1" }, error: null });
   const productsUpdateEq = vi.fn().mockResolvedValue({ error: null });
+  // Wrappers that capture the insert/update payloads, so tests can assert on
+  // which columns a write actually carried (e.g. external_image_source_url).
+  const productsInsert = vi.fn(() => ({ select: () => ({ single: productsInsertSelectSingle }) }));
+  const productsUpdate = vi.fn(() => ({ eq: productsUpdateEq }));
   const productsArchiveNotInEq = vi.fn().mockResolvedValue({ data: [], error: null });
 
   const variantsSelectMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
@@ -68,7 +98,7 @@ function makeAdminClientMock() {
     }
     if (table === "categories") {
       return {
-        select: () => ({ ilike: () => ({ maybeSingle: categoriesSelectMaybeSingle }) }),
+        select: () => ({ eq: () => ({ maybeSingle: categoriesSelectMaybeSingle }) }),
         insert: () => ({ select: () => ({ single: categoriesInsertSelectSingle }) }),
       };
     }
@@ -84,8 +114,8 @@ function makeAdminClientMock() {
             not: productsArchiveNotInEq,
           }),
         }),
-        insert: () => ({ select: () => ({ single: productsInsertSelectSingle }) }),
-        update: () => ({ eq: productsUpdateEq }),
+        insert: productsInsert,
+        update: productsUpdate,
       };
     }
     if (table === "product_variants") {
@@ -118,8 +148,13 @@ function makeAdminClientMock() {
   return {
     client: { from, storage: { from: vi.fn() } } as never,
     spies: {
+      categoriesSelectMaybeSingle,
+      categoriesInsertSelectSingle,
       productsArchiveNotInEq,
+      productsInsert,
       productsInsertSelectSingle,
+      productsSelectMaybeSingle,
+      productsUpdate,
       productsUpdateEq,
       variantsInsert,
       runsUpdateEq,
@@ -169,6 +204,82 @@ describe("runSync (catalog)", () => {
       }),
     );
     expect(run.itemsCreated).toBe(1);
+    expect(run.status).toBe("success");
+  });
+
+  it("does not persist external_image_source_url when the image download fails", async () => {
+    const imageUrl = "https://mms.img.susercontent.com/broken.jpg";
+    const shop = shopWithOneItem({ imageUrl });
+
+    vi.mocked(downloadAndStoreImage).mockRejectedValueOnce(new Error("unsupported content-type"));
+
+    const { client, spies } = makeAdminClientMock();
+    const run = await runSync(client, fakeAdapter(shop), baseSettings(), "manual");
+
+    // The initial insert must not carry the source URL...
+    expect(spies.productsInsert).toHaveBeenCalledTimes(1);
+    expect(spies.productsInsert).not.toHaveBeenCalledWith(
+      expect.objectContaining({ external_image_source_url: expect.anything() }),
+    );
+    // ...and the follow-up update is never reached, so the next run retries.
+    expect(spies.productsUpdate).not.toHaveBeenCalledWith(
+      expect.objectContaining({ external_image_source_url: imageUrl }),
+    );
+    expect(run.itemsErrored).toBe(1);
+    expect(run.itemsCreated).toBe(0);
+  });
+
+  it("persists external_image_source_url only after the image download succeeds", async () => {
+    const imageUrl = "https://mms.img.susercontent.com/ok.jpg";
+    const { client, spies } = makeAdminClientMock();
+    const run = await runSync(client, fakeAdapter(shopWithOneItem({ imageUrl })), baseSettings(), "manual");
+
+    expect(spies.productsUpdate).toHaveBeenCalledWith({ external_image_source_url: imageUrl });
+    expect(run.itemsCreated).toBe(1);
+  });
+
+  it("records an error item instead of creating a duplicate when the category lookup fails", async () => {
+    const { client, spies } = makeAdminClientMock();
+    spies.categoriesSelectMaybeSingle.mockResolvedValue({
+      data: null,
+      error: { message: "more than one row returned" },
+    });
+
+    const run = await runSync(client, fakeAdapter(shopWithOneItem()), baseSettings(), "manual");
+
+    expect(spies.categoriesInsertSelectSingle).not.toHaveBeenCalled();
+    expect(spies.productsInsert).not.toHaveBeenCalled();
+    expect(spies.runItemsInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "error",
+        message: expect.stringContaining("Failed to look up category"),
+      }),
+    );
+    expect(run.itemsErrored).toBe(1);
+  });
+
+  it("skips archiving (and records why) when the scrape returns zero items", async () => {
+    const shop: ScrapedShop = {
+      shopInfo: {
+        name: "Shop",
+        logoUrl: null,
+        coverImageUrl: null,
+        description: null,
+        address: null,
+        openingHours: null,
+      },
+      items: [],
+    };
+
+    const { client, spies } = makeAdminClientMock();
+    const run = await runSync(client, fakeAdapter(shop), baseSettings(), "scheduled");
+
+    expect(spies.productsArchiveNotInEq).not.toHaveBeenCalled();
+    expect(spies.productsUpdate).not.toHaveBeenCalled();
+    expect(spies.runItemsInsert).toHaveBeenCalledWith(
+      expect.objectContaining({ action: "skipped", external_id: "n/a", product_id: null }),
+    );
+    expect(run.itemsArchived).toBe(0);
     expect(run.status).toBe("success");
   });
 

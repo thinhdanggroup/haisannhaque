@@ -31,23 +31,37 @@ async function recordRunItem(
   action: "created" | "updated" | "archived" | "skipped" | "error",
   message: string | null,
 ): Promise<void> {
-  await client.from("shop_sync_run_items").insert({
+  const { error } = await client.from("shop_sync_run_items").insert({
     run_id: runId,
     external_id: externalId,
     product_id: productId,
     action,
     message,
   });
+  // This function *is* the audit-trail writer, so it must not throw: doing so
+  // would mask the original error that triggered the call. Surface it in the
+  // server logs instead.
+  if (error) {
+    console.error(`[shop-sync] failed to record run item (${action}, ${externalId}):`, error.message);
+  }
 }
 
 async function findOrCreateCategory(client: SyncClient, categoryName: string | null): Promise<string | null> {
   if (!categoryName) return null;
 
-  const { data: existing } = await client
+  // Exact match, not .ilike(): ilike treats the name as a LIKE pattern, so a
+  // category like "Combo giảm 20%" would match the wrong rows (or several,
+  // which makes .maybeSingle() error). A swallowed error here would fall
+  // through to the create branch below and mint a fresh duplicate category
+  // — with a random-suffixed slug that can never collide — on every run.
+  const { data: existing, error: lookupError } = await client
     .from("categories")
     .select("id")
-    .ilike("name", categoryName)
+    .eq("name", categoryName)
     .maybeSingle();
+  if (lookupError) {
+    throw new Error(`Failed to look up category "${categoryName}": ${lookupError.message}`);
+  }
   const existingCategory = existing as { id: string } | null;
   if (existingCategory) return existingCategory.id;
 
@@ -150,16 +164,18 @@ async function syncItem(
     if (existingProductRow) {
       productId = existingProductRow.id;
       action = "updated";
-      await client
+      // external_image_source_url is deliberately NOT written here — see the
+      // follow-up update after upsertProductImage below.
+      const { error } = await client
         .from("products")
         .update({
           name: item.name,
           short_description: item.description,
           description: item.description,
           status,
-          external_image_source_url: item.imageUrl,
         })
         .eq("id", productId);
+      if (error) throw new Error(`Failed to update product: ${error.message}`);
     } else {
       action = "created";
       const { data: created, error } = await client
@@ -173,7 +189,6 @@ async function syncItem(
           temperature_class: "ready",
           external_source: EXTERNAL_SOURCE,
           external_id: item.externalId,
-          external_image_source_url: item.imageUrl,
         })
         .select("id")
         .single();
@@ -188,6 +203,21 @@ async function syncItem(
       item.imageUrl,
       existingProductRow?.external_image_source_url ?? null,
     );
+
+    // Only record the source URL once the image actually downloaded and
+    // stored. Writing it as part of the insert/update above would make a
+    // failed download look "already synced" on the next run (the guard in
+    // upsertProductImage compares against this column), permanently skipping
+    // the retry.
+    if (item.imageUrl) {
+      const { error: imageSourceError } = await client
+        .from("products")
+        .update({ external_image_source_url: item.imageUrl })
+        .eq("id", productId);
+      if (imageSourceError) {
+        throw new Error(`Failed to record product image source URL: ${imageSourceError.message}`);
+      }
+    }
 
     if (categoryId) {
       const { error: categoryLinkError } = await client
@@ -225,12 +255,25 @@ async function archiveMissingProducts(
     (row) => !seenExternalIds.includes(row.external_id),
   );
 
+  let archived = 0;
   for (const row of rows) {
-    await client.from("products").update({ status: "archived" }).eq("id", row.id);
+    const { error } = await client.from("products").update({ status: "archived" }).eq("id", row.id);
+    if (error) {
+      await recordRunItem(
+        client,
+        runId,
+        row.external_id,
+        row.id,
+        "error",
+        `Failed to archive product: ${error.message}`,
+      );
+      continue;
+    }
     await recordRunItem(client, runId, row.external_id, row.id, "archived", null);
+    archived++;
   }
 
-  return rows.length;
+  return archived;
 }
 
 async function syncShopProfile(client: SyncClient, shopInfo: ScrapedShopInfo): Promise<void> {
@@ -274,11 +317,18 @@ export async function runSync(
   settings: ShopSyncSettings,
   trigger: "scheduled" | "manual",
 ): Promise<ShopSyncRun> {
-  const { data: runRow } = await adminClient
+  const { data: runRow, error: runInsertError } = await adminClient
     .from("shop_sync_runs")
     .insert({ settings_id: settings.id, status: "running", trigger })
     .select("id")
     .single();
+  // This runs before the try block below, so an unchecked cast on a null row
+  // would escape as a bare TypeError. Fail with a real message instead.
+  if (runInsertError || !runRow) {
+    throw new Error(
+      `Failed to create shop_sync_runs row: ${runInsertError?.message ?? "no row returned"}`,
+    );
+  }
   const runId = (runRow as { id: string }).id;
 
   try {
@@ -302,7 +352,22 @@ export async function runSync(
         else if (outcome === "updated") updated++;
         else errored++;
       }
-      archived = await archiveMissingProducts(adminClient, runId, seenExternalIds);
+
+      // A scrape that returns nothing (malformed-but-200 response, shop
+      // marked closed) would otherwise archive the entire synced catalog in
+      // one run and still be recorded as a success.
+      if (scraped.items.length > 0) {
+        archived = await archiveMissingProducts(adminClient, runId, seenExternalIds);
+      } else {
+        await recordRunItem(
+          adminClient,
+          runId,
+          "n/a",
+          null,
+          "skipped",
+          "Scrape returned zero items; skipped archiving to avoid wiping the catalog on a bad/empty response.",
+        );
+      }
     }
 
     await adminClient

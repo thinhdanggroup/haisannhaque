@@ -19,15 +19,29 @@ export async function startShopSyncScheduler(): Promise<void> {
 
   let runInFlight = false;
 
-  cron.schedule(settings.cronExpression, async () => {
-    if (runInFlight) return;
-    runInFlight = true;
-    try {
-      const latestSettings = await getShopSyncSettings(adminClient);
-      if (!latestSettings || !latestSettings.enabled) return;
-      await runSync(adminClient, new ShopeefoodAdapter(), latestSettings, "scheduled");
-    } finally {
-      runInFlight = false;
-    }
-  });
+  try {
+    cron.schedule(
+      settings.cronExpression,
+      async () => {
+        if (runInFlight) return;
+        runInFlight = true;
+        try {
+          const latestSettings = await getShopSyncSettings(adminClient);
+          if (!latestSettings || !latestSettings.enabled) return;
+          await runSync(adminClient, new ShopeefoodAdapter(), latestSettings, "scheduled");
+        } catch (error) {
+          // node-cron does not await the callback's promise, so an unhandled
+          // rejection here would crash the Node process. Swallow and log.
+          console.error("[shop-sync] scheduled run failed:", error);
+        } finally {
+          runInFlight = false;
+        }
+      },
+      // Without an explicit timezone node-cron uses the container clock (UTC),
+      // so "0 3 * * *" would fire at 10:00 Vietnam time.
+      { timezone: "Asia/Ho_Chi_Minh" },
+    );
+  } catch (error) {
+    console.error("[shop-sync] invalid cron expression, scheduler not started:", error);
+  }
 }

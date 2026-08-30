@@ -44,4 +44,17 @@ describe("parseShopSyncSettingsForm", () => {
     const result = parseShopSyncSettingsForm(buildForm({ cronExpression: "" }));
     expect(result).toEqual({ success: false, error: expect.stringContaining("cron") });
   });
+
+  it("rejects an unparseable cron expression", () => {
+    const result = parseShopSyncSettingsForm(buildForm({ cronExpression: "not a cron" }));
+    expect(result).toEqual({
+      success: false,
+      error: "cronExpression must be a valid cron expression",
+    });
+  });
+
+  it("rejects an out-of-range cron field", () => {
+    const result = parseShopSyncSettingsForm(buildForm({ cronExpression: "0 99 * * *" }));
+    expect(result.success).toBe(false);
+  });
 });

@@ -28,10 +28,18 @@ export class ShopeefoodAdapter implements ShopSourceAdapter {
         (res) => SHOP_DETAIL_PATTERN.test(res.url()) && res.status() === 200,
         { timeout: NAVIGATION_TIMEOUT_MS },
       );
+      // Mark each promise as handled up front: if page.goto() throws before
+      // the Promise.all below, or one promise rejects while the other is
+      // still pending (and later rejects when the browser is torn down in
+      // `finally`), the stray rejection would otherwise be unhandled. This
+      // no-op catch does not change what Promise.all observes.
+      detailPromise.catch(() => {});
+
       const dishesPromise = page.waitForResponse(
         (res) => DISHES_PATTERN.test(res.url()) && res.status() === 200,
         { timeout: NAVIGATION_TIMEOUT_MS },
       );
+      dishesPromise.catch(() => {});
 
       await page.goto(sourceUrl, {
         waitUntil: "domcontentloaded",
