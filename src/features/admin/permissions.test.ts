@@ -17,4 +17,12 @@ describe("canAccess", () => {
   it("allows customer service to manage complaints", () => {
     expect(canAccess(["customer_service"], "complaints:update")).toBe(true);
   });
+
+  it("allows catalog manager to manage shop sync", () => {
+    expect(canAccess(["catalog_manager"], "shop_sync:manage")).toBe(true);
+  });
+
+  it("blocks customer service from shop sync", () => {
+    expect(canAccess(["customer_service"], "shop_sync:manage")).toBe(false);
+  });
 });

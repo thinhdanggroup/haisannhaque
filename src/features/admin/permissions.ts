@@ -1,6 +1,13 @@
 const rolePermissions: Record<string, string[]> = {
   super_admin: ["*"],
-  catalog_manager: ["products:read", "products:create", "products:update", "products:delete", "categories:update"],
+  catalog_manager: [
+    "products:read",
+    "products:create",
+    "products:update",
+    "products:delete",
+    "categories:update",
+    "shop_sync:manage",
+  ],
   marketing: ["cms:update", "promotions:update", "flash_sales:manage"],
   customer_service: [
     "orders:read",
