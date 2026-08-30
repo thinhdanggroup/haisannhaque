@@ -16,7 +16,9 @@ export async function startShopSyncScheduler(): Promise<void> {
     if (runInFlight) return;
     runInFlight = true;
     try {
-      await runSync(adminClient, new ShopeefoodAdapter(), settings, "scheduled");
+      const latestSettings = await getShopSyncSettings(adminClient);
+      if (!latestSettings || !latestSettings.enabled) return;
+      await runSync(adminClient, new ShopeefoodAdapter(), latestSettings, "scheduled");
     } finally {
       runInFlight = false;
     }

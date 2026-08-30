@@ -52,17 +52,26 @@ describe("startShopSyncScheduler", () => {
 
   it("skips a run if the previous scheduled run is still in flight", async () => {
     mockGetShopSyncSettings.mockResolvedValue({ id: "s1", enabled: true, cronExpression: "* * * * *" });
-    let resolveFirstRun: () => void = () => {};
-    mockRunSync.mockImplementation(
-      () => new Promise((resolve) => (resolveFirstRun = () => resolve({ id: "run-1" }))),
-    );
+    // Bind resolveFirstRun to the actual promise runSync will return, up
+    // front, before mockRunSync's implementation is even wired in. runSync
+    // is only reached one microtask after the synchronous portion of this
+    // test runs (the cron callback re-fetches settings via an awaited
+    // getShopSyncSettings call before invoking runSync), so resolving a
+    // promise created and captured this early is what makes the test's
+    // own timing irrelevant — resolving a promise before anything awaits
+    // it is safe in JS; the resolution is simply remembered.
+    let resolveFirstRun!: (value: unknown) => void;
+    const firstRunPromise = new Promise((resolve) => {
+      resolveFirstRun = resolve;
+    });
+    mockRunSync.mockImplementation(() => firstRunPromise);
 
     await startShopSyncScheduler();
     const scheduledFn = mockSchedule.mock.calls[0][1] as () => Promise<void>;
 
     const firstCall = scheduledFn();
     const secondCall = scheduledFn(); // fires while first is still running
-    resolveFirstRun();
+    resolveFirstRun({ id: "run-1" });
     await Promise.all([firstCall, secondCall]);
 
     expect(mockRunSync).toHaveBeenCalledTimes(1);
