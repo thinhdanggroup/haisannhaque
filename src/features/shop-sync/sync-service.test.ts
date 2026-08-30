@@ -52,6 +52,10 @@ function makeAdminClientMock() {
 
   const productCategoriesUpsert = vi.fn().mockResolvedValue({ error: null });
 
+  const shopProfileSelectMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
+  const shopProfileInsert = vi.fn().mockResolvedValue({ error: null });
+  const shopProfileUpdateEq = vi.fn().mockResolvedValue({ error: null });
+
   const from = vi.fn((table: string) => {
     if (table === "shop_sync_runs") {
       return {
@@ -101,6 +105,13 @@ function makeAdminClientMock() {
     if (table === "product_categories") {
       return { upsert: productCategoriesUpsert };
     }
+    if (table === "shop_profile") {
+      return {
+        select: () => ({ eq: () => ({ maybeSingle: shopProfileSelectMaybeSingle }) }),
+        insert: shopProfileInsert,
+        update: () => ({ eq: shopProfileUpdateEq }),
+      };
+    }
     throw new Error(`Unexpected table in test: ${table}`);
   });
 
@@ -113,6 +124,8 @@ function makeAdminClientMock() {
       variantsInsert,
       runsUpdateEq,
       runItemsInsert,
+      shopProfileInsert,
+      shopProfileUpdateEq,
     },
   };
 }
@@ -169,5 +182,32 @@ describe("runSync (catalog)", () => {
 
     expect(run.status).toBe("failed");
     expect(run.errorMessage).toContain("network down");
+  });
+
+  it("creates a shop_profile row when targetShopInfo is enabled", async () => {
+    const shop: ScrapedShop = {
+      shopInfo: {
+        name: "Cơm Nhà Vị Quê",
+        logoUrl: "https://mms.img.susercontent.com/logo.jpg",
+        coverImageUrl: "https://mms.img.susercontent.com/cover.jpg",
+        description: null,
+        address: "123 Đường ABC",
+        openingHours: "Thứ Hai: 07:30–20:00",
+      },
+      items: [],
+    };
+
+    const { client, spies } = makeAdminClientMock();
+    const settings = baseSettings({ targetCatalog: false, targetShopInfo: true });
+    const run = await runSync(client, fakeAdapter(shop), settings, "manual");
+
+    expect(spies.shopProfileInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        source: "shopeefood",
+        name: "Cơm Nhà Vị Quê",
+        address: "123 Đường ABC",
+      }),
+    );
+    expect(run.status).toBe("success");
   });
 });

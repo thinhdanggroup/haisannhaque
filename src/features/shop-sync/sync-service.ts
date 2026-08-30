@@ -1,6 +1,6 @@
 import { downloadAndStoreImage } from "./image-store";
 import type { StorageLikeClient } from "./image-store";
-import type { ScrapedShopItem } from "./adapters/types";
+import type { ScrapedShopInfo, ScrapedShopItem } from "./adapters/types";
 import type { ShopSourceAdapter } from "./adapters/types";
 import type { ShopSyncRun, ShopSyncSettings } from "./types";
 
@@ -254,6 +254,41 @@ async function archiveMissingProducts(
   return rows.length;
 }
 
+async function syncShopProfile(client: SyncClient, shopInfo: ScrapedShopInfo): Promise<void> {
+  const { data } = await client
+    .from("shop_profile")
+    .select("id, logo_source_url, cover_image_source_url")
+    .eq("source", EXTERNAL_SOURCE)
+    .maybeSingle();
+  const existing = data as { id: string; logo_source_url: string | null; cover_image_source_url: string | null } | null;
+
+  const logoUrl =
+    shopInfo.logoUrl && shopInfo.logoUrl !== existing?.logo_source_url
+      ? await downloadAndStoreImage(client, shopInfo.logoUrl, "shop-sync/shop-profile/logo")
+      : undefined;
+  const coverImageUrl =
+    shopInfo.coverImageUrl && shopInfo.coverImageUrl !== existing?.cover_image_source_url
+      ? await downloadAndStoreImage(client, shopInfo.coverImageUrl, "shop-sync/shop-profile/cover")
+      : undefined;
+
+  const fields = {
+    source: EXTERNAL_SOURCE,
+    name: shopInfo.name,
+    description: shopInfo.description,
+    address: shopInfo.address,
+    opening_hours: shopInfo.openingHours,
+    updated_at: new Date().toISOString(),
+    ...(logoUrl ? { logo_url: logoUrl, logo_source_url: shopInfo.logoUrl } : {}),
+    ...(coverImageUrl ? { cover_image_url: coverImageUrl, cover_image_source_url: shopInfo.coverImageUrl } : {}),
+  };
+
+  if (existing) {
+    await client.from("shop_profile").update(fields).eq("id", existing.id);
+  } else {
+    await client.from("shop_profile").insert(fields);
+  }
+}
+
 export async function runSync(
   adminClient: SyncClient,
   adapter: ShopSourceAdapter,
@@ -274,6 +309,10 @@ export async function runSync(
     let updated = 0;
     let errored = 0;
     let archived = 0;
+
+    if (settings.targetShopInfo) {
+      await syncShopProfile(adminClient, scraped.shopInfo);
+    }
 
     if (settings.targetCatalog) {
       const seenExternalIds: string[] = [];
