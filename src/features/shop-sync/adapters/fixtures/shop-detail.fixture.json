@@ -1,0 +1,23 @@
+{
+  "reply": {
+    "delivery_detail": {
+      "id": 469472,
+      "delivery_id": 469472,
+      "name": "Cơm Nhà Vị Quê - The Sun Avenue Novaland",
+      "address": "Căn SAV.2-00.04, Tầng Trệt, Tháp 2, Tòa Nhà The Sun Avenue, 28 Mai Chí Thọ, P. An Phú, Thành Phố Thủ Đức, TP. HCM",
+      "short_description": null,
+      "logo_mms_img_id": "vn-11134259-81ztc-ms3oow7cw9hh99",
+      "photos": [
+        { "width": 160, "height": 120, "value": "https://mms.img.susercontent.com/vn-11134259-81ztc-ms3oowod924kec@resize_ss160x120!@crop_w160_h120_cT" },
+        { "width": 1242, "height": 600, "value": "https://mms.img.susercontent.com/vn-11134259-81ztc-ms3oowod924kec@resize_ss1242x600!@crop_w1242_h600_cT" }
+      ],
+      "time": {
+        "week_days": [
+          { "week_day": 1, "start_time": "07:30", "end_time": "20:00" },
+          { "week_day": 7, "start_time": "07:30", "end_time": "19:30" }
+        ]
+      }
+    }
+  },
+  "result": "success"
+}

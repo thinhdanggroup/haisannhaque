@@ -1,0 +1,48 @@
+{
+  "reply": {
+    "menu_infos": [
+      {
+        "dish_type_id": 16909636,
+        "dish_type_name": "Món chế biến sẳn (Hấp/Nướng)",
+        "dishes": [
+          {
+            "id": 293255211,
+            "name": "Cá Chẽm hấp Hồng kông - Size 1,5kg",
+            "description": "Hấp hồng kông bằng nước sốt hải sản dành riêng cho cá",
+            "price": { "value": 350000.0 },
+            "is_available": true,
+            "photos": [
+              { "width": 120, "value": "https://mms.img.susercontent.com/vn-11134505-81ztc-ms9cqqltse818c@resize_ss120x120!@crop_w120_h120_cT" },
+              { "width": 1242, "value": "https://mms.img.susercontent.com/vn-11134505-81ztc-ms9cqqltse818c@resize_ss1242x1242!@crop_w1242_h1242_cT" }
+            ]
+          },
+          {
+            "id": 293255200,
+            "name": "Mực Lá hấp gừng - 1kg",
+            "description": "Mực lá tươi ngon hấp cùng gừng chẻ sợi",
+            "price": { "value": 600000.0 },
+            "is_available": false,
+            "photos": [
+              { "width": 400, "value": "https://mms.img.susercontent.com/vn-11134505-81ztc-ms9cl16qn7k4de@resize_ss400x400!@crop_w400_h400_cT" }
+            ]
+          }
+        ]
+      },
+      {
+        "dish_type_id": 16909655,
+        "dish_type_name": "Hải Sản chưa chế biến (CÓ SƠ CHẾ FREE)",
+        "dishes": [
+          {
+            "id": 293154579,
+            "name": "Cá Chim Trắng (Đông Lạnh) | 1,4-1,5kg/con",
+            "description": "",
+            "price": { "value": 600000.0 },
+            "is_available": true,
+            "photos": []
+          }
+        ]
+      }
+    ]
+  },
+  "result": "success"
+}
