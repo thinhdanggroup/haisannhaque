@@ -43,6 +43,14 @@ export async function updateShopSyncSettings(
   return null;
 }
 
+// Form `action` props require a `(formData: FormData) => void | Promise<void>`
+// shape; triggerShopSyncNow() returns a result for programmatic callers, so
+// this thin wrapper adapts it for direct use as a <form action={...}> value
+// (e.g. the "Chạy ngay" button on the shop sync admin page).
+export async function triggerShopSyncNowAction(): Promise<void> {
+  await triggerShopSyncNow();
+}
+
 export async function triggerShopSyncNow(): Promise<ShopSyncTriggerResult> {
   const client = await createServerClient();
   await requireAdminPermission(client, "shop_sync:manage");
