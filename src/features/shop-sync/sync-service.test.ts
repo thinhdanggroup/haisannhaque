@@ -26,8 +26,6 @@ function baseSettings(overrides: Partial<ShopSyncSettings> = {}): ShopSyncSettin
 }
 
 function makeAdminClientMock() {
-  const state: { products: Record<string, unknown>[] } = { products: [] };
-
   const runsInsertSelectSingle = vi.fn().mockResolvedValue({ data: { id: "run-1" }, error: null });
   const runsUpdateEq = vi.fn().mockResolvedValue({ error: null });
   const runItemsInsert = vi.fn().mockResolvedValue({ error: null });

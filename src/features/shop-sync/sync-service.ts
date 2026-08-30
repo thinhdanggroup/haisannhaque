@@ -1,13 +1,33 @@
 import { downloadAndStoreImage } from "./image-store";
+import type { StorageLikeClient } from "./image-store";
 import type { ScrapedShopItem } from "./adapters/types";
 import type { ShopSourceAdapter } from "./adapters/types";
 import type { ShopSyncRun, ShopSyncSettings } from "./types";
 
+// Structural query-builder shape covering exactly the Supabase chains this
+// file calls. `QueryBuilder & QueryResult` lets every intermediate step
+// either keep chaining (select/insert/update/eq/...) or be awaited directly,
+// since some chains (e.g. a bare `.insert(...)`) resolve without a terminal
+// method.
+type QueryResult = Promise<{ data: unknown; error: { message: string } | null }>;
+type QueryBuilder = {
+  select: (...args: unknown[]) => QueryBuilder;
+  insert: (...args: unknown[]) => QueryBuilder;
+  update: (...args: unknown[]) => QueryBuilder;
+  upsert: (...args: unknown[]) => QueryResult;
+  eq: (...args: unknown[]) => QueryBuilder;
+  not: (...args: unknown[]) => QueryResult;
+  ilike: (...args: unknown[]) => QueryBuilder;
+  limit: (...args: unknown[]) => QueryBuilder;
+  maybeSingle: () => QueryResult;
+  single: () => QueryResult;
+} & QueryResult;
+
 // Minimal shape this service needs from the Supabase admin client — kept
 // narrow so tests can supply a lightweight fake.
 type SyncClient = {
-  from: (table: string) => any;
-  storage: { from: (bucket: string) => any };
+  from: (table: string) => QueryBuilder;
+  storage: StorageLikeClient["storage"];
 };
 
 const EXTERNAL_SOURCE = "shopeefood";
@@ -49,7 +69,8 @@ async function findOrCreateCategory(client: SyncClient, categoryName: string | n
     .select("id")
     .ilike("name", categoryName)
     .maybeSingle();
-  if (existing) return existing.id;
+  const existingCategory = existing as { id: string } | null;
+  if (existingCategory) return existingCategory.id;
 
   const { data: created, error } = await client
     .from("categories")
@@ -63,7 +84,7 @@ async function findOrCreateCategory(client: SyncClient, categoryName: string | n
     .single();
 
   if (error) throw new Error(`Failed to create category "${categoryName}": ${error.message}`);
-  return created.id;
+  return (created as { id: string }).id;
 }
 
 async function upsertProductImage(
@@ -82,11 +103,16 @@ async function upsertProductImage(
     .eq("product_id", productId)
     .limit(1)
     .maybeSingle();
+  const existingImageRow = existingImage as { id: string } | null;
 
-  if (existingImage) {
-    await client.from("product_images").update({ url: hostedUrl }).eq("id", existingImage.id);
+  if (existingImageRow) {
+    const { error } = await client.from("product_images").update({ url: hostedUrl }).eq("id", existingImageRow.id);
+    if (error) throw new Error(`Failed to update product image: ${error.message}`);
   } else {
-    await client.from("product_images").insert({ product_id: productId, url: hostedUrl, sort_order: 0 });
+    const { error } = await client
+      .from("product_images")
+      .insert({ product_id: productId, url: hostedUrl, sort_order: 0 });
+    if (error) throw new Error(`Failed to create product image: ${error.message}`);
   }
 }
 
@@ -97,22 +123,28 @@ async function upsertVariant(client: SyncClient, productId: string, item: Scrape
     .eq("product_id", productId)
     .limit(1)
     .maybeSingle();
+  const existingVariantRow = existingVariant as { id: string } | null;
 
   const variantFields = {
     list_price: item.priceVnd,
     is_active: item.isAvailable,
   };
 
-  if (existingVariant) {
-    await client.from("product_variants").update(variantFields).eq("id", existingVariant.id);
+  if (existingVariantRow) {
+    const { error } = await client
+      .from("product_variants")
+      .update(variantFields)
+      .eq("id", existingVariantRow.id);
+    if (error) throw new Error(`Failed to update product variant: ${error.message}`);
   } else {
-    await client.from("product_variants").insert({
+    const { error } = await client.from("product_variants").insert({
       product_id: productId,
       sku: `${EXTERNAL_SOURCE}-${item.externalId}`,
       unit: "phần",
       is_weighable: false,
       ...variantFields,
     });
+    if (error) throw new Error(`Failed to create product variant: ${error.message}`);
   }
 }
 
@@ -130,13 +162,14 @@ async function syncItem(
       .eq("external_source", EXTERNAL_SOURCE)
       .eq("external_id", item.externalId)
       .maybeSingle();
+    const existingProductRow = existingProduct as { id: string; external_image_source_url: string | null } | null;
 
     const status = item.isAvailable ? "published" : "draft";
     let productId: string;
     let action: "created" | "updated";
 
-    if (existingProduct) {
-      productId = existingProduct.id;
+    if (existingProductRow) {
+      productId = existingProductRow.id;
       action = "updated";
       await client
         .from("products")
@@ -166,16 +199,27 @@ async function syncItem(
         .select("id")
         .single();
       if (error) throw new Error(`Failed to create product: ${error.message}`);
-      productId = created.id;
+      productId = (created as { id: string }).id;
     }
 
     await upsertVariant(client, productId, item);
-    await upsertProductImage(client, productId, item.imageUrl, existingProduct?.external_image_source_url ?? null);
+    await upsertProductImage(
+      client,
+      productId,
+      item.imageUrl,
+      existingProductRow?.external_image_source_url ?? null,
+    );
 
     if (categoryId) {
-      await client
+      const { error: categoryLinkError } = await client
         .from("product_categories")
-        .upsert({ product_id: productId, category_id: categoryId }, { onConflict: "product_id,category_id", ignoreDuplicates: true });
+        .upsert(
+          { product_id: productId, category_id: categoryId },
+          { onConflict: "product_id,category_id", ignoreDuplicates: true },
+        );
+      if (categoryLinkError) {
+        throw new Error(`Failed to link product to category: ${categoryLinkError.message}`);
+      }
     }
 
     await recordRunItem(client, runId, item.externalId, productId, action, null);
@@ -221,7 +265,7 @@ export async function runSync(
     .insert({ settings_id: settings.id, status: "running", trigger })
     .select("id")
     .single();
-  const runId = runRow.id as string;
+  const runId = (runRow as { id: string }).id;
 
   try {
     const scraped = await adapter.fetchShop(settings.sourceUrl);

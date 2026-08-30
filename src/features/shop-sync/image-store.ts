@@ -1,4 +1,4 @@
-type StorageLikeClient = {
+export type StorageLikeClient = {
   storage: {
     from(bucket: string): {
       upload(
