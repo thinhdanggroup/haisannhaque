@@ -6,7 +6,14 @@ import { ShopeefoodAdapter } from "./adapters/shopeefood-adapter";
 
 export async function startShopSyncScheduler(): Promise<void> {
   const adminClient = createAdminClient();
-  const settings = await getShopSyncSettings(adminClient);
+
+  let settings;
+  try {
+    settings = await getShopSyncSettings(adminClient);
+  } catch (error) {
+    console.error("[shop-sync] failed to load settings at startup; scheduler not started:", error);
+    return;
+  }
 
   if (!settings || !settings.enabled) return;
 

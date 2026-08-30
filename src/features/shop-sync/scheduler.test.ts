@@ -50,6 +50,13 @@ describe("startShopSyncScheduler", () => {
     expect(mockSchedule).toHaveBeenCalledWith("0 3 * * *", expect.any(Function));
   });
 
+  it("does not throw or reject and does not schedule a job when the startup settings fetch fails", async () => {
+    mockGetShopSyncSettings.mockRejectedValue(new Error("network error: getaddrinfo ENOTFOUND"));
+
+    await expect(startShopSyncScheduler()).resolves.toBeUndefined();
+    expect(mockSchedule).not.toHaveBeenCalled();
+  });
+
   it("skips a run if the previous scheduled run is still in flight", async () => {
     mockGetShopSyncSettings.mockResolvedValue({ id: "s1", enabled: true, cronExpression: "* * * * *" });
     // Bind resolveFirstRun to the actual promise runSync will return, up
