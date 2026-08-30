@@ -2000,11 +2000,11 @@ export async function updateShopSyncSettings(
   _prev: ShopSyncSettingsState,
   formData: FormData,
 ): Promise<ShopSyncSettingsState> {
-  const parsed = parseShopSyncSettingsForm(formData);
-  if (!parsed.success) return { error: parsed.error };
-
   const client = await createServerClient();
   await requireAdminPermission(client, "shop_sync:manage");
+
+  const parsed = parseShopSyncSettingsForm(formData);
+  if (!parsed.success) return { error: parsed.error };
 
   const { error } = await client.from("shop_sync_settings").upsert(
     {
