@@ -49,3 +49,4 @@ uploads/
 # Ansible vault / venv
 deploy/ansible/group_vars/
 deploy/ansible/.venv/
+.superpowers/
