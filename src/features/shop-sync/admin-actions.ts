@@ -53,16 +53,7 @@ export async function triggerShopSyncNow(): Promise<ShopSyncTriggerResult> {
   }
 
   const adminClient = createAdminClient();
-  // `runSync`'s internal SyncClient type is a narrow duck-typed shape built
-  // for its own test fakes; the real Supabase client is structurally
-  // compatible at runtime (it implements every chain method SyncClient
-  // needs) but not identical, so bridge the two with a type-only cast.
-  const run = await runSync(
-    adminClient as unknown as Parameters<typeof runSync>[0],
-    new ShopeefoodAdapter(),
-    settings,
-    "manual",
-  );
+  const run = await runSync(adminClient, new ShopeefoodAdapter(), settings, "manual");
 
   revalidatePath("/admin/shop-sync");
   return { runId: run.id };

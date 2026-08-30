@@ -1,34 +1,13 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { downloadAndStoreImage } from "./image-store";
 import type { StorageLikeClient } from "./image-store";
 import type { ScrapedShopInfo, ScrapedShopItem } from "./adapters/types";
 import type { ShopSourceAdapter } from "./adapters/types";
 import type { ShopSyncRun, ShopSyncSettings } from "./types";
 
-// Structural query-builder shape covering exactly the Supabase chains this
-// file calls. `QueryBuilder & QueryResult` lets every intermediate step
-// either keep chaining (select/insert/update/eq/...) or be awaited directly,
-// since some chains (e.g. a bare `.insert(...)`) resolve without a terminal
-// method.
-type QueryResult = Promise<{ data: unknown; error: { message: string } | null }>;
-type QueryBuilder = {
-  select: (...args: unknown[]) => QueryBuilder;
-  insert: (...args: unknown[]) => QueryBuilder;
-  update: (...args: unknown[]) => QueryBuilder;
-  upsert: (...args: unknown[]) => QueryResult;
-  eq: (...args: unknown[]) => QueryBuilder;
-  not: (...args: unknown[]) => QueryResult;
-  ilike: (...args: unknown[]) => QueryBuilder;
-  limit: (...args: unknown[]) => QueryBuilder;
-  maybeSingle: () => QueryResult;
-  single: () => QueryResult;
-} & QueryResult;
-
 // Minimal shape this service needs from the Supabase admin client — kept
 // narrow so tests can supply a lightweight fake.
-type SyncClient = {
-  from: (table: string) => QueryBuilder;
-  storage: StorageLikeClient["storage"];
-};
+type SyncClient = Pick<SupabaseClient, "from"> & { storage: StorageLikeClient["storage"] };
 
 const EXTERNAL_SOURCE = "shopeefood";
 
