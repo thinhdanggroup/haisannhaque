@@ -7,9 +7,11 @@ import type { ShopSyncRun, ShopSyncSettings } from "./types";
 
 // Minimal shape this service needs from the Supabase admin client — kept
 // narrow so tests can supply a lightweight fake.
-type SyncClient = Pick<SupabaseClient, "from"> & { storage: StorageLikeClient["storage"] };
+type SyncClient = Pick<SupabaseClient, "from" | "rpc"> & { storage: StorageLikeClient["storage"] };
 
 const EXTERNAL_SOURCE = "shopeefood";
+const INVENTORY_WAREHOUSE_CODE = "HCM-01";
+const SYNCED_STOCK_QUANTITY = 50;
 
 function makeSlug(name: string, externalId: string): string {
   const base = name
@@ -46,9 +48,11 @@ async function recordRunItem(
   }
 }
 
-async function findOrCreateCategory(client: SyncClient, categoryName: string | null): Promise<string | null> {
-  if (!categoryName) return null;
-
+// Falls back for a ShopeeFood category with no admin-provided mapping yet
+// (see resolveCategoryId below): find-or-create a shopeefood-tagged
+// placeholder category so nothing is left uncategorized. It shows up in
+// /admin/shop-sync/categories for an admin to map onto a real category.
+async function findOrCreatePlaceholderCategory(client: SyncClient, categoryName: string): Promise<string> {
   // Exact match, not .ilike(): ilike treats the name as a LIKE pattern, so a
   // category like "Combo giảm 20%" would match the wrong rows (or several,
   // which makes .maybeSingle() error). A swallowed error here would fall
@@ -72,12 +76,34 @@ async function findOrCreateCategory(client: SyncClient, categoryName: string | n
       slug: makeSlug(categoryName, Math.random().toString(36).slice(2, 8)),
       is_active: true,
       sort_order: 0,
+      external_source: EXTERNAL_SOURCE,
     })
     .select("id")
     .single();
 
   if (error) throw new Error(`Failed to create category "${categoryName}": ${error.message}`);
   return (created as { id: string }).id;
+}
+
+// Resolves a ShopeeFood category name to a real site category id if an admin
+// has already mapped it (see /admin/shop-sync/categories); otherwise falls
+// back to a placeholder category rather than leaving the product unlinked.
+async function resolveCategoryId(client: SyncClient, categoryName: string | null): Promise<string | null> {
+  if (!categoryName) return null;
+
+  const { data: mapping, error: mappingError } = await client
+    .from("shop_sync_category_mappings")
+    .select("category_id")
+    .eq("external_source", EXTERNAL_SOURCE)
+    .eq("external_category_name", categoryName)
+    .maybeSingle();
+  if (mappingError) {
+    throw new Error(`Failed to look up category mapping for "${categoryName}": ${mappingError.message}`);
+  }
+  const mappingRow = mapping as { category_id: string } | null;
+  if (mappingRow) return mappingRow.category_id;
+
+  return findOrCreatePlaceholderCategory(client, categoryName);
 }
 
 async function upsertProductImage(
@@ -109,7 +135,7 @@ async function upsertProductImage(
   }
 }
 
-async function upsertVariant(client: SyncClient, productId: string, item: ScrapedShopItem): Promise<void> {
+async function upsertVariant(client: SyncClient, productId: string, item: ScrapedShopItem): Promise<string> {
   const { data: existingVariant } = await client
     .from("product_variants")
     .select("id")
@@ -129,15 +155,63 @@ async function upsertVariant(client: SyncClient, productId: string, item: Scrape
       .update(variantFields)
       .eq("id", existingVariantRow.id);
     if (error) throw new Error(`Failed to update product variant: ${error.message}`);
-  } else {
-    const { error } = await client.from("product_variants").insert({
+    return existingVariantRow.id;
+  }
+
+  const { data: createdVariant, error } = await client
+    .from("product_variants")
+    .insert({
       product_id: productId,
       sku: `${EXTERNAL_SOURCE}-${item.externalId}`,
       unit: "phần",
       is_weighable: false,
       ...variantFields,
-    });
-    if (error) throw new Error(`Failed to create product variant: ${error.message}`);
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(`Failed to create product variant: ${error.message}`);
+  return (createdVariant as { id: string }).id;
+}
+
+// ShopeeFood only tells us a dish is available or not — never a real
+// quantity — so synced stock converges to a flat target (SYNCED_STOCK_QUANTITY
+// when available, 0 when not) rather than accumulating deltas every run.
+// Real orders then decrement it normally through the existing inventory
+// system. Inventory is an enhancement on top of the sync, not core to it: a
+// missing warehouse skips convergence rather than failing the whole item.
+async function convergeStock(client: SyncClient, variantId: string, isAvailable: boolean): Promise<void> {
+  const { data: warehouse, error: warehouseError } = await client
+    .from("warehouses")
+    .select("id")
+    .eq("code", INVENTORY_WAREHOUSE_CODE)
+    .maybeSingle();
+  if (warehouseError) {
+    throw new Error(`Failed to look up warehouse "${INVENTORY_WAREHOUSE_CODE}": ${warehouseError.message}`);
+  }
+  const warehouseRow = warehouse as { id: string } | null;
+  if (!warehouseRow) return;
+
+  const { data: currentStock, error: stockError } = await client.rpc("calculate_available_stock", {
+    input_variant_id: variantId,
+    input_warehouse_id: warehouseRow.id,
+  });
+  if (stockError) {
+    throw new Error(`Failed to read current stock for variant ${variantId}: ${stockError.message}`);
+  }
+
+  const target = isAvailable ? SYNCED_STOCK_QUANTITY : 0;
+  const delta = target - Number(currentStock ?? 0);
+  if (delta === 0) return;
+
+  const { error: ledgerError } = await client.from("stock_ledger_entries").insert({
+    variant_id: variantId,
+    warehouse_id: warehouseRow.id,
+    movement_type: "adjustment",
+    quantity_delta: delta,
+    source_doc_type: "shop_sync",
+  });
+  if (ledgerError) {
+    throw new Error(`Failed to adjust stock for variant ${variantId}: ${ledgerError.message}`);
   }
 }
 
@@ -147,7 +221,7 @@ async function syncItem(
   item: ScrapedShopItem,
 ): Promise<"created" | "updated" | "error"> {
   try {
-    const categoryId = await findOrCreateCategory(client, item.categoryName);
+    const categoryId = await resolveCategoryId(client, item.categoryName);
 
     const { data: existingProduct } = await client
       .from("products")
@@ -196,7 +270,8 @@ async function syncItem(
       productId = (created as { id: string }).id;
     }
 
-    await upsertVariant(client, productId, item);
+    const variantId = await upsertVariant(client, productId, item);
+    await convergeStock(client, variantId, item.isAvailable);
     await upsertProductImage(
       client,
       productId,

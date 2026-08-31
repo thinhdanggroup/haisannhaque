@@ -78,6 +78,11 @@ export default async function ShopSyncPage() {
       <AdminPageHeader
         title="Đồng bộ ShopeeFood"
         description="Tự động đồng bộ sản phẩm và thông tin shop từ ShopeeFood theo lịch."
+        action={
+          <Link href="/admin/shop-sync/categories" className="text-sm font-medium text-teal-700">
+            Ánh xạ danh mục →
+          </Link>
+        }
       />
 
       <section className="space-y-3">

@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { getShopSyncSettings, listShopSyncRuns, getShopSyncRunWithItems } from "./queries";
+import {
+  getShopSyncSettings,
+  listShopSyncRuns,
+  getShopSyncRunWithItems,
+  listUnmappedShopSyncCategories,
+  listMappableCategories,
+} from "./queries";
 
 function clientReturning(row: unknown, table: string) {
   return {
@@ -88,6 +94,40 @@ describe("listShopSyncRuns", () => {
         finishedAt: "2026-08-30T00:01:00Z",
       },
     ]);
+  });
+});
+
+describe("listUnmappedShopSyncCategories", () => {
+  it("lists active shopeefood-tagged categories with no mapping yet", async () => {
+    const rows = [{ id: "cat-1", name: "Món chế biến sẳn" }];
+    const client = {
+      from: vi.fn(() => ({
+        select: () => ({
+          eq: () => ({
+            eq: () => ({ order: () => Promise.resolve({ data: rows, error: null }) }),
+          }),
+        }),
+      })),
+    } as never;
+
+    expect(await listUnmappedShopSyncCategories(client)).toEqual(rows);
+  });
+});
+
+describe("listMappableCategories", () => {
+  it("lists active categories with no external_source (real, site-owned categories)", async () => {
+    const rows = [{ id: "cat-2", name: "Hải sản tươi sống" }];
+    const client = {
+      from: vi.fn(() => ({
+        select: () => ({
+          is: () => ({
+            eq: () => ({ order: () => Promise.resolve({ data: rows, error: null }) }),
+          }),
+        }),
+      })),
+    } as never;
+
+    expect(await listMappableCategories(client)).toEqual(rows);
   });
 });
 

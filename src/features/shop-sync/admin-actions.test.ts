@@ -20,7 +20,7 @@ vi.mock("@/src/lib/supabase/admin", () => ({
 vi.mock("./sync-service", () => ({ runSync: mockRunSync }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-import { updateShopSyncSettings, triggerShopSyncNow } from "./admin-actions";
+import { updateShopSyncSettings, triggerShopSyncNow, mapShopSyncCategory } from "./admin-actions";
 
 function grantSuperAdmin() {
   mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
@@ -96,5 +96,87 @@ describe("triggerShopSyncNow", () => {
     const result = await triggerShopSyncNow();
     expect(mockRunSync).toHaveBeenCalled();
     expect(result).toEqual({ runId: "run-1" });
+  });
+});
+
+describe("mapShopSyncCategory", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  function grantSuperAdminForMapping() {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+  }
+
+  it("rejects non-UUID category ids before touching the database", async () => {
+    grantSuperAdminForMapping();
+    mockFrom.mockImplementation((table: string) => {
+      if (table === "user_admin_roles") {
+        return {
+          select: () => ({
+            eq: () => Promise.resolve({ data: [{ admin_roles: { name: "super_admin" } }], error: null }),
+          }),
+        };
+      }
+      throw new Error(`unexpected table ${table}`);
+    });
+
+    const fd = new FormData();
+    fd.set("placeholderCategoryId", "not-a-uuid");
+    fd.set("targetCategoryId", "also-not-a-uuid");
+    const result = await mapShopSyncCategory(null, fd);
+    expect(result).toEqual({ error: expect.stringContaining("category") });
+  });
+
+  it("saves the mapping, re-links products, and deactivates the placeholder", async () => {
+    grantSuperAdminForMapping();
+    const placeholderId = "caca07be-4855-45ea-93c1-d061853878ae";
+    const targetId = "e1b0d055-7a48-4cff-9268-6ed2e40ff8a4";
+
+    const mappingUpsert = vi.fn().mockResolvedValue({ error: null });
+    const relinkUpdateEq = vi.fn().mockResolvedValue({ error: null });
+    const deactivateUpdateEq = vi.fn().mockResolvedValue({ error: null });
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === "user_admin_roles") {
+        return {
+          select: () => ({
+            eq: () => Promise.resolve({ data: [{ admin_roles: { name: "super_admin" } }], error: null }),
+          }),
+        };
+      }
+      if (table === "categories") {
+        return {
+          select: () => ({
+            eq: () => ({
+              single: () => Promise.resolve({ data: { name: "Món chế biến sẳn" }, error: null }),
+            }),
+          }),
+          update: () => ({ eq: deactivateUpdateEq }),
+        };
+      }
+      if (table === "shop_sync_category_mappings") {
+        return { upsert: mappingUpsert };
+      }
+      if (table === "product_categories") {
+        return { update: () => ({ eq: relinkUpdateEq }) };
+      }
+      throw new Error(`unexpected table ${table}`);
+    });
+
+    const fd = new FormData();
+    fd.set("placeholderCategoryId", placeholderId);
+    fd.set("targetCategoryId", targetId);
+    const result = await mapShopSyncCategory(null, fd);
+
+    expect(mappingUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        external_source: "shopeefood",
+        external_category_name: "Món chế biến sẳn",
+        category_id: targetId,
+      }),
+      expect.objectContaining({ onConflict: "external_source,external_category_name" }),
+    );
+    expect(relinkUpdateEq).toHaveBeenCalledWith("category_id", placeholderId);
+    expect(deactivateUpdateEq).toHaveBeenCalledWith("id", placeholderId);
+    expect(result).toBeNull();
   });
 });

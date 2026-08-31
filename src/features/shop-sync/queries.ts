@@ -103,6 +103,37 @@ export async function listShopSyncRuns(
   return ((data ?? []) as RunRow[]).map(mapRun);
 }
 
+export type UnmappedShopSyncCategory = { id: string; name: string };
+export type MappableCategory = { id: string; name: string };
+
+export async function listUnmappedShopSyncCategories(
+  client: Pick<SupabaseClient, "from">,
+): Promise<UnmappedShopSyncCategory[]> {
+  const { data, error } = await client
+    .from("categories")
+    .select("id, name")
+    .eq("external_source", "shopeefood")
+    .eq("is_active", true)
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as UnmappedShopSyncCategory[];
+}
+
+export async function listMappableCategories(
+  client: Pick<SupabaseClient, "from">,
+): Promise<MappableCategory[]> {
+  const { data, error } = await client
+    .from("categories")
+    .select("id, name")
+    .is("external_source", null)
+    .eq("is_active", true)
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as MappableCategory[];
+}
+
 export async function getShopSyncRunWithItems(
   client: Pick<SupabaseClient, "from">,
   runId: string,

@@ -56,10 +56,13 @@ function makeAdminClientMock() {
   const runsUpdateEq = vi.fn().mockResolvedValue({ error: null });
   const runItemsInsert = vi.fn().mockResolvedValue({ error: null });
 
+  const categoryMappingSelectMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
+
   const categoriesSelectMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
   const categoriesInsertSelectSingle = vi
     .fn()
     .mockResolvedValue({ data: { id: "category-1" }, error: null });
+  const categoriesInsert = vi.fn(() => ({ select: () => ({ single: categoriesInsertSelectSingle }) }));
 
   const productsSelectMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
   const productsInsertSelectSingle = vi
@@ -73,7 +76,10 @@ function makeAdminClientMock() {
   const productsArchiveNotInEq = vi.fn().mockResolvedValue({ data: [], error: null });
 
   const variantsSelectMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
-  const variantsInsert = vi.fn().mockResolvedValue({ error: null });
+  const variantsInsertSelectSingle = vi
+    .fn()
+    .mockResolvedValue({ data: { id: "variant-1" }, error: null });
+  const variantsInsert = vi.fn(() => ({ select: () => ({ single: variantsInsertSelectSingle }) }));
   const variantsUpdateEq = vi.fn().mockResolvedValue({ error: null });
 
   const imagesSelectMaybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
@@ -86,6 +92,10 @@ function makeAdminClientMock() {
   const shopProfileInsert = vi.fn().mockResolvedValue({ error: null });
   const shopProfileUpdateEq = vi.fn().mockResolvedValue({ error: null });
 
+  const warehouseSelectMaybeSingle = vi.fn().mockResolvedValue({ data: { id: "warehouse-1" }, error: null });
+  const calculateAvailableStockRpc = vi.fn().mockResolvedValue({ data: 0, error: null });
+  const stockLedgerInsert = vi.fn().mockResolvedValue({ error: null });
+
   const from = vi.fn((table: string) => {
     if (table === "shop_sync_runs") {
       return {
@@ -96,10 +106,15 @@ function makeAdminClientMock() {
     if (table === "shop_sync_run_items") {
       return { insert: runItemsInsert };
     }
+    if (table === "shop_sync_category_mappings") {
+      return {
+        select: () => ({ eq: () => ({ eq: () => ({ maybeSingle: categoryMappingSelectMaybeSingle }) }) }),
+      };
+    }
     if (table === "categories") {
       return {
         select: () => ({ eq: () => ({ maybeSingle: categoriesSelectMaybeSingle }) }),
-        insert: () => ({ select: () => ({ single: categoriesInsertSelectSingle }) }),
+        insert: categoriesInsert,
       };
     }
     if (table === "products") {
@@ -142,13 +157,26 @@ function makeAdminClientMock() {
         update: () => ({ eq: shopProfileUpdateEq }),
       };
     }
+    if (table === "warehouses") {
+      return { select: () => ({ eq: () => ({ maybeSingle: warehouseSelectMaybeSingle }) }) };
+    }
+    if (table === "stock_ledger_entries") {
+      return { insert: stockLedgerInsert };
+    }
     throw new Error(`Unexpected table in test: ${table}`);
   });
 
+  const rpc = vi.fn((name: string) => {
+    if (name === "calculate_available_stock") return calculateAvailableStockRpc();
+    throw new Error(`Unexpected rpc in test: ${name}`);
+  });
+
   return {
-    client: { from, storage: { from: vi.fn() } } as never,
+    client: { from, rpc, storage: { from: vi.fn() } } as never,
     spies: {
+      categoryMappingSelectMaybeSingle,
       categoriesSelectMaybeSingle,
+      categoriesInsert,
       categoriesInsertSelectSingle,
       productsArchiveNotInEq,
       productsInsert,
@@ -161,6 +189,9 @@ function makeAdminClientMock() {
       runItemsInsert,
       shopProfileInsert,
       shopProfileUpdateEq,
+      warehouseSelectMaybeSingle,
+      calculateAvailableStockRpc,
+      stockLedgerInsert,
     },
   };
 }
@@ -293,6 +324,85 @@ describe("runSync (catalog)", () => {
 
     expect(run.status).toBe("failed");
     expect(run.errorMessage).toContain("network down");
+  });
+
+  it("links the product to the mapped category instead of creating a placeholder", async () => {
+    const { client, spies } = makeAdminClientMock();
+    spies.categoryMappingSelectMaybeSingle.mockResolvedValue({
+      data: { category_id: "real-category-1" },
+      error: null,
+    });
+
+    const run = await runSync(client, fakeAdapter(shopWithOneItem()), baseSettings(), "manual");
+
+    expect(spies.categoriesInsert).not.toHaveBeenCalled();
+    expect(spies.categoriesSelectMaybeSingle).not.toHaveBeenCalled();
+    // productCategoriesUpsert isn't exposed as a spy on its own, but the
+    // product row it's called for confirms the sync completed past the
+    // category-resolution step using the mapped id.
+    expect(run.itemsCreated).toBe(1);
+    expect(run.status).toBe("success");
+  });
+
+  it("falls back to a shopeefood-tagged placeholder category when no mapping exists", async () => {
+    const { client, spies } = makeAdminClientMock();
+
+    const run = await runSync(client, fakeAdapter(shopWithOneItem()), baseSettings(), "manual");
+
+    expect(spies.categoryMappingSelectMaybeSingle).toHaveBeenCalled();
+    expect(spies.categoriesInsert).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "Hải sản hấp", external_source: "shopeefood" }),
+    );
+    expect(run.itemsCreated).toBe(1);
+  });
+
+  it("converges stock up to the synced quantity for an available item with none on hand", async () => {
+    const { client, spies } = makeAdminClientMock();
+    spies.calculateAvailableStockRpc.mockResolvedValue({ data: 0, error: null });
+
+    await runSync(client, fakeAdapter(shopWithOneItem({ isAvailable: true })), baseSettings(), "manual");
+
+    expect(spies.stockLedgerInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        variant_id: "variant-1",
+        warehouse_id: "warehouse-1",
+        movement_type: "adjustment",
+        quantity_delta: 50,
+        source_doc_type: "shop_sync",
+      }),
+    );
+  });
+
+  it("converges stock down to zero for an unavailable item that currently has stock", async () => {
+    const { client, spies } = makeAdminClientMock();
+    spies.calculateAvailableStockRpc.mockResolvedValue({ data: 50, error: null });
+
+    await runSync(client, fakeAdapter(shopWithOneItem({ isAvailable: false })), baseSettings(), "manual");
+
+    expect(spies.stockLedgerInsert).toHaveBeenCalledWith(
+      expect.objectContaining({ quantity_delta: -50 }),
+    );
+  });
+
+  it("does not write a stock adjustment when already at the target quantity", async () => {
+    const { client, spies } = makeAdminClientMock();
+    spies.calculateAvailableStockRpc.mockResolvedValue({ data: 50, error: null });
+
+    await runSync(client, fakeAdapter(shopWithOneItem({ isAvailable: true })), baseSettings(), "manual");
+
+    expect(spies.stockLedgerInsert).not.toHaveBeenCalled();
+  });
+
+  it("skips inventory convergence without failing the item when no warehouse is configured", async () => {
+    const { client, spies } = makeAdminClientMock();
+    spies.warehouseSelectMaybeSingle.mockResolvedValue({ data: null, error: null });
+
+    const run = await runSync(client, fakeAdapter(shopWithOneItem()), baseSettings(), "manual");
+
+    expect(spies.stockLedgerInsert).not.toHaveBeenCalled();
+    expect(spies.calculateAvailableStockRpc).not.toHaveBeenCalled();
+    expect(run.itemsCreated).toBe(1);
+    expect(run.itemsErrored).toBe(0);
   });
 
   it("creates a shop_profile row when targetShopInfo is enabled", async () => {

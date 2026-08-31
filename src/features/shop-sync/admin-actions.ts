@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { createServerClient } from "@/src/lib/supabase/server";
 import { createAdminClient } from "@/src/lib/supabase/admin";
 import { requireAdminPermission } from "@/src/features/admin/auth";
@@ -65,4 +66,61 @@ export async function triggerShopSyncNow(): Promise<ShopSyncTriggerResult> {
 
   revalidatePath("/admin/shop-sync");
   return { runId: run.id };
+}
+
+export type ShopSyncCategoryMappingState = { error: string } | null;
+
+// Points a ShopeeFood category (currently a shopeefood-tagged placeholder
+// category, since sync-service.ts falls back to creating one when no
+// mapping exists yet) at one of the site's real categories: saves the
+// mapping (keyed by category NAME, matching how sync-service.ts resolves
+// it), re-links every product currently on the placeholder over to the real
+// category, then deactivates the now-empty placeholder rather than deleting
+// it (avoids FK surprises if anything still references it).
+export async function mapShopSyncCategory(
+  _prev: ShopSyncCategoryMappingState,
+  formData: FormData,
+): Promise<ShopSyncCategoryMappingState> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "shop_sync:manage");
+
+  const placeholderCategoryId = z.string().uuid().safeParse(formData.get("placeholderCategoryId"));
+  const targetCategoryId = z.string().uuid().safeParse(formData.get("targetCategoryId"));
+  if (!placeholderCategoryId.success || !targetCategoryId.success) {
+    return { error: "Invalid category selection." };
+  }
+
+  const { data: placeholder, error: placeholderError } = await client
+    .from("categories")
+    .select("name")
+    .eq("id", placeholderCategoryId.data)
+    .single();
+  if (placeholderError || !placeholder) {
+    return { error: "Category to map not found." };
+  }
+
+  const { error: mappingError } = await client.from("shop_sync_category_mappings").upsert(
+    {
+      external_source: SOURCE,
+      external_category_name: (placeholder as { name: string }).name,
+      category_id: targetCategoryId.data,
+    },
+    { onConflict: "external_source,external_category_name" },
+  );
+  if (mappingError) return { error: mappingError.message };
+
+  const { error: relinkError } = await client
+    .from("product_categories")
+    .update({ category_id: targetCategoryId.data })
+    .eq("category_id", placeholderCategoryId.data);
+  if (relinkError) return { error: relinkError.message };
+
+  const { error: deactivateError } = await client
+    .from("categories")
+    .update({ is_active: false })
+    .eq("id", placeholderCategoryId.data);
+  if (deactivateError) return { error: deactivateError.message };
+
+  revalidatePath("/admin/shop-sync/categories");
+  return null;
 }
