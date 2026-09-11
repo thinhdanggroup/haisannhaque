@@ -1,3 +1,4 @@
+// Server-only: imports node:path. Never import this from a "use client" component.
 import { extname } from "node:path";
 
 // Same rules as app/api/admin/images/route.ts.
