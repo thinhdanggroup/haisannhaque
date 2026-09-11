@@ -62,11 +62,11 @@ export async function publishPhoto(
     return { ok: false, error: `Lỗi khi gọi Facebook: ${message}` };
   }
 
-  if (body.error?.message) {
+  if (body?.error?.message) {
     return { ok: false, error: `Facebook từ chối: ${body.error.message}` };
   }
 
-  const postId = body.post_id ?? body.id;
+  const postId = body?.post_id ?? body?.id;
   if (!postId) {
     return { ok: false, error: "Facebook không trả về mã bài đăng." };
   }

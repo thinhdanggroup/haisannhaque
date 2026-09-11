@@ -91,4 +91,12 @@ describe("publishPhoto", () => {
     const result = await publishPhoto(INPUT, fetchImpl as unknown as typeof fetch);
     expect(result.ok).toBe(false);
   });
+
+  it("reports a null JSON body instead of throwing", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response("null", { status: 502, headers: { "content-type": "application/json" } }),
+    );
+    const result = await publishPhoto(INPUT, fetchImpl as unknown as typeof fetch);
+    expect(result.ok).toBe(false);
+  });
 });
