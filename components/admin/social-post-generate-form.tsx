@@ -41,7 +41,14 @@ export function SocialPostGenerateForm({
       body.set("file", file);
 
       const response = await fetch("/api/admin/social-images", { method: "POST", body });
-      const payload = (await response.json()) as UploadedImage & { error?: string };
+      let payload: UploadedImage & { error?: string };
+      try {
+        payload = (await response.json()) as UploadedImage & { error?: string };
+      } catch {
+        setUploadError("Tải ảnh thất bại");
+        setImage(null);
+        return;
+      }
 
       if (!response.ok) {
         setUploadError(payload.error ?? "Tải ảnh thất bại");
@@ -54,8 +61,8 @@ export function SocialPostGenerateForm({
         storagePath: payload.storagePath,
         localPath: payload.localPath,
       });
-    } catch (error) {
-      setUploadError(error instanceof Error ? error.message : "Tải ảnh thất bại");
+    } catch {
+      setUploadError("Tải ảnh thất bại");
       setImage(null);
     } finally {
       setIsUploading(false);
@@ -105,6 +112,7 @@ export function SocialPostGenerateForm({
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
           onChange={handleFileChange}
+          disabled={isUploading}
           className="block w-full text-sm"
         />
         {isUploading && <p className="text-xs text-slate-500">Đang tải ảnh lên…</p>}
