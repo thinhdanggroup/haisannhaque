@@ -84,7 +84,7 @@ export async function listSocialPosts(
 
   if (error) throw error;
 
-  return ((data ?? []) as PostRow[]).map(mapPost);
+  return ((data ?? []) as unknown as PostRow[]).map(mapPost);
 }
 
 export async function getSocialPost(
@@ -99,7 +99,7 @@ export async function getSocialPost(
 
   if (error) throw error;
 
-  return data ? mapPost(data as PostRow) : null;
+  return data ? mapPost(data as unknown as PostRow) : null;
 }
 
 export async function listSocialPostTemplates(
@@ -112,7 +112,7 @@ export async function listSocialPostTemplates(
 
   if (error) throw error;
 
-  return ((data ?? []) as TemplateRow[]).map(mapTemplate);
+  return ((data ?? []) as unknown as TemplateRow[]).map(mapTemplate);
 }
 
 export async function getSocialPostTemplate(
@@ -127,7 +127,7 @@ export async function getSocialPostTemplate(
 
   if (error) throw error;
 
-  return data ? mapTemplate(data as TemplateRow) : null;
+  return data ? mapTemplate(data as unknown as TemplateRow) : null;
 }
 
 export async function getDefaultSocialPostTemplate(
@@ -141,5 +141,5 @@ export async function getDefaultSocialPostTemplate(
 
   if (error) throw error;
 
-  return data ? mapTemplate(data as TemplateRow) : null;
+  return data ? mapTemplate(data as unknown as TemplateRow) : null;
 }
