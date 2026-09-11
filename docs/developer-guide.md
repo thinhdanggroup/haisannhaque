@@ -20,6 +20,7 @@ This guide explains how to write code for this repository. Read it before adding
 12. [Testing Conventions](#12-testing-conventions)
 13. [Image Handling](#13-image-handling)
 14. [Common Gotchas](#14-common-gotchas)
+15. [Features](#15-features)
 
 ---
 
@@ -793,3 +794,11 @@ The cart is identified by a `cart_id` cookie (30 days, httpOnly). It is created 
 ### Soft-delete vs hard delete
 
 Never hard-delete products, variants, categories, or suppliers. Use the soft-delete mechanism (set `status = 'archived'` or `is_active = false`). Hard-delete breaks referential integrity with existing orders and cart items.
+
+---
+
+## 15. Features
+
+| Feature | Documentation |
+|---|---|
+| Facebook Post Generator | [Setup & Operations](./social-post-generator.md) — AI-generated Facebook sales posts (admin) |
