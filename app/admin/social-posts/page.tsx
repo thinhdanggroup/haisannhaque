@@ -4,6 +4,7 @@ import { AdminDataTable } from "@/components/admin/admin-data-table";
 import { StatusChip, type StatusChipTone } from "@/components/admin/status-chip";
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { createServerClient } from "@/src/lib/supabase/server";
+import { SocialPostDeleteForm } from "@/components/admin/social-post-delete-form";
 import { deleteSocialPost } from "@/src/features/social-posts/admin-actions";
 import { listSocialPosts } from "@/src/features/social-posts/queries";
 import { effectiveCaption } from "@/src/features/social-posts/types";
@@ -102,12 +103,12 @@ export default async function SocialPostsPage() {
             <Link href={`/admin/social-posts/${row.id}`} className="text-sm font-medium text-teal-700">
               Duyệt
             </Link>
-            <form action={deleteSocialPost}>
-              <input type="hidden" name="postId" value={row.id} />
-              <button type="submit" className="text-sm font-medium text-red-700">
-                Xoá
-              </button>
-            </form>
+            <SocialPostDeleteForm
+              action={deleteSocialPost}
+              fieldName="postId"
+              id={row.id}
+              confirmMessage="Xoá bài đăng này? Thao tác này không thể hoàn tác."
+            />
           </div>
         )}
       />

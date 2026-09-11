@@ -3,6 +3,7 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { SocialPostTemplateForm } from "@/components/admin/social-post-template-form";
 import { AdminAuthorizationError, requireAdminPermission } from "@/src/features/admin/auth";
 import { createServerClient } from "@/src/lib/supabase/server";
+import { SocialPostDeleteForm } from "@/components/admin/social-post-delete-form";
 import {
   deleteSocialPostTemplate,
   upsertSocialPostTemplate,
@@ -79,12 +80,12 @@ export default async function SocialPostTemplatesPage() {
                   </span>
                 )}
               </h3>
-              <form action={deleteSocialPostTemplate}>
-                <input type="hidden" name="templateId" value={template.id} />
-                <button type="submit" className="text-sm font-medium text-red-700">
-                  Xoá
-                </button>
-              </form>
+              <SocialPostDeleteForm
+                action={deleteSocialPostTemplate}
+                fieldName="templateId"
+                id={template.id}
+                confirmMessage={`Xoá mẫu "${template.name}"? Đây là xoá vĩnh viễn — mọi bài đăng đang dùng mẫu này sẽ mất liên kết và không thể sinh lại nội dung.`}
+              />
             </div>
 
             <SocialPostTemplateForm
