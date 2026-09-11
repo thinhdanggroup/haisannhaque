@@ -14,7 +14,9 @@ vi.mock("@/src/features/admin/auth", () => ({
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 
-const { generateSocialPost, updateSocialPostCaption } = await import("./admin-actions");
+const { generateSocialPost, updateSocialPostCaption, deleteSocialPost } = await import(
+  "./admin-actions"
+);
 
 beforeEach(() => {
   requireAdminPermission.mockReset();
@@ -65,5 +67,20 @@ describe("updateSocialPostCaption", () => {
     const result = await updateSocialPostCaption(null, formData);
     expect(result).toMatchObject({ error: expect.stringContaining("không hợp lệ") });
     expect(from).not.toHaveBeenCalled();
+  });
+});
+
+describe("deleteSocialPost", () => {
+  it("throws instead of failing silently when the delete errors", async () => {
+    requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
+
+    const eq = vi.fn().mockResolvedValue({ error: { message: "boom" } });
+    const del = vi.fn().mockReturnValue({ eq });
+    from.mockReturnValue({ delete: del });
+
+    const formData = new FormData();
+    formData.set("postId", "3fa85f64-5717-4562-b3fc-2c963f66afa6");
+
+    await expect(deleteSocialPost(formData)).rejects.toThrow("boom");
   });
 });

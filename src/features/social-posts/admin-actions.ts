@@ -120,6 +120,7 @@ export async function regenerateSocialPost(
   const { error } = await client.from("social_posts").update(outcome.values).eq("id", id);
   if (error) return { error: error.message };
 
+  revalidatePath(LIST_PATH);
   revalidatePath(`${LIST_PATH}/${id}`);
 
   return outcome.ok ? null : { error: outcome.values.error_message };
@@ -190,11 +191,20 @@ export async function publishSocialPost(
   });
 
   if (!result.ok) {
-    await client
+    const { error: recordError } = await client
       .from("social_posts")
       .update({ status: "failed", error_message: result.error })
       .eq("id", id);
+
+    revalidatePath(LIST_PATH);
     revalidatePath(`${LIST_PATH}/${id}`);
+
+    if (recordError) {
+      return {
+        error: `${result.error} (Ngoài ra, không ghi lại được lỗi này: ${recordError.message})`,
+      };
+    }
+
     return { error: result.error };
   }
 
@@ -223,7 +233,8 @@ export async function deleteSocialPost(formData: FormData): Promise<void> {
   const id = String(formData.get("postId") ?? "");
   if (!isUuid(id)) return;
 
-  await client.from("social_posts").delete().eq("id", id);
+  const { error } = await client.from("social_posts").delete().eq("id", id);
+  if (error) throw error;
 
   revalidatePath(LIST_PATH);
 }
@@ -242,12 +253,16 @@ export async function upsertSocialPostTemplate(
   if (rawId && !isUuid(rawId)) return { error: "Mã mẫu không hợp lệ" };
 
   // social_post_templates_default_key is a partial unique index on
-  // is_default, so the previous default must be cleared first.
+  // is_default, so the previous default must be cleared first. Left
+  // unchecked, a failure here would let the write below violate that index
+  // and surface a raw Postgres unique-violation instead of the real cause.
   if (parsed.data.isDefault) {
-    await client
+    const { error: clearError } = await client
       .from("social_post_templates")
       .update({ is_default: false })
       .eq("is_default", true);
+
+    if (clearError) return { error: clearError.message };
   }
 
   const values = {
@@ -276,7 +291,9 @@ export async function deleteSocialPostTemplate(formData: FormData): Promise<void
   const id = String(formData.get("templateId") ?? "");
   if (!isUuid(id)) return;
 
-  await client.from("social_post_templates").delete().eq("id", id);
+  const { error } = await client.from("social_post_templates").delete().eq("id", id);
+  if (error) throw error;
 
   revalidatePath(TEMPLATES_PATH);
+  revalidatePath(`${LIST_PATH}/new`);
 }
