@@ -14,12 +14,12 @@ describe("createDashboardMetrics", () => {
         revenueToday: 1250000,
       }),
     ).toEqual([
-      { label: "Open orders", value: "2", detail: "Needs review" },
-      { label: "Low stock SKUs", value: "3", detail: "Below threshold" },
-      { label: "Pending refunds", value: "1", detail: "Finance queue" },
-      { label: "Open complaints", value: "4", detail: "Support queue" },
-      { label: "Purchase orders", value: "5", detail: "Procurement" },
-      { label: "Sales today", value: "1,250,000d", detail: "Completed orders" },
+      { label: "Đơn chờ xử lý", value: "2", detail: "Cần xem xét" },
+      { label: "SKU sắp hết hàng", value: "3", detail: "Dưới ngưỡng" },
+      { label: "Hoàn tiền chờ xử lý", value: "1", detail: "Hàng đợi tài chính" },
+      { label: "Khiếu nại đang mở", value: "4", detail: "Hàng đợi hỗ trợ" },
+      { label: "Đơn nhập hàng", value: "5", detail: "Mua hàng" },
+      { label: "Doanh số hôm nay", value: "1,250,000d", detail: "Đơn hoàn thành" },
     ]);
   });
 
@@ -46,12 +46,12 @@ describe("createDashboardMetrics", () => {
     };
 
     await expect(getAdminDashboardMetrics(client as never)).resolves.toEqual([
-      { label: "Open orders", value: "2", detail: "Needs review" },
-      { label: "Low stock SKUs", value: "3", detail: "Below threshold" },
-      { label: "Pending refunds", value: "1", detail: "Finance queue" },
-      { label: "Open complaints", value: "4", detail: "Support queue" },
-      { label: "Purchase orders", value: "5", detail: "Procurement" },
-      { label: "Sales today", value: "1,250,000d", detail: "Completed orders" },
+      { label: "Đơn chờ xử lý", value: "2", detail: "Cần xem xét" },
+      { label: "SKU sắp hết hàng", value: "3", detail: "Dưới ngưỡng" },
+      { label: "Hoàn tiền chờ xử lý", value: "1", detail: "Hàng đợi tài chính" },
+      { label: "Khiếu nại đang mở", value: "4", detail: "Hàng đợi hỗ trợ" },
+      { label: "Đơn nhập hàng", value: "5", detail: "Mua hàng" },
+      { label: "Doanh số hôm nay", value: "1,250,000d", detail: "Đơn hoàn thành" },
     ]);
     expect(rpcCalls).toEqual(["get_admin_dashboard_metrics"]);
   });
