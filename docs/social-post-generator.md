@@ -58,6 +58,8 @@ host. The `command` permission stays denied; the prompt is written to steer
 | `agy bị từ chối quyền: read_file` | The allow-rule does not cover `SOCIAL_POST_IMAGE_DIR` |
 | `agy bị từ chối quyền: command` | `agy` tried to shell out; check the prompt still contains the absolute path and the no-shell clause |
 | `agy không trả về nội dung bài đăng.` | The model replied without the `<<<POST>>>` delimiters and the fallback was empty |
+| `Sinh nội dung quá thời gian chờ (Ns)` | `agy` did not finish within the configured `--print-timeout` and was killed; retry, or investigate why generation is slow |
+| `Không tạo được thư mục ảnh <dir>: …` | `SOCIAL_POST_IMAGE_DIR` could not be created (permissions, read-only volume) before spawning `agy` |
 | `Chưa cấu hình FACEBOOK_PAGE_ID và FACEBOOK_PAGE_ACCESS_TOKEN` | Both Facebook env vars missing — check both are set |
 | `Facebook từ chối: Invalid OAuth access token` | Page token expired — reissue it |
 
