@@ -63,6 +63,21 @@ host. The `command` permission stays denied; the prompt is written to steer
 | `Chưa cấu hình FACEBOOK_PAGE_ID và FACEBOOK_PAGE_ACCESS_TOKEN` | Both Facebook env vars missing — check both are set |
 | `Facebook từ chối: Invalid OAuth access token` | Page token expired — reissue it |
 
+### Path containment — what it does and does not cover
+
+`generateSocialPost` verifies that the uploaded image's resolved path sits
+inside the configured `SOCIAL_POST_IMAGE_DIR` before handing it to `agy` in
+vision mode; a request naming a path outside that directory (e.g. a forged
+hidden field) is rejected before generation runs.
+
+**This does not make the `read_file` allow-rule safe to widen.** The check
+only closes the hidden-field vector. A prompt **template**'s body is free
+text that any admin with `social_posts:manage` can edit, and it can name any
+absolute path in prose — the containment check in code has no visibility
+into that. Treat prompt templates as a semi-trusted input, and **never widen
+the `read_file` allow-rule beyond `SOCIAL_POST_IMAGE_DIR`** on the theory
+that the app-level check makes a broader rule safe. It does not.
+
 ## Publishing and scheduling
 
 The admin reviews the generated caption and can either publish immediately or schedule

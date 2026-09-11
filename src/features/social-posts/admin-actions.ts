@@ -1,5 +1,6 @@
 "use server";
 
+import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdminPermission } from "@/src/features/admin/auth";
@@ -31,6 +32,18 @@ function buildGenerator() {
   });
 }
 
+// imageLocalPath arrives from a hidden form field and is validated only as
+// "starts with /" at the schema boundary — it is otherwise client-controlled.
+// Containment inside the configured image directory is the last line of
+// defense before that path is handed to agy as a file to read. Comparing
+// against the dir plus a trailing separator (rather than a bare prefix)
+// avoids the "/foo" vs "/foobar" trap.
+function isInsideImageDir(imageLocalPath: string): boolean {
+  const imageDir = path.resolve(resolveImageDir());
+  const resolvedPath = path.resolve(imageLocalPath);
+  return resolvedPath === imageDir || resolvedPath.startsWith(`${imageDir}${path.sep}`);
+}
+
 export async function generateSocialPost(
   _prev: SocialPostActionState,
   formData: FormData,
@@ -41,6 +54,13 @@ export async function generateSocialPost(
 
   const parsed = parseGenerateSocialPostForm(formData);
   if (!parsed.success) return { error: parsed.error };
+
+  if (
+    parsed.data.visionMode === "vision" &&
+    (!parsed.data.imageLocalPath || !isInsideImageDir(parsed.data.imageLocalPath))
+  ) {
+    return { error: "Đường dẫn ảnh không hợp lệ" };
+  }
 
   const template = await getSocialPostTemplate(client, parsed.data.templateId);
   if (!template) return { error: "Không tìm thấy mẫu prompt" };
