@@ -112,6 +112,7 @@ export function SocialPostGenerateForm({
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
           onChange={handleFileChange}
+          required
           disabled={isUploading}
           className="block w-full text-sm"
         />
