@@ -1,10 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SocialPost, SocialPostStatus, SocialPostTemplate } from "./types";
 
-const POST_COLUMNS =
-  "id, template_id, idea, image_url, image_storage_path, image_local_path, " +
-  "generated_caption, edited_caption, status, fb_post_id, scheduled_publish_time, " +
-  "conversation_id, generation_ms, generation_tokens, error_message, created_at, posted_at";
+const POST_COLUMNS = "id, template_id, idea, image_url, image_storage_path, image_local_path, generated_caption, edited_caption, status, fb_post_id, scheduled_publish_time, conversation_id, generation_ms, generation_tokens, error_message, created_at, posted_at";
 
 const TEMPLATE_COLUMNS = "id, name, prompt_body, is_default, is_active, updated_at";
 
@@ -84,7 +81,7 @@ export async function listSocialPosts(
 
   if (error) throw error;
 
-  return ((data ?? []) as unknown as PostRow[]).map(mapPost);
+  return ((data ?? []) as PostRow[]).map(mapPost);
 }
 
 export async function getSocialPost(
@@ -99,7 +96,7 @@ export async function getSocialPost(
 
   if (error) throw error;
 
-  return data ? mapPost(data as unknown as PostRow) : null;
+  return data ? mapPost(data as PostRow) : null;
 }
 
 export async function listSocialPostTemplates(
@@ -112,7 +109,7 @@ export async function listSocialPostTemplates(
 
   if (error) throw error;
 
-  return ((data ?? []) as unknown as TemplateRow[]).map(mapTemplate);
+  return ((data ?? []) as TemplateRow[]).map(mapTemplate);
 }
 
 export async function getSocialPostTemplate(
@@ -127,7 +124,7 @@ export async function getSocialPostTemplate(
 
   if (error) throw error;
 
-  return data ? mapTemplate(data as unknown as TemplateRow) : null;
+  return data ? mapTemplate(data as TemplateRow) : null;
 }
 
 export async function getDefaultSocialPostTemplate(
@@ -141,5 +138,5 @@ export async function getDefaultSocialPostTemplate(
 
   if (error) throw error;
 
-  return data ? mapTemplate(data as unknown as TemplateRow) : null;
+  return data ? mapTemplate(data as TemplateRow) : null;
 }

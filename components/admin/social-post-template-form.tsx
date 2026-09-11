@@ -30,6 +30,8 @@ export function SocialPostTemplateForm({
     null,
   );
 
+  const instanceId = initialValues.id ?? "new";
+
   return (
     <form action={formAction} className="max-w-2xl space-y-4">
       {state?.error && (
@@ -40,10 +42,10 @@ export function SocialPostTemplateForm({
 
       {initialValues.id && <input type="hidden" name="templateId" value={initialValues.id} />}
 
-      <label className="block text-sm" htmlFor="name">
+      <label className="block text-sm" htmlFor={`name-${instanceId}`}>
         <span className="font-medium text-slate-700">Tên mẫu</span>
         <input
-          id="name"
+          id={`name-${instanceId}`}
           name="name"
           type="text"
           required
@@ -52,10 +54,10 @@ export function SocialPostTemplateForm({
         />
       </label>
 
-      <label className="block text-sm" htmlFor="promptBody">
+      <label className="block text-sm" htmlFor={`promptBody-${instanceId}`}>
         <span className="font-medium text-slate-700">Nội dung prompt</span>
         <textarea
-          id="promptBody"
+          id={`promptBody-${instanceId}`}
           name="promptBody"
           required
           rows={10}
