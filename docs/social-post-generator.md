@@ -57,8 +57,8 @@ host. The `command` permission stays denied; the prompt is written to steer
 |---|---|
 | `agy bị từ chối quyền: read_file` | The allow-rule does not cover `SOCIAL_POST_IMAGE_DIR` |
 | `agy bị từ chối quyền: command` | `agy` tried to shell out; check the prompt still contains the absolute path and the no-shell clause |
-| `agy không trả về nội dung bài đăng` | The model replied without the `<<<POST>>>` delimiters and the fallback was empty |
-| `Chưa cấu hình FACEBOOK_PAGE_ID…` | Facebook env vars missing |
+| `agy không trả về nội dung bài đăng.` | The model replied without the `<<<POST>>>` delimiters and the fallback was empty |
+| `Chưa cấu hình FACEBOOK_PAGE_ID và FACEBOOK_PAGE_ACCESS_TOKEN` | Both Facebook env vars missing — check both are set |
 | `Facebook từ chối: Invalid OAuth access token` | Page token expired — reissue it |
 
 ## Publishing and scheduling
