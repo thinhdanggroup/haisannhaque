@@ -125,15 +125,56 @@ auto-approves every tool, which would let an admin web request run arbitrary
 shell commands on the host. A `read_file` rule scoped to the image directory is
 the supported configuration.
 
-### 2.5 Open verification item
+**Tool choice is non-deterministic.** With the `read_file` rule in place, a
+subsequent probe was denied on `command` / `RunCommand` instead: the agent chose
+to shell out to orient itself, because the directory was untrusted and the image
+path was relative. The allowlist therefore cannot simply enumerate whichever
+tool the agent picked last time — the prompt must actively steer it, and
+`command` must stay denied.
 
-Whether `agy` can actually *see* image content (true vision) is **not yet
-confirmed** — both probes were blocked by permissions before reaching the model.
-Confirm with a scoped `read_file` rule before building the vision prompt.
+### 2.4.1 Verified working configuration
 
-If vision proves unavailable, the fallback is text-only generation with the
-image attached to the Facebook post unchanged (see §5, `ImageVisionMode`); the
-rest of this design is unaffected.
+This exact combination produced vision with **no denied actions** (6.4s,
+`num_turns: 1`):
+
+1. `read_file(<image-dir>/**)` under `permissions.allow`.
+2. The image directory passed as `--add-dir <image-dir>`.
+3. An **absolute** image path in the prompt (a relative `./x.png` triggered
+   directory exploration via `command`).
+4. An explicit instruction: *"Use ONLY your file-reading tool. Do NOT run any
+   shell command."*
+
+All four matter; dropping 3 or 4 reintroduced the `command` denial.
+
+### 2.5 Vision — verified
+
+Confirmed 2026-09-11 using the §2.4.1 configuration. Given an image whose
+subject was unrelated to the prompt domain (a "BRM Capability" mindmap), `agy`
+correctly identified it as a Business Relationship Management mind map and
+quoted three exact labels present in the diagram (`BRM Capability`,
+`Capability Framework`, `Organizational Factors`). Since none of that vocabulary
+appeared in the prompt, this is genuine image reading rather than inference from
+the prompt.
+
+### 2.6 Delimiter contract — verified
+
+The §2.3 delimiter instruction was tested together with vision in a single
+realistic prompt (Vietnamese seafood sales post, absolute image path, shell
+prohibited). Result: `<<<POST>>> … <<<END>>>` present, **no preamble**, on-brand
+Vietnamese copy with CTA and hashtags, 11.3s, `num_turns: 1`, no denied actions.
+
+Residual gap: the test image was a mindmap, irrelevant to seafood, and the model
+sensibly declined to mention it. So vision (§2.5) and delimiter compliance (§2.6)
+are each verified, but *vision materially shaping the caption* has not been
+demonstrated end-to-end. Worth one probe with a real product photo during
+implementation; it does not change any interface here.
+
+### 2.7 `.response` is JSON-escaped
+
+The envelope escapes the delimiters (`\u003c\u003c\u003cPOST\u003e\u003e\u003e`).
+The parser MUST `JSON.parse` the stdout envelope and extract from the decoded
+`.response` string — never regex the raw stdout. Responses may also embed
+markdown file links (`[mindmap.png](file:///…)`), which the parser strips.
 
 ---
 
@@ -164,6 +205,10 @@ src/features/social-posts/
     graph-client.ts     Graph API photo post + scheduling
   *.test.ts             co-located Vitest tests
 ```
+
+The prompt builder must emit an **absolute** image path plus the clause
+*"Use ONLY your file-reading tool. Do NOT run any shell command."* — both are
+load-bearing for §2.4.1 and are covered by tests.
 
 `prompt-builder` and `response-parser` are deliberately separate pure modules:
 they hold the two subtle behaviours from §2.2–2.3 and are the highest-value
@@ -318,8 +363,9 @@ keeping the suite fast and offline.
 1. **`execFile` with an args array — never a shell string.** The idea text and
    prompt template are admin-supplied; interpolating them into a shell command
    is a command-injection hole. This is non-negotiable.
-2. Flags: `-p <prompt> --output-format json --print-timeout 120s`; add
-   `--conversation <id>` when continuing.
+2. Flags: `-p <prompt> --output-format json --print-timeout 120s
+   --add-dir <SOCIAL_POST_IMAGE_DIR>`; add `--conversation <id>` when continuing.
+   `--add-dir` is required, not optional — see §2.4.1.
 3. `cwd` = `SOCIAL_POST_IMAGE_DIR`. Pass `HOME` through in `env` — `agy` reads
    credentials from `~/.gemini/antigravity-cli/`.
 4. Node-side timeout slightly above `--print-timeout`, so a hung subprocess is
@@ -329,13 +375,15 @@ keeping the suite fast and offline.
 
 In order:
 
+0. `JSON.parse` stdout; extract the decoded `.response` (see §2.7 — the
+   delimiters arrive escaped, so raw-stdout regex fails).
 1. Non-zero exit or unparseable stdout -> `{ ok: false }` with stderr excerpt.
 2. `denied_actions` non-empty -> `{ ok: false }` listing them, mapped to a
    Vietnamese admin-facing message. **Checked before `status`**, because §2.4
    showed denials coexist with `status: "SUCCESS"`.
 3. `status !== "SUCCESS"` -> `{ ok: false }`.
 4. Extract `<<<POST>>> … <<<END>>>` from `.response`; fall back to the trimmed
-   full response if absent.
+   full response if absent. Strip markdown file links (`[x](file:///…)`).
 5. Empty caption after extraction -> `{ ok: false }`, never an empty draft.
 
 ---
@@ -421,9 +469,14 @@ actually succeeded. Mitigation: `--print-timeout 120s` plus a matching
 server-side guard. If this bites in practice, the upgrade path is the
 `shop_sync_runs` background-job pattern already proven in this codebase.
 
-### Unverified vision capability
+### Vision depends on prompt steering
 
-See §2.5. Fallback is `attach-only` mode; no schema change required.
+Resolved as workable (§2.5, §2.4.1), but the guarantee is softer than a flag:
+vision works because the prompt steers the agent away from `command`. A future
+`agy` release could change tool-selection behaviour and reintroduce the denial.
+Mitigation: `denied_actions` is already treated as a first-class error (§6), so
+this degrades to a legible failure rather than silent empty output, and
+`attach-only` (§5) remains available with no schema change.
 
 ### Model output variability
 
