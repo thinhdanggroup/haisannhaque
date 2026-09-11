@@ -8,7 +8,7 @@ const rolePermissions: Record<string, string[]> = {
     "categories:update",
     "shop_sync:manage",
   ],
-  marketing: ["cms:update", "promotions:update", "flash_sales:manage"],
+  marketing: ["cms:update", "promotions:update", "flash_sales:manage", "social_posts:manage"],
   customer_service: [
     "orders:read",
     "orders:update",
