@@ -168,6 +168,10 @@ export async function publishSocialPost(
   const post = await getSocialPost(client, id);
   if (!post) return { error: "Không tìm thấy bài đăng" };
   if (!post.imageUrl) return { error: "Bài đăng chưa có ảnh để đăng lên Facebook" };
+  // Gate on fb_post_id rather than status: it is only ever set after a real
+  // Graph API success, so it is a more precise "already published" signal
+  // than status (which a retry after a recorded failure would also carry).
+  if (post.fbPostId) return { error: "Bài đăng này đã được đăng lên Facebook" };
 
   const caption = effectiveCaption(post);
   if (!caption) return { error: "Bài đăng chưa có nội dung" };

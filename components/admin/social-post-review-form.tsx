@@ -7,6 +7,10 @@ type SocialPostReviewFormProps = {
   postId: string;
   caption: string;
   canPublish: boolean;
+  // Distinct from canPublish: this is "already succeeded", not "not yet
+  // eligible" — the two reasons the button is disabled need different
+  // messages so the admin isn't told to add an image/caption it already has.
+  alreadyPublished: boolean;
   updateAction: (
     prev: SocialPostActionState,
     formData: FormData,
@@ -40,6 +44,7 @@ export function SocialPostReviewForm({
   postId,
   caption,
   canPublish,
+  alreadyPublished,
   updateAction,
   regenerateAction,
   publishAction,
@@ -140,15 +145,21 @@ export function SocialPostReviewForm({
           </p>
           <button
             type="submit"
-            disabled={isPublishing || !canPublish}
+            disabled={isPublishing || !canPublish || alreadyPublished}
             className="inline-flex min-h-11 items-center rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60"
           >
             {isPublishing ? "Đang đăng…" : "Đăng lên Facebook"}
           </button>
-          {!canPublish && (
+          {alreadyPublished ? (
             <p className="text-xs text-slate-500">
-              Cần có ảnh và nội dung trước khi đăng lên Facebook.
+              Bài đăng này đã được đăng lên Facebook và không thể đăng lại từ đây.
             </p>
+          ) : (
+            !canPublish && (
+              <p className="text-xs text-slate-500">
+                Cần có ảnh và nội dung trước khi đăng lên Facebook.
+              </p>
+            )
           )}
         </form>
       </section>

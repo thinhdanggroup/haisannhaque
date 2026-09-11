@@ -112,6 +112,7 @@ export default async function SocialPostReviewPage({ params }: PageProps) {
         postId={post.id}
         caption={caption}
         canPublish={Boolean(post.imageUrl) && caption.length > 0}
+        alreadyPublished={Boolean(post.fbPostId)}
         updateAction={updateSocialPostCaption}
         regenerateAction={regenerateSocialPost}
         publishAction={publishSocialPost}
