@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { SocialPostActionState } from "@/src/features/social-posts/admin-actions";
 
 type SocialPostReviewFormProps = {
@@ -56,6 +56,14 @@ export function SocialPostReviewForm({
     SocialPostActionState,
     FormData
   >(publishAction, null);
+  const [scheduledPublishTime, setScheduledPublishTime] = useState<string>("");
+
+  function getScheduledPublishTimeValue(): string {
+    if (!scheduledPublishTime) return "";
+    const d = new Date(scheduledPublishTime);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toISOString();
+  }
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -65,6 +73,7 @@ export function SocialPostReviewForm({
           <ErrorBanner message={updateState?.error} />
           <input type="hidden" name="postId" value={postId} />
           <textarea
+            key={caption}
             name="caption"
             rows={16}
             defaultValue={caption}
@@ -114,18 +123,20 @@ export function SocialPostReviewForm({
         <form action={publishFormAction} className="space-y-3">
           <ErrorBanner message={publishState?.error} />
           <input type="hidden" name="postId" value={postId} />
-          <label className="block text-sm" htmlFor="scheduledPublishTime">
+          <input type="hidden" name="scheduledPublishTime" value={getScheduledPublishTimeValue()} />
+          <label className="block text-sm" htmlFor="scheduledPublishTimeInput">
             <span className="font-medium text-slate-700">Hẹn giờ đăng (để trống = đăng ngay)</span>
             <input
-              id="scheduledPublishTime"
-              name="scheduledPublishTime"
+              id="scheduledPublishTimeInput"
               type="datetime-local"
+              value={scheduledPublishTime}
+              onChange={(e) => setScheduledPublishTime(e.target.value)}
               className={INPUT_CLASS}
             />
           </label>
           <p className="text-xs text-slate-500">
-            Nếu hẹn giờ, thời điểm đăng phải cách hiện tại từ 10 phút đến 75 ngày (giới hạn của
-            Facebook).
+            Thời gian được hiểu theo múi giờ của bạn. Nếu hẹn giờ, thời điểm đăng phải cách hiện tại
+            từ 10 phút đến 75 ngày (giới hạn của Facebook).
           </p>
           <button
             type="submit"
