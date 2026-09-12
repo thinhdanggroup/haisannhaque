@@ -96,18 +96,72 @@ a post for a future date.
 
 ## Deployment (IMPORTANT)
 
-On a developer machine `agy` is at `~/.local/bin/agy` with credentials in
-`~/.gemini/antigravity-cli/`. **The production container has neither**, so
-generation will fail there until all of the following are true:
+### What is solved
 
-1. The `agy` binary is available in the container and `AGY_BIN_PATH` points at it.
-2. `~/.gemini/antigravity-cli/` (credentials **and** the `permissions.allow`
-   rule) is mounted for the container's user.
-3. `SOCIAL_POST_IMAGE_DIR` is a writable volume whose path is covered by that
-   allow-rule.
+The production image installs `agy` itself. `Dockerfile` runs the official
+installer in the runner stage and pins `AGY_BIN_PATH=/root/.local/bin/agy`,
+because the installer only puts the binary on `PATH` via shell profiles that a
+non-login `CMD` never sources.
 
-Publishing to Facebook and reviewing drafts do not depend on `agy`; only
-generation does.
+The image is Debian (`node:22-bookworm-slim`), **not** Alpine. This is not a
+preference: `agy` ships glibc builds only. The release server returns HTTP 404
+for every `linux_*_musl` manifest, so the installer cannot even run on Alpine,
+and the binary could not exec there if it did. Two consequences of that base
+change, both verified in the built image:
+
+- chromium is `/usr/bin/chromium` on Debian (Alpine called it
+  `chromium-browser`), so `SHOPEEFOOD_SYNC_CHROMIUM_PATH` changed with it.
+- `sharp` resolves to the glibc native binaries (`@img/sharp-linux-x64`), not
+  the musl ones, so `next/image` optimization keeps working.
+
+### What is NOT solved: authentication
+
+**Mounting `~/.gemini` does not authenticate `agy`.** This was tested directly:
+with the whole directory bind-mounted into a container, `agy` still demands an
+interactive Google OAuth login and exits with
+`error: authentication failed or timed out`. Setting `GEMINI_API_KEY` does not
+help either — the OAuth prompt is identical, so that string in the binary is not
+an auth path.
+
+`agy`'s credentials belong to the desktop **Antigravity IDE** installation
+(`~/.config/Antigravity/`, alongside the login keyring), not to `~/.gemini`.
+`~/.gemini` holds settings, logs, caches and conversation state — which is why
+mounting it is still required for the `permissions.allow` rule, but is not
+sufficient to log in.
+
+The practical consequences for a server:
+
+1. There is no documented non-interactive login. Authenticating on the server
+   means running `agy` there and completing a browser OAuth flow within a
+   60-second window, pasting the authorization code back over SSH.
+2. It is **unverified** whether the resulting token persists anywhere on the
+   mounted volume. If it lives with the IDE profile instead, every container
+   restart would need the login repeating — which is not viable unattended.
+
+Until that is resolved, treat generation as a feature that works on a developer
+machine and not on the server.
+
+### Degradation when `agy` is absent or unauthenticated
+
+The rest of the feature still works: the pages render, an admin can write and
+edit a caption by hand, and publishing or scheduling to Facebook is unaffected
+because it goes through the Graph API, not `agy`. Only generation and
+regeneration fail, and they fail with a legible Vietnamese error rather than a
+blank one.
+
+### The allow-rule must use the CONTAINER path
+
+`SOCIAL_POST_IMAGE_DIR` is `/var/lib/social-post-images` **inside** the
+container, backed by the `social-post-images` volume. `agy` resolves the
+`read_file` rule from inside the container, so the rule in the mounted
+`settings.json` must name that container path:
+
+```json
+{ "permissions": { "allow": ["read_file(/var/lib/social-post-images/**)"] } }
+```
+
+A rule naming the host path (`/home/<user>/...`) will not match, and vision
+fails with `agy bị từ chối quyền: read_file`.
 
 ## Known limitations
 

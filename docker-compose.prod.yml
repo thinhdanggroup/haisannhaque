@@ -15,6 +15,24 @@ services:
       SUPABASE_INTERNAL_URL: ${SUPABASE_INTERNAL_URL:-${NEXT_PUBLIC_SUPABASE_URL}}
       MOMO_WEBHOOK_SECRET: ${MOMO_WEBHOOK_SECRET:-}
       VNPAY_WEBHOOK_SECRET: ${VNPAY_WEBHOOK_SECRET:-}
+      FACEBOOK_PAGE_ID: ${FACEBOOK_PAGE_ID:-}
+      FACEBOOK_PAGE_ACCESS_TOKEN: ${FACEBOOK_PAGE_ACCESS_TOKEN:-}
+      # Both are also baked into the image; repeated here so they are visible
+      # to anyone reading the compose file, and overridable without a rebuild.
+      AGY_BIN_PATH: ${AGY_BIN_PATH:-/root/.local/bin/agy}
+      SOCIAL_POST_IMAGE_DIR: ${SOCIAL_POST_IMAGE_DIR:-/var/lib/social-post-images}
+    volumes:
+      # agy's account material and settings, supplied by the host rather than
+      # baked into the image. Mounted read-write because agy writes logs, caches
+      # and conversation state under this directory on every run.
+      #
+      # IMPORTANT: the permissions.allow read_file rule inside this directory's
+      # settings.json must name the CONTAINER path below, not a host path —
+      # agy resolves it from inside the container. See docs/social-post-generator.md.
+      - ${AGY_CONFIG_DIR:-/home/thinhda/.gemini}:/root/.gemini
+      # Uploaded post images. agy reads these from disk, so they must persist
+      # across restarts and live inside the read_file allow-rule above.
+      - social-post-images:/var/lib/social-post-images
     # Deliberately not published to the host: nginx is the only way in.
     expose:
       - "3000"
@@ -47,3 +65,6 @@ services:
     entrypoint: >-
       /bin/sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"
     restart: unless-stopped
+
+volumes:
+  social-post-images:
