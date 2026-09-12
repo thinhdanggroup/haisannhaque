@@ -114,40 +114,32 @@ change, both verified in the built image:
 - `sharp` resolves to the glibc native binaries (`@img/sharp-linux-x64`), not
   the musl ones, so `next/image` optimization keeps working.
 
-### What is NOT solved: authentication
+### Authentication: depends on how agy was logged in
 
-**Mounting `~/.gemini` does not authenticate `agy`.** This was tested directly:
-with the whole directory bind-mounted into a container, `agy` still demands an
-interactive Google OAuth login and exits with
-`error: authentication failed or timed out`. Setting `GEMINI_API_KEY` does not
-help either — the OAuth prompt is identical, so that string in the binary is not
-an auth path.
+`agy` has no documented non-interactive login, and `GEMINI_API_KEY` does not
+bypass OAuth (tested — the prompt is identical). Where the resulting token is
+stored differs by install, and that difference decides whether a container can
+use it:
 
-`agy`'s credentials belong to the desktop **Antigravity IDE** installation
-(`~/.config/Antigravity/`, alongside the login keyring), not to `~/.gemini`.
-`~/.gemini` holds settings, logs, caches and conversation state — which is why
-mounting it is still required for the `permissions.allow` rule, but is not
-sufficient to log in.
+- **Headless server login** (what production uses): the token lives under
+  `~/.gemini`, so bind-mounting that directory into the container authenticates
+  it. Verified on the production host: `agy` inside a container with `~/.gemini`
+  mounted returns `status: "SUCCESS"`.
+- **Desktop install alongside the Antigravity IDE** (a developer laptop): the
+  credentials belong to the IDE profile in `~/.config/Antigravity/`, not to
+  `~/.gemini`. Mounting `~/.gemini` from such a machine does **not**
+  authenticate — `agy` still demands an interactive OAuth login. Do not expect
+  to copy a laptop's `~/.gemini` to a server and have it work.
 
-The practical consequences for a server:
+So authenticate on the server itself (`agy` there, complete the OAuth flow
+once), and mount that host's `~/.gemini`. Do not ship a developer machine's copy.
 
-1. There is no documented non-interactive login. Authenticating on the server
-   means running `agy` there and completing a browser OAuth flow within a
-   60-second window, pasting the authorization code back over SSH.
-2. It is **unverified** whether the resulting token persists anywhere on the
-   mounted volume. If it lives with the IDE profile instead, every container
-   restart would need the login repeating — which is not viable unattended.
+### CA certificates are required
 
-Until that is resolved, treat generation as a feature that works on a developer
-machine and not on the server.
-
-### Degradation when `agy` is absent or unauthenticated
-
-The rest of the feature still works: the pages render, an admin can write and
-edit a caption by hand, and publishing or scheduling to Facebook is unaffected
-because it goes through the Graph API, not `agy`. Only generation and
-regeneration fail, and they fail with a legible Vietnamese error rather than a
-blank one.
+Without `ca-certificates` in the image, `agy` fails its eligibility check with
+`x509: certificate signed by unknown authority` — an error that looks like a
+credential problem but is not. The runner stage installs the package for this
+reason; do not drop it when trimming image size.
 
 ### The allow-rule must use the CONTAINER path
 
