@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "migrate": "bash scripts/migrate.sh",
     "migrate:list": "bash scripts/migrate.sh --list",
-    "migrate:new": "bash scripts/migrate.sh --new"
+    "migrate:new": "bash scripts/migrate.sh --new",
+    "fb:token": "node scripts/facebook-token.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
