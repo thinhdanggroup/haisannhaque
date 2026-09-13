@@ -21,7 +21,53 @@ granted to `super_admin` and `marketing`).
 | `SOCIAL_POST_IMAGE_DIR` | Where uploaded images are written for `agy` to read |
 | `AGY_BIN_PATH` | Absolute path to the `agy` binary (defaults to `agy` on PATH) |
 | `FACEBOOK_PAGE_ID` | Target Page id |
-| `FACEBOOK_PAGE_ACCESS_TOKEN` | Long-lived Page token, scope `pages_manage_posts` |
+| `FACEBOOK_PAGE_ACCESS_TOKEN` | Non-expiring Page token, scope `pages_manage_posts` |
+
+Both are read at runtime only (`resolveFacebookConfig`), so changing them on
+the server needs a container restart, not a rebuild — unlike the
+`NEXT_PUBLIC_*` values, which are baked into the client bundle at build time.
+
+### Minting the Page token
+
+```sh
+pnpm fb:token          # writes both variables into .env.local
+pnpm fb:token --print  # print them instead, change nothing
+```
+
+The script wants an App ID, the App Secret (App settings → Basic → Show), and
+a short-lived **user** token from the Graph API Explorer, generated with
+`pages_show_list`, `pages_read_engagement` and `pages_manage_posts` and with
+the target Page ticked in the consent dialog.
+
+The Explorer never gives you a Page token directly — this is the step that
+costs people an afternoon. What it hands out is a USER token; the Page token
+is *derived* from it:
+
+```
+short-lived user token --(exchange, needs App Secret)--> long-lived user token
+                       --(/<user id>/accounts)--------> Page token, never expires
+```
+
+Skipping the middle step yields a Page token that looks correct and stops
+working within hours, because a derived token inherits the lifetime of the
+token it came from. `pnpm fb:token` runs the whole chain and refuses anything
+that is not a valid `PAGE` token carrying `pages_manage_posts`, warning
+loudly when `expires_at` is not `0`.
+
+Verify an existing token at any time:
+
+```sh
+curl -s "https://graph.facebook.com/v21.0/debug_token?input_token=$T&access_token=$T"
+```
+
+Want `"type": "PAGE"`, `"expires_at": 0`, and a `profile_id` matching
+`FACEBOOK_PAGE_ID`. A response naming a person rather than the Page means a
+user token got pasted in by mistake.
+
+The App Secret is used only during the exchange — it is never stored in
+`.env*`. The Page token that results does not expire, so treat it as a
+long-lived credential: anyone holding it can post as the Page. Revoke it from
+the owning account under Settings → Business Integrations.
 
 ## agy permission configuration (required)
 
@@ -61,7 +107,7 @@ host. The `command` permission stays denied; the prompt is written to steer
 | `Sinh nội dung quá thời gian chờ (Ns)` | `agy` did not finish within the configured `--print-timeout` and was killed; retry, or investigate why generation is slow |
 | `Không tạo được thư mục ảnh <dir>: …` | `SOCIAL_POST_IMAGE_DIR` could not be created (permissions, read-only volume) before spawning `agy` |
 | `Chưa cấu hình FACEBOOK_PAGE_ID và FACEBOOK_PAGE_ACCESS_TOKEN` | Both Facebook env vars missing — check both are set |
-| `Facebook từ chối: Invalid OAuth access token` | Page token expired — reissue it |
+| `Facebook từ chối: Invalid OAuth access token` | Token revoked, or derived from a short-lived user token — re-run `pnpm fb:token` |
 
 ### Path containment — what it does and does not cover
 
