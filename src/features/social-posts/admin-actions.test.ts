@@ -46,6 +46,8 @@ const BASE_POST_ROW = {
   edited_caption: null,
   status: "generated",
   fb_post_id: null,
+  test_fb_post_id: null,
+  tested_at: null,
   scheduled_publish_time: null,
   conversation_id: "conv-1",
   generation_ms: 5000,
@@ -192,6 +194,23 @@ describe("publishSocialPost", () => {
     expect(updateChain.eq).toHaveBeenCalledWith("id", BASE_POST_ROW.id);
   });
 
+  it("sends the now target for an immediate publish", async () => {
+    requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
+    resolveFacebookConfig.mockReturnValue({ pageId: "page-1", accessToken: "token-1" });
+    publishPhoto.mockResolvedValue({ ok: true, postId: "fb-123" });
+
+    from.mockReturnValueOnce(makeSelectChain(BASE_POST_ROW)).mockReturnValueOnce(makeUpdateChain());
+
+    const formData = new FormData();
+    formData.set("postId", BASE_POST_ROW.id);
+
+    await publishSocialPost(null, formData);
+
+    expect(publishPhoto).toHaveBeenCalledWith(
+      expect.objectContaining({ target: { kind: "now" } }),
+    );
+  });
+
   it("rejects a second publish attempt once fb_post_id is already set", async () => {
     requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
     resolveFacebookConfig.mockReturnValue({ pageId: "page-1", accessToken: "token-1" });
@@ -206,6 +225,116 @@ describe("publishSocialPost", () => {
 
     expect(result).toEqual({ error: "Bài đăng này đã được đăng lên Facebook" });
     expect(publishPhoto).not.toHaveBeenCalled();
+  });
+});
+
+describe("publishSocialPost — chế độ đăng thử", () => {
+  function testFormData() {
+    const formData = new FormData();
+    formData.set("postId", BASE_POST_ROW.id);
+    formData.set("mode", "test");
+    return formData;
+  }
+
+  it("publishes to the unpublished target so nothing reaches the timeline", async () => {
+    requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
+    resolveFacebookConfig.mockReturnValue({ pageId: "page-1", accessToken: "token-1" });
+    publishPhoto.mockResolvedValue({ ok: true, postId: "fb-test-1" });
+
+    from.mockReturnValueOnce(makeSelectChain(BASE_POST_ROW)).mockReturnValueOnce(makeUpdateChain());
+
+    await publishSocialPost(null, testFormData());
+
+    expect(publishPhoto).toHaveBeenCalledWith(
+      expect.objectContaining({ target: { kind: "unpublished" } }),
+    );
+  });
+
+  // The whole point of the mode: testing must not consume the post. Writing
+  // fb_post_id or status here would trip the already-published gate and lock
+  // the post out of a real publish forever.
+  it("records the test without touching fb_post_id, status or posted_at", async () => {
+    requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
+    resolveFacebookConfig.mockReturnValue({ pageId: "page-1", accessToken: "token-1" });
+    publishPhoto.mockResolvedValue({ ok: true, postId: "fb-test-1" });
+
+    const updateChain = makeUpdateChain();
+    from.mockReturnValueOnce(makeSelectChain(BASE_POST_ROW)).mockReturnValueOnce(updateChain);
+
+    const result = await publishSocialPost(null, testFormData());
+
+    expect(result).toBeNull();
+    const written = updateChain.update.mock.calls[0][0];
+    expect(written.test_fb_post_id).toBe("fb-test-1");
+    expect(written.tested_at).toEqual(expect.any(String));
+    expect(written).not.toHaveProperty("status");
+    expect(written).not.toHaveProperty("fb_post_id");
+    expect(written).not.toHaveProperty("posted_at");
+    expect(updateChain.eq).toHaveBeenCalledWith("id", BASE_POST_ROW.id);
+  });
+
+  it("allows a test even after the post has been published for real", async () => {
+    requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
+    resolveFacebookConfig.mockReturnValue({ pageId: "page-1", accessToken: "token-1" });
+    publishPhoto.mockResolvedValue({ ok: true, postId: "fb-test-2" });
+
+    const row = { ...BASE_POST_ROW, fb_post_id: "fb-already-posted", status: "posted" };
+    from.mockReturnValueOnce(makeSelectChain(row)).mockReturnValueOnce(makeUpdateChain());
+
+    const result = await publishSocialPost(null, testFormData());
+
+    expect(result).toBeNull();
+    expect(publishPhoto).toHaveBeenCalled();
+  });
+
+  it("can be run twice on the same post", async () => {
+    requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
+    resolveFacebookConfig.mockReturnValue({ pageId: "page-1", accessToken: "token-1" });
+    publishPhoto.mockResolvedValue({ ok: true, postId: "fb-test-3" });
+
+    const row = { ...BASE_POST_ROW, test_fb_post_id: "fb-test-2", tested_at: "2026-09-13T00:00:00.000Z" };
+    from.mockReturnValueOnce(makeSelectChain(row)).mockReturnValueOnce(makeUpdateChain());
+
+    const result = await publishSocialPost(null, testFormData());
+
+    expect(result).toBeNull();
+    expect(publishPhoto).toHaveBeenCalled();
+  });
+
+  // A failed test says nothing about the draft's quality, so it must not brand
+  // an otherwise good post as failed.
+  it("on failure, records the error without marking the post failed", async () => {
+    requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
+    resolveFacebookConfig.mockReturnValue({ pageId: "page-1", accessToken: "token-1" });
+    publishPhoto.mockResolvedValue({ ok: false, error: "Facebook từ chối: Invalid OAuth access token" });
+
+    const updateChain = makeUpdateChain();
+    from.mockReturnValueOnce(makeSelectChain(BASE_POST_ROW)).mockReturnValueOnce(updateChain);
+
+    const result = await publishSocialPost(null, testFormData());
+
+    expect(result).toEqual({ error: "Facebook từ chối: Invalid OAuth access token" });
+    const written = updateChain.update.mock.calls[0][0];
+    expect(written).not.toHaveProperty("status");
+    expect(written.error_message).toBe("Facebook từ chối: Invalid OAuth access token");
+  });
+
+  it("ignores a schedule: a test is always immediate and hidden", async () => {
+    requireAdminPermission.mockResolvedValue({ userId: "u1", roles: ["super_admin"] });
+    resolveFacebookConfig.mockReturnValue({ pageId: "page-1", accessToken: "token-1" });
+    publishPhoto.mockResolvedValue({ ok: true, postId: "fb-test-4" });
+
+    from.mockReturnValueOnce(makeSelectChain(BASE_POST_ROW)).mockReturnValueOnce(makeUpdateChain());
+
+    const formData = testFormData();
+    formData.set("scheduledPublishTime", "2026-12-01T10:00");
+
+    const result = await publishSocialPost(null, formData);
+
+    expect(result).toBeNull();
+    expect(publishPhoto).toHaveBeenCalledWith(
+      expect.objectContaining({ target: { kind: "unpublished" } }),
+    );
   });
 });
 

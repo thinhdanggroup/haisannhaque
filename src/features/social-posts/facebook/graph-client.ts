@@ -1,13 +1,25 @@
 export const GRAPH_VERSION = "v21.0";
 
+// The three ways a photo can land on a Page, as a union so they cannot be
+// combined: "scheduled" and "unpublished" both send published=false, and what
+// separates them is the presence of the timestamp. A flag alongside an
+// optional date would let a caller ask for both at once, which Facebook
+// resolves by publishing later — the opposite of staying hidden.
+export type PublishTarget =
+  | { kind: "now" }
+  // `at` must already be inside the Graph API's 10-minute-to-75-day window
+  // (validated by schema.ts).
+  | { kind: "scheduled"; at: Date }
+  // Stored against the Page but kept off the timeline; visible to admins in
+  // Business Suite → Publishing Tools. Used by the admin's test publish.
+  | { kind: "unpublished" };
+
 export type PublishPhotoInput = {
   pageId: string;
   accessToken: string;
   message: string;
   imageUrl: string;
-  // Omit to publish immediately. Must already be inside the Graph API's
-  // 10-minute-to-75-day window (validated by schema.ts).
-  scheduledPublishTime?: Date;
+  target: PublishTarget;
 };
 
 export type PublishResult = { ok: true; postId: string } | { ok: false; error: string };
@@ -25,14 +37,17 @@ export function buildPhotoPayload(input: PublishPhotoInput): URLSearchParams {
     access_token: input.accessToken,
   });
 
-  if (input.scheduledPublishTime) {
-    payload.set("published", "false");
-    payload.set(
-      "scheduled_publish_time",
-      String(Math.floor(input.scheduledPublishTime.getTime() / 1000)),
-    );
-  } else {
-    payload.set("published", "true");
+  switch (input.target.kind) {
+    case "now":
+      payload.set("published", "true");
+      break;
+    case "scheduled":
+      payload.set("published", "false");
+      payload.set("scheduled_publish_time", String(Math.floor(input.target.at.getTime() / 1000)));
+      break;
+    case "unpublished":
+      payload.set("published", "false");
+      break;
   }
 
   return payload;

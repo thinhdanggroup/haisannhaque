@@ -14,6 +14,8 @@ function buildPost(overrides: Partial<SocialPost> = {}): SocialPost {
     editedCaption: null,
     status: "generated",
     fbPostId: null,
+    testFbPostId: null,
+    testedAt: null,
     scheduledPublishTime: null,
     conversationId: null,
     generationMs: null,

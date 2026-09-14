@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SocialPost, SocialPostStatus, SocialPostTemplate } from "./types";
 
-const POST_COLUMNS = "id, template_id, idea, image_url, image_storage_path, image_local_path, generated_caption, edited_caption, status, fb_post_id, scheduled_publish_time, conversation_id, generation_ms, generation_tokens, error_message, created_at, posted_at";
+const POST_COLUMNS = "id, template_id, idea, image_url, image_storage_path, image_local_path, generated_caption, edited_caption, status, fb_post_id, test_fb_post_id, tested_at, scheduled_publish_time, conversation_id, generation_ms, generation_tokens, error_message, created_at, posted_at";
 
 const TEMPLATE_COLUMNS = "id, name, prompt_body, is_default, is_active, updated_at";
 
@@ -18,6 +18,8 @@ type PostRow = {
   edited_caption: string | null;
   status: SocialPostStatus;
   fb_post_id: string | null;
+  test_fb_post_id: string | null;
+  tested_at: string | null;
   scheduled_publish_time: string | null;
   conversation_id: string | null;
   generation_ms: number | null;
@@ -48,6 +50,8 @@ function mapPost(row: PostRow): SocialPost {
     editedCaption: row.edited_caption,
     status: row.status,
     fbPostId: row.fb_post_id,
+    testFbPostId: row.test_fb_post_id,
+    testedAt: row.tested_at,
     scheduledPublishTime: row.scheduled_publish_time,
     conversationId: row.conversation_id,
     generationMs: row.generation_ms,

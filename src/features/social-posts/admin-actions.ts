@@ -185,19 +185,26 @@ export async function publishSocialPost(
     return { error: "Chưa cấu hình FACEBOOK_PAGE_ID và FACEBOOK_PAGE_ACCESS_TOKEN" };
   }
 
+  // "test" publishes an unpublished photo: stored against the Page, visible
+  // only to admins in Business Suite, never on the timeline.
+  const isTest = String(formData.get("mode") ?? "") === "test";
+
   const post = await getSocialPost(client, id);
   if (!post) return { error: "Không tìm thấy bài đăng" };
   if (!post.imageUrl) return { error: "Bài đăng chưa có ảnh để đăng lên Facebook" };
   // Gate on fb_post_id rather than status: it is only ever set after a real
   // Graph API success, so it is a more precise "already published" signal
   // than status (which a retry after a recorded failure would also carry).
-  if (post.fbPostId) return { error: "Bài đăng này đã được đăng lên Facebook" };
+  // A test never writes fb_post_id, so it is exempt — testing must stay
+  // repeatable, before or after the post goes out for real.
+  if (!isTest && post.fbPostId) return { error: "Bài đăng này đã được đăng lên Facebook" };
 
   const caption = effectiveCaption(post);
   if (!caption) return { error: "Bài đăng chưa có nội dung" };
 
-  // An empty schedule field means publish now.
-  const rawSchedule = String(formData.get("scheduledPublishTime") ?? "").trim();
+  // An empty schedule field means publish now. A test is always immediate and
+  // hidden, so any schedule left in the form is ignored rather than rejected.
+  const rawSchedule = isTest ? "" : String(formData.get("scheduledPublishTime") ?? "").trim();
   let scheduledPublishTime: Date | undefined;
 
   if (rawSchedule) {
@@ -211,13 +218,19 @@ export async function publishSocialPost(
     accessToken: config.accessToken,
     message: caption,
     imageUrl: post.imageUrl,
-    scheduledPublishTime,
+    target: isTest
+      ? { kind: "unpublished" }
+      : scheduledPublishTime
+        ? { kind: "scheduled", at: scheduledPublishTime }
+        : { kind: "now" },
   });
 
   if (!result.ok) {
+    // A failed test says nothing about the draft, so it records the error
+    // without branding the post itself as failed.
     const { error: recordError } = await client
       .from("social_posts")
-      .update({ status: "failed", error_message: result.error })
+      .update(isTest ? { error_message: result.error } : { status: "failed", error_message: result.error })
       .eq("id", id);
 
     revalidatePath(LIST_PATH);
@@ -234,13 +247,21 @@ export async function publishSocialPost(
 
   const { error } = await client
     .from("social_posts")
-    .update({
-      status: scheduledPublishTime ? "scheduled" : "posted",
-      fb_post_id: result.postId,
-      scheduled_publish_time: scheduledPublishTime?.toISOString() ?? null,
-      posted_at: scheduledPublishTime ? null : new Date().toISOString(),
-      error_message: null,
-    })
+    .update(
+      isTest
+        ? {
+            test_fb_post_id: result.postId,
+            tested_at: new Date().toISOString(),
+            error_message: null,
+          }
+        : {
+            status: scheduledPublishTime ? "scheduled" : "posted",
+            fb_post_id: result.postId,
+            scheduled_publish_time: scheduledPublishTime?.toISOString() ?? null,
+            posted_at: scheduledPublishTime ? null : new Date().toISOString(),
+            error_message: null,
+          },
+    )
     .eq("id", id);
 
   if (error) return { error: error.message };

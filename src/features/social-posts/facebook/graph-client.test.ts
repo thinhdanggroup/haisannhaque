@@ -6,6 +6,7 @@ const INPUT = {
   accessToken: "page-token",
   message: "Cá hồi tươi về sáng nay!",
   imageUrl: "https://example.supabase.co/storage/v1/social/a.png",
+  target: { kind: "now" } as const,
 };
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -26,7 +27,7 @@ describe("buildPhotoEndpoint", () => {
 });
 
 describe("buildPhotoPayload", () => {
-  it("publishes immediately when no schedule is given", () => {
+  it("publishes immediately for the now target", () => {
     const payload = buildPhotoPayload(INPUT);
     expect(payload.get("url")).toBe(INPUT.imageUrl);
     expect(payload.get("message")).toBe(INPUT.message);
@@ -37,9 +38,21 @@ describe("buildPhotoPayload", () => {
 
   it("sets published=false and a unix timestamp when scheduled", () => {
     const when = new Date("2026-09-12T10:00:00.000Z");
-    const payload = buildPhotoPayload({ ...INPUT, scheduledPublishTime: when });
+    const payload = buildPhotoPayload({ ...INPUT, target: { kind: "scheduled", at: when } });
     expect(payload.get("published")).toBe("false");
     expect(payload.get("scheduled_publish_time")).toBe(String(Math.floor(when.getTime() / 1000)));
+  });
+
+  // The unpublished target is what "đăng thử" rides on: Facebook stores the
+  // photo against the Page but never puts it on the timeline. Omitting the
+  // timestamp is what separates it from a scheduled post — with one, Facebook
+  // would publish it later rather than keeping it hidden.
+  it("sets published=false and no timestamp when unpublished", () => {
+    const payload = buildPhotoPayload({ ...INPUT, target: { kind: "unpublished" } });
+    expect(payload.get("published")).toBe("false");
+    expect(payload.get("scheduled_publish_time")).toBeNull();
+    expect(payload.get("message")).toBe(INPUT.message);
+    expect(payload.get("url")).toBe(INPUT.imageUrl);
   });
 });
 

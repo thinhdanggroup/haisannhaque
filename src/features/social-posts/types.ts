@@ -24,6 +24,10 @@ export type SocialPost = {
   editedCaption: string | null;
   status: SocialPostStatus;
   fbPostId: string | null;
+  // Set by a test publish only; leaves fbPostId untouched so the post can
+  // still be published for real afterwards.
+  testFbPostId: string | null;
+  testedAt: string | null;
   scheduledPublishTime: string | null;
   conversationId: string | null;
   generationMs: number | null;

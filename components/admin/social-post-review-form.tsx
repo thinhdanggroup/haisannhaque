@@ -11,6 +11,8 @@ type SocialPostReviewFormProps = {
   // eligible" — the two reasons the button is disabled need different
   // messages so the admin isn't told to add an image/caption it already has.
   alreadyPublished: boolean;
+  // ISO timestamp of the last "đăng thử", or null if never tested.
+  testedAt: string | null;
   updateAction: (
     prev: SocialPostActionState,
     formData: FormData,
@@ -45,6 +47,7 @@ export function SocialPostReviewForm({
   caption,
   canPublish,
   alreadyPublished,
+  testedAt,
   updateAction,
   regenerateAction,
   publishAction,
@@ -143,13 +146,35 @@ export function SocialPostReviewForm({
             Thời gian được hiểu theo múi giờ của bạn. Nếu hẹn giờ, thời điểm đăng phải cách hiện tại
             từ 10 phút đến 75 ngày (giới hạn của Facebook).
           </p>
-          <button
-            type="submit"
-            disabled={isPublishing || !canPublish || alreadyPublished}
-            className="inline-flex min-h-11 items-center rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60"
-          >
-            {isPublishing ? "Đang đăng…" : "Đăng lên Facebook"}
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="submit"
+              name="mode"
+              value="publish"
+              disabled={isPublishing || !canPublish || alreadyPublished}
+              className="inline-flex min-h-11 items-center rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60"
+            >
+              {isPublishing ? "Đang đăng…" : "Đăng lên Facebook"}
+            </button>
+            {/* Stays enabled after a real publish: a test never consumes the
+                post, so it can be re-run to check the Facebook connection. */}
+            <button
+              type="submit"
+              name="mode"
+              value="test"
+              disabled={isPublishing || !canPublish}
+              className="inline-flex min-h-11 items-center rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+            >
+              {isPublishing ? "Đang xử lý…" : "Đăng thử (chỉ admin thấy)"}
+            </button>
+          </div>
+          <p className="text-xs text-slate-500">
+            Đăng thử gửi bài lên Facebook ở dạng chưa xuất bản: bài không xuất hiện trên trang,
+            chỉ admin xem được trong Meta Business Suite → Publishing Tools. Hẹn giờ sẽ bị bỏ qua.
+            {testedAt && (
+              <> Lần đăng thử gần nhất: {testedAt.slice(0, 16).replace("T", " ")}.</>
+            )}
+          </p>
           {alreadyPublished ? (
             <p className="text-xs text-slate-500">
               Bài đăng này đã được đăng lên Facebook và không thể đăng lại từ đây.
