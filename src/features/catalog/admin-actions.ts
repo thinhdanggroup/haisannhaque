@@ -289,18 +289,34 @@ export async function updateVariantPricing(
   const productIdResult = z.string().uuid().safeParse(productId);
   if (!productIdResult.success) return { error: "Invalid product ID." };
 
+  // Same empty-string trap as createVariantSchema: Number("") is 0, so a
+  // cleared sale price used to be stored as a 0d sale rather than as "no
+  // sale", and a blank list price as a free product.
   const variantSchema = z.object({
     id: z.string().uuid(),
-    listPrice: z.coerce.number().min(0, "List price must be 0 or more"),
-    salePrice: z.union([z.coerce.number().min(0), z.literal("")]).optional(),
+    listPrice: z
+      .string()
+      .trim()
+      .min(1, "List price is required")
+      .transform((value) => Number(value))
+      .pipe(
+        z
+          .number({ message: "List price must be a number" })
+          .min(0, "List price must be 0 or more"),
+      ),
+    salePrice: z
+      .string()
+      .trim()
+      .refine((value) => value === "" || Number.isFinite(Number(value)), "Sale price must be a number")
+      .refine((value) => value === "" || Number(value) >= 0, "Sale price must be 0 or more")
+      .transform((value) => (value === "" ? null : Number(value))),
   });
 
   const updates = variantIds.map((id) => {
-    const saleRaw = formData.get(`salePrice_${id}`);
     return variantSchema.safeParse({
       id,
-      listPrice: formData.get(`listPrice_${id}`),
-      salePrice: saleRaw === "" ? "" : saleRaw,
+      listPrice: formData.get(`listPrice_${id}`) ?? "",
+      salePrice: formData.get(`salePrice_${id}`) ?? "",
     });
   });
 
@@ -312,17 +328,106 @@ export async function updateVariantPricing(
   for (const result of updates) {
     if (!result.success) continue;
     const { id, listPrice, salePrice } = result.data;
-    const salePriceValue =
-      salePrice === "" || salePrice === undefined ? null : salePrice;
 
     const { error } = await client
       .from("product_variants")
-      .update({ list_price: listPrice, sale_price: salePriceValue })
+      .update({ list_price: listPrice, sale_price: salePrice })
       .eq("id", id);
 
     if (error) throw error;
   }
 
   revalidatePath(`/admin/products/${productIdResult.data}/edit`);
+  return { success: true };
+}
+
+// Number("") is 0, so coercing a blank price would silently make the product
+// free. Both money fields handle the empty string explicitly: list price
+// rejects it, sale price maps it to null ("no sale price").
+const createVariantSchema = z.object({
+  productId: z.string().uuid(),
+  sku: z.string(),
+  unit: z.string().trim().min(1, "Unit is required"),
+  optionSummary: z.string(),
+  listPrice: z
+    .string()
+    .trim()
+    .min(1, "List price is required")
+    .transform((value) => Number(value))
+    .pipe(
+      z
+        .number({ message: "List price must be a number" })
+        .min(0, "List price must be 0 or more"),
+    ),
+  salePrice: z
+    .string()
+    .trim()
+    .refine((value) => value === "" || Number.isFinite(Number(value)), "Sale price must be a number")
+    .refine((value) => value === "" || Number(value) >= 0, "Sale price must be 0 or more")
+    .transform((value) => (value === "" ? null : Number(value))),
+});
+
+export type CreateVariantState = { error: string } | { success: true } | null;
+
+export async function createProductVariant(
+  _prev: CreateVariantState,
+  formData: FormData,
+): Promise<CreateVariantState> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "products:update");
+
+  const result = createVariantSchema.safeParse({
+    productId: formData.get("productId"),
+    sku: formData.get("sku") ?? "",
+    unit: formData.get("unit") ?? "",
+    optionSummary: formData.get("optionSummary") ?? "",
+    listPrice: formData.get("listPrice") ?? "",
+    salePrice: formData.get("salePrice") ?? "",
+  });
+
+  if (!result.success) {
+    const issue = result.error.issues[0];
+    if (issue?.path[0] === "productId") return { error: "Invalid product ID." };
+    return { error: issue?.message ?? "Invalid input." };
+  }
+
+  const { productId, unit, optionSummary, listPrice, salePrice } = result.data;
+
+  // The admin create-product form makes a product with no variants, so prices
+  // live nowhere until one is added here. SKU is globally unique and rarely
+  // meaningful for hand-made products, so a blank one is derived from the
+  // product slug rather than forced on the operator.
+  let sku = result.data.sku.trim();
+  if (sku.length === 0) {
+    const { data, error } = await client
+      .from("products")
+      .select("slug")
+      .eq("id", productId)
+      .single();
+
+    if (error || !data) return { error: "Product not found." };
+    sku = `${data.slug}-${Math.random().toString(36).slice(2, 7)}`;
+  }
+
+  const { error } = await client.from("product_variants").insert({
+    product_id: productId,
+    sku,
+    unit,
+    option_summary: optionSummary.trim() === "" ? null : optionSummary.trim(),
+    list_price: listPrice,
+    sale_price: salePrice,
+    is_active: true,
+    is_weighable: false,
+  });
+
+  if (error) {
+    if ((error as { code?: string }).code === "23505") {
+      return { error: `SKU "${sku}" is already used by another variant.` };
+    }
+    throw error;
+  }
+
+  revalidatePath(`/admin/products/${productId}/edit`);
+  revalidatePath("/admin/products");
   return { success: true };
 }

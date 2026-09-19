@@ -1,8 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import {
+  createProductVariant,
   updateVariantPricing,
+  type CreateVariantState,
   type UpdateVariantPricingState,
 } from "@/src/features/catalog/admin-actions";
 
@@ -29,9 +31,13 @@ export function ProductVariantsPricing({ productId, variants }: ProductVariantsP
 
   if (variants.length === 0) {
     return (
-      <div className="max-w-xl">
+      <div className="max-w-2xl space-y-4">
         <h2 className="text-sm font-semibold text-slate-700">Giá sản phẩm</h2>
-        <p className="mt-2 text-sm text-slate-500">Chưa có biến thể nào.</p>
+        <p className="text-sm text-slate-500">
+          Chưa có biến thể nào — sản phẩm chưa có giá nên sẽ không hiển thị trên web. Thêm một biến
+          thể để đặt giá.
+        </p>
+        <AddVariantForm productId={productId} />
       </div>
     );
   }
@@ -114,6 +120,102 @@ export function ProductVariantsPricing({ productId, variants }: ProductVariantsP
           {isPending ? "Đang lưu…" : "Lưu giá"}
         </button>
       </form>
+
+      <AddVariantForm productId={productId} />
     </div>
+  );
+}
+
+const inputClass =
+  "min-h-9 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100";
+
+function AddVariantForm({ productId }: { productId: string }) {
+  const [state, action, isPending] = useActionState<CreateVariantState, FormData>(
+    createProductVariant,
+    null,
+  );
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const created = state !== null && "success" in state;
+
+  useEffect(() => {
+    if (created) formRef.current?.reset();
+  }, [created]);
+
+  return (
+    <form
+      ref={formRef}
+      action={action}
+      className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4"
+    >
+      <input type="hidden" name="productId" value={productId} />
+
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Thêm biến thể</p>
+
+      {state && "error" in state && (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {state.error}
+        </p>
+      )}
+
+      {created && (
+        <p className="rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-sm text-teal-700">
+          Đã thêm biến thể.
+        </p>
+      )}
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="space-y-1 text-sm text-slate-700">
+          <span>
+            Đơn vị <span className="text-red-600">*</span>
+          </span>
+          <input name="unit" defaultValue="phần" required className={inputClass} />
+        </label>
+
+        <label className="space-y-1 text-sm text-slate-700">
+          <span>Tên biến thể</span>
+          <input name="optionSummary" placeholder="VD: Hũ 500g" className={inputClass} />
+        </label>
+
+        <label className="space-y-1 text-sm text-slate-700">
+          <span>
+            Giá niêm yết (₫) <span className="text-red-600">*</span>
+          </span>
+          <input
+            type="number"
+            name="listPrice"
+            min={0}
+            step={1000}
+            required
+            className={inputClass}
+          />
+        </label>
+
+        <label className="space-y-1 text-sm text-slate-700">
+          <span>Giá khuyến mãi (₫)</span>
+          <input
+            type="number"
+            name="salePrice"
+            min={0}
+            step={1000}
+            placeholder="Để trống nếu không giảm giá"
+            className={inputClass}
+          />
+        </label>
+
+        <label className="space-y-1 text-sm text-slate-700 sm:col-span-2">
+          <span>SKU</span>
+          <input name="sku" placeholder="Để trống để tự sinh theo tên sản phẩm" className={inputClass} />
+        </label>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isPending}
+        className="min-h-10 rounded-lg bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:opacity-60"
+      >
+        {isPending ? "Đang thêm…" : "Thêm biến thể"}
+      </button>
+    </form>
   );
 }
