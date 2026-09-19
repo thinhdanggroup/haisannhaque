@@ -106,3 +106,40 @@ Copy `.env.example` → `.env.local` and fill in:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+
+---
+
+## Production
+
+Production is a **self-hosted Docker stack on `110.172.28.198`**, not Vercel. A
+`.vercel/` directory exists in the repo but is stale — do not deploy with
+`vercel --prod`.
+
+| | |
+|---|---|
+| Host | `thinhda@110.172.28.198` |
+| Path | `~/haisannhaque` |
+| Stack | `docker compose -f docker-compose.prod.yml` — services `web`, `nginx`, `certbot` |
+| Live URL | https://haisannhaque.com |
+| Secrets | `.env` on the server (gitignored); `.env.local` is local only |
+
+Deploy = push to `main` first, then:
+
+```bash
+ssh thinhda@110.172.28.198 'cd ~/haisannhaque && ./scripts/deploy.sh'
+```
+
+`scripts/deploy.sh` does `git pull --ff-only`, rebuilds the `web` image, restarts
+the stack, and polls port 80 until the app answers — so **the server pulls from
+`origin/main`**; an unpushed commit will not ship. Expect a few minutes for
+`next build`. A transient `502` during the poll is normal while the container
+boots; the script only succeeds once a real `200` comes back.
+
+`NEXT_PUBLIC_*` values are baked into the client bundle at build time, so
+changing one needs a rebuild, not just a restart.
+
+Full runbook, TLS modes, and image-transfer fallback: `docs/DEPLOYMENT.md`.
+
+> **Local dev points at the production Supabase project.** `pnpm dev` reads and
+> writes real shop data. Navigating and reading is fine; submitting admin forms
+> is a production write.
