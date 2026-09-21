@@ -27,6 +27,13 @@ ENV SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
 RUN corepack enable && corepack prepare pnpm@10.5.2 --activate
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# The production host has 2 GB of RAM and no swap, and `next build` is the
+# peak-memory step: left uncapped, V8 grows past physical memory and the
+# kernel SIGKILLs the TypeScript worker. Capping the heap makes V8 collect
+# instead of balloon. Applies to the build workers too, since they inherit
+# NODE_OPTIONS.
+ENV NODE_OPTIONS=--max-old-space-size=768
 RUN pnpm build
 
 FROM node:22-bookworm-slim AS runner
