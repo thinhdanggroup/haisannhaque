@@ -27,6 +27,8 @@ export async function createCategory(
     parent_id: result.data.parentId,
     sort_order: result.data.sortOrder,
     is_active: result.data.isActive,
+    icon_key: result.data.iconKey || null,
+    show_in_nav: result.data.showInNav,
   });
 
   if (error) {
@@ -35,6 +37,7 @@ export async function createCategory(
   }
 
   revalidatePath("/admin/categories");
+  revalidatePath("/", "layout");
   redirect("/admin/categories");
 }
 
@@ -57,12 +60,15 @@ export async function updateCategory(
       parent_id: result.data.parentId,
       sort_order: result.data.sortOrder,
       is_active: result.data.isActive,
+      icon_key: result.data.iconKey || null,
+      show_in_nav: result.data.showInNav,
     })
     .eq("id", result.data.id);
 
   if (error) throw error;
 
   revalidatePath("/admin/categories");
+  revalidatePath("/", "layout");
   redirect("/admin/categories");
 }
 
@@ -80,4 +86,5 @@ export async function deleteCategory(id: string): Promise<void> {
   }
 
   revalidatePath("/admin/categories");
+  revalidatePath("/", "layout");
 }

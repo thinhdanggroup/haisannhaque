@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import type { CmsNavigationItem } from "@/src/features/cms/types";
-import { getNavigationItems, NavigationItemIcon } from "./category-nav";
+import type { StorefrontNavLink } from "@/src/features/cms/types";
+import { NavigationItemIcon } from "./category-nav";
 
 type CategorySidebarProps = {
-  items: CmsNavigationItem[];
+  items: StorefrontNavLink[];
 };
 
 export function CategorySidebar({ items }: CategorySidebarProps) {
-  const visibleItems = getNavigationItems(items);
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <aside
@@ -20,7 +22,7 @@ export function CategorySidebar({ items }: CategorySidebarProps) {
         <span>Danh mục</span>
       </div>
       <nav className="p-2">
-        {visibleItems.map((item) => (
+        {items.map((item) => (
           <Link
             key={item.id}
             href={item.href}

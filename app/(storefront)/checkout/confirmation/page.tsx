@@ -25,7 +25,7 @@ export default async function CheckoutConfirmationPage({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
-      <StorefrontHeader navItems={chrome.headerNav} />
+      <StorefrontHeader navItems={chrome.categoryNav} />
       <main className="mx-auto max-w-2xl px-4 py-20 text-center">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-teal-50">
           <CheckCircle className="h-10 w-10 text-teal-600" aria-hidden="true" />

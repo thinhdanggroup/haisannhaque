@@ -1,4 +1,21 @@
 import { z } from "zod";
+import { navigationIconKeys } from "@/components/storefront/category-nav";
+
+/**
+ * A form that never rendered the field should not silently pull a category out
+ * of the menus, so only an explicit "false" hides it. The column defaults to
+ * true for the same reason.
+ */
+function readShowInNav(formData: FormData): boolean {
+  return formData.get("showInNav") !== "false";
+}
+
+/** "" means "no icon"; anything else must be a key the storefront can draw. */
+const iconKeySchema = z
+  .string()
+  .refine((value) => value === "" || navigationIconKeys.includes(value), {
+    message: "Unknown icon.",
+  });
 
 export const categorySchema = z.object({
   slug: z
@@ -11,6 +28,8 @@ export const categorySchema = z.object({
   parentId: z.string().uuid().nullable(),
   sortOrder: z.coerce.number().int().min(0),
   isActive: z.boolean(),
+  iconKey: iconKeySchema,
+  showInNav: z.boolean(),
 });
 
 // Update schema excludes slug (immutable after creation)
@@ -27,6 +46,8 @@ export function validateCategoryInput(formData: FormData) {
     parentId: formData.get("parentId") && formData.get("parentId") !== "" ? formData.get("parentId") : null,
     sortOrder: formData.get("sortOrder") ?? 0,
     isActive: formData.get("isActive") === "true",
+    iconKey: formData.get("iconKey") ?? "",
+    showInNav: readShowInNav(formData),
   });
 }
 
@@ -39,5 +60,7 @@ export function validateCategoryUpdateInput(formData: FormData) {
     parentId: formData.get("parentId") && formData.get("parentId") !== "" ? formData.get("parentId") : null,
     sortOrder: formData.get("sortOrder") ?? 0,
     isActive: formData.get("isActive") === "true",
+    iconKey: formData.get("iconKey") ?? "",
+    showInNav: readShowInNav(formData),
   });
 }

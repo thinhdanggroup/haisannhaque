@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
-import type { CmsNavigationItem } from "@/src/features/cms/types";
-import { getNavigationItems, NavigationItemIcon } from "./category-nav";
+import type { StorefrontNavLink } from "@/src/features/cms/types";
+import { NavigationItemIcon } from "./category-nav";
 
 type CategoryNavProps = {
-  items: CmsNavigationItem[];
+  items: StorefrontNavLink[];
 };
 
 export function CategoryNav({ items }: CategoryNavProps) {
-  const visibleItems = getNavigationItems(items);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -42,6 +41,10 @@ export function CategoryNav({ items }: CategoryNavProps) {
     el.scrollBy({ left: dir === "left" ? -240 : 240, behavior: "smooth" });
   }
 
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
     <nav
       aria-label="Danh mục sản phẩm"
@@ -60,7 +63,7 @@ export function CategoryNav({ items }: CategoryNavProps) {
         ref={scrollRef}
         className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {visibleItems.map((item) => (
+        {items.map((item) => (
           <Link
             key={item.id}
             href={item.href}

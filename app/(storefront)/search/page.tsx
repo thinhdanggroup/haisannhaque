@@ -52,7 +52,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
-      <StorefrontHeader navItems={chrome.headerNav} />
+      <StorefrontHeader navItems={chrome.categoryNav} />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <div className="rounded-lg border border-slate-200 bg-white p-4">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

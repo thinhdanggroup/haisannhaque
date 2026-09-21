@@ -1,80 +1,21 @@
 import Link from "next/link";
-import type { CmsSection } from "@/src/features/cms/types";
+import type { CmsSection, StorefrontNavLink } from "@/src/features/cms/types";
 import { NavigationItemIcon } from "./category-nav";
 import { storefrontTheme } from "./storefront-theme";
 
-type CategoryShortcut = {
-  label: string;
-  href: string;
-  iconKey: string | null;
-};
-
-type CategoryShortcutInput = {
-  label: string;
-  href: string;
-  iconKey?: string | null;
-};
-
 type CategoryShortcutStripProps = {
+  /** Supplies the heading only; the shortcuts themselves come from `items`. */
   section: CmsSection;
+  items: StorefrontNavLink[];
 };
 
-function isShortcut(value: unknown): value is CategoryShortcutInput {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return false;
-  }
-
-  const candidate = value as Record<string, unknown>;
-
-  return (
-    typeof candidate.label === "string" &&
-    typeof candidate.href === "string" &&
-    (candidate.iconKey === undefined ||
-      candidate.iconKey === null ||
-      typeof candidate.iconKey === "string")
-  );
-}
-
-function isSafeShortcutHref(href: string): boolean {
-  return href.startsWith("/categories/") || href.startsWith("/search");
-}
-
-function normalizeShortcut(value: unknown): CategoryShortcut | null {
-  if (!isShortcut(value)) {
-    return null;
-  }
-
-  const label = value.label.trim();
-  const href = value.href.trim();
-
-  if (label.length === 0 || href.length === 0 || !isSafeShortcutHref(href)) {
-    return null;
-  }
-
-  return {
-    label,
-    href,
-    iconKey: value.iconKey ?? null,
-  };
-}
-
-function getShortcuts(section: CmsSection): CategoryShortcut[] {
-  const items = section.metadata.items;
-
-  if (!Array.isArray(items)) {
-    return [];
-  }
-
-  return items
-    .map(normalizeShortcut)
-    .filter((shortcut): shortcut is CategoryShortcut => shortcut !== null);
-}
-
-export function CategoryShortcutStrip({ section }: CategoryShortcutStripProps) {
-  const shortcuts = getShortcuts(section);
+export function CategoryShortcutStrip({
+  section,
+  items,
+}: CategoryShortcutStripProps) {
   const headingId = `home-section-${section.id}`;
 
-  if (shortcuts.length === 0) {
+  if (items.length === 0) {
     return null;
   }
 
@@ -103,9 +44,9 @@ export function CategoryShortcutStrip({ section }: CategoryShortcutStripProps) {
         aria-label="Danh mục hải sản phổ biến"
         className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 xl:grid-cols-6"
       >
-        {shortcuts.map((shortcut) => (
+        {items.map((shortcut) => (
           <Link
-            key={`${shortcut.href}-${shortcut.label}`}
+            key={shortcut.id}
             href={shortcut.href}
             className="flex min-h-14 flex-col items-center justify-center gap-1.5 rounded-md border border-teal-100 bg-[#f5fbf9] px-2 text-center text-xs font-bold text-slate-700 transition hover:border-teal-300 hover:bg-white hover:text-teal-700"
           >

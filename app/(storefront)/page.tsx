@@ -21,6 +21,7 @@ import type {
   CmsSection,
   HomePageContent,
   StorefrontChrome,
+  StorefrontNavLink,
 } from "@/src/features/cms/types";
 import { getActiveFlashSale } from "@/src/features/flash-sales/queries";
 import type { ActiveFlashSale } from "@/src/features/flash-sales/types";
@@ -48,14 +49,20 @@ async function loadHomePageContent(client: SupabaseClient): Promise<HomePageCont
   return getHomePageContent(client);
 }
 
-function renderHomeSection(section: CmsSection, flashSale: ActiveFlashSale | null) {
+function renderHomeSection(
+  section: CmsSection,
+  flashSale: ActiveFlashSale | null,
+  categoryNav: StorefrontNavLink[],
+) {
   switch (section.type) {
     case "hero":
       return <HeroMerchandisingGrid key={section.id} section={section} />;
     case "service_strip":
       return <ServiceStrip key={section.id} section={section} />;
     case "category_shortcuts":
-      return <CategoryShortcutStrip key={section.id} section={section} />;
+      return (
+        <CategoryShortcutStrip key={section.id} section={section} items={categoryNav} />
+      );
     case "promo_band":
       return <PromoBand key={section.id} section={section} />;
     case "product_rail":
@@ -86,12 +93,14 @@ export default async function StorefrontHomePage() {
       data-theme="seafood-market-v2"
       className={storefrontTheme.shell}
     >
-      <StorefrontHeader navItems={chrome.headerNav} />
+      <StorefrontHeader navItems={chrome.categoryNav} />
       <main>
         <div className={storefrontTheme.mainWrap}>
-          <CategorySidebar items={chrome.sidebarNav} />
+          <CategorySidebar items={chrome.categoryNav} />
           <div className={storefrontTheme.contentStack}>
-            {home.sections.map((section) => renderHomeSection(section, flashSale))}
+            {home.sections.map((section) =>
+              renderHomeSection(section, flashSale, chrome.categoryNav),
+            )}
           </div>
         </div>
       </main>

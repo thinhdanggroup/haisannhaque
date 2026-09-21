@@ -110,6 +110,7 @@ type ContentPageData = { access: "allowed"; rows: CmsContentRows } | { access: "
 
 type CmsTableSectionProps<T extends object> = {
   title: string;
+  note?: string;
   columns: Array<AdminDataTableColumn<T>>;
   rows: T[];
   emptyMessage: string;
@@ -153,6 +154,7 @@ function getActiveStatusTone(status: string): StatusChipTone {
 
 function CmsTableSection<T extends object>({
   title,
+  note,
   columns,
   rows,
   emptyMessage,
@@ -173,6 +175,7 @@ function CmsTableSection<T extends object>({
           </Link>
         )}
       </div>
+      {note && <p className="text-xs text-slate-500">{note}</p>}
       <AdminDataTable
         columns={columns}
         rows={rows}
@@ -406,6 +409,7 @@ export default async function AdminContentPage() {
         />
         <CmsTableSection
           title="Điều hướng"
+          note="Thanh danh mục xanh, danh mục dọc và lối tắt mua nhanh lấy dữ liệu từ Danh mục sản phẩm, không phải từ đây. Các mục header/sidebar cũ đã ngừng dùng."
           newHref="/admin/content/navigation/new"
           columns={[
             { key: "placement", label: "Vị trí" },

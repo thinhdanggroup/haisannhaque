@@ -27,6 +27,8 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
             parentId: null,
             sortOrder: 0,
             isActive: true,
+            iconKey: "",
+            showInNav: true,
           }}
         />
       </div>
@@ -52,7 +54,7 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
   const [{ data, error }, { data: parents }] = await Promise.all([
     client
       .from("categories")
-      .select("id, slug, name, description, image_url, parent_id, sort_order, is_active")
+      .select("id, slug, name, description, image_url, parent_id, sort_order, is_active, icon_key, show_in_nav")
       .eq("id", id)
       .single(),
     client
@@ -80,6 +82,8 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
           parentId: data.parent_id,
           sortOrder: data.sort_order,
           isActive: data.is_active,
+          iconKey: data.icon_key ?? "",
+          showInNav: data.show_in_nav,
         }}
       />
     </div>

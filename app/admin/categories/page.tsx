@@ -17,6 +17,7 @@ type CategoryRow = {
   parent_id: string | null;
   sort_order: number;
   is_active: boolean;
+  show_in_nav: boolean;
   parentName: string | null;
 };
 
@@ -29,11 +30,11 @@ async function getPageData(): Promise<PageData> {
     await requireAdminPermission(client, "categories:update");
     const { data, error } = await client
       .from("categories")
-      .select("id, slug, name, parent_id, sort_order, is_active")
+      .select("id, slug, name, parent_id, sort_order, is_active, show_in_nav")
       .order("sort_order")
       .order("name");
     if (error) throw error;
-    const rows = (data ?? []) as { id: string; slug: string; name: string; parent_id: string | null; sort_order: number; is_active: boolean }[];
+    const rows = (data ?? []) as { id: string; slug: string; name: string; parent_id: string | null; sort_order: number; is_active: boolean; show_in_nav: boolean }[];
     const nameById = new Map(rows.map((r) => [r.id, r.name]));
     const categories: CategoryRow[] = rows.map((row) => ({
       ...row,
@@ -62,7 +63,7 @@ export default async function AdminCategoriesPage() {
     <div>
       <AdminPageHeader
         title="Danh mục"
-        description="Quản lý phân loại sản phẩm dùng để duyệt và lọc."
+        description="Quản lý phân loại sản phẩm. Đây cũng là nguồn duy nhất cho thanh danh mục xanh, danh mục dọc và lối tắt mua nhanh ngoài trang chủ."
         action={
           <Link
             href="/admin/categories/new"
@@ -85,6 +86,16 @@ export default async function AdminCategoriesPage() {
             ),
           },
           { key: "sort_order", label: "Thứ tự" },
+          {
+            key: "show_in_nav",
+            label: "Trong menu",
+            render: (row) => (
+              <StatusChip
+                value={row.show_in_nav ? "hiện" : "ẩn"}
+                tone={row.show_in_nav ? "success" : "neutral"}
+              />
+            ),
+          },
           {
             key: "is_active",
             label: "Trạng thái",

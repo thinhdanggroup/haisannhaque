@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { navigationIconKeys } from "@/components/storefront/category-nav";
 import type { CategoryState } from "@/src/features/catalog/category-actions";
 
 const INPUT_CLASS =
@@ -21,6 +22,8 @@ type CategoryFormProps = {
     parentId: string | null;
     sortOrder: number;
     isActive: boolean;
+    iconKey: string;
+    showInNav: boolean;
   };
 };
 
@@ -123,6 +126,40 @@ export function CategoryForm({ action, parentOptions, initialValues }: CategoryF
         >
           <option value="true">Hoạt động</option>
           <option value="false">Không hoạt động</option>
+        </select>
+      </label>
+
+      <label className="block text-sm" htmlFor="iconKey">
+        <span className="font-medium text-slate-700">Biểu tượng</span>
+        <span className="ml-1 text-xs text-slate-400">(hiện cạnh tên trong menu)</span>
+        <select
+          id="iconKey"
+          name="iconKey"
+          defaultValue={initialValues?.iconKey ?? ""}
+          className={INPUT_CLASS}
+        >
+          <option value="">— Không có —</option>
+          {navigationIconKeys.map((key) => (
+            <option key={key} value={key}>
+              {key}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="block text-sm" htmlFor="showInNav">
+        <span className="font-medium text-slate-700">Hiển thị trong menu</span>
+        <span className="ml-1 text-xs text-slate-400">
+          (thanh xanh trên cùng, danh mục dọc và lối tắt mua nhanh)
+        </span>
+        <select
+          id="showInNav"
+          name="showInNav"
+          defaultValue={initialValues?.showInNav === false ? "false" : "true"}
+          className={INPUT_CLASS}
+        >
+          <option value="true">Có</option>
+          <option value="false">Không</option>
         </select>
       </label>
 

@@ -44,6 +44,18 @@ export type CmsSection = {
   products: CmsProductCard[];
 };
 
+/**
+ * A link in one of the three category menus (header bar, sidebar, homepage
+ * shortcuts). All three render the same list, derived from the categories
+ * table, so there is nothing to keep in sync by hand.
+ */
+export type StorefrontNavLink = {
+  id: string;
+  label: string;
+  href: string;
+  iconKey: string | null;
+};
+
 export type CmsNavigationItem = {
   id: string;
   placement: CmsNavigationPlacement;
@@ -72,8 +84,7 @@ export type CmsBrandAsset = {
 };
 
 export type StorefrontChrome = {
-  headerNav: CmsNavigationItem[];
-  sidebarNav: CmsNavigationItem[];
+  categoryNav: StorefrontNavLink[];
   mobileDock: CmsNavigationItem[];
   footerLinks: CmsFooterLink[];
   paymentAssets: CmsBrandAsset[];

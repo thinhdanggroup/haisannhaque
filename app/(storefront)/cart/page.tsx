@@ -101,7 +101,7 @@ export default async function CartPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
-      <StorefrontHeader navItems={chrome.headerNav} />
+      <StorefrontHeader navItems={chrome.categoryNav} />
       <main className="mx-auto grid max-w-6xl gap-6 px-4 py-6 md:grid-cols-[minmax(0,1fr)_360px]">
         <section>
           <p className="text-sm font-semibold text-teal-700">Giỏ hàng</p>

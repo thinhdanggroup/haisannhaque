@@ -348,21 +348,11 @@ function fixtureBrandAsset({
 }
 
 export const playwrightChromeFixture: StorefrontChrome = {
-  headerNav: categoryNavItems.map(([label, href, iconKey], index) => ({
-    id: `e2e-header-${index}`,
-    placement: "header",
+  categoryNav: categoryNavItems.map(([label, href, iconKey], index) => ({
+    id: `e2e-category-${index}`,
     label,
     href,
     iconKey,
-    sortOrder: (index + 1) * 10,
-  })),
-  sidebarNav: categoryNavItems.map(([label, href, iconKey], index) => ({
-    id: `e2e-sidebar-${index}`,
-    placement: "sidebar",
-    label,
-    href,
-    iconKey,
-    sortOrder: (index + 1) * 10,
   })),
   mobileDock: [
     {

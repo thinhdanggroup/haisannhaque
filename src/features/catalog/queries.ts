@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { ProductCard, ProductDetail } from "./types";
+import type { CategoryNavEntry, ProductCard, ProductDetail } from "./types";
 
 type ProductCardRow = {
   id: string;
@@ -117,6 +117,47 @@ function mapProductDetailRow(row: ProductDetailRow): ProductDetail {
     })),
     relatedProducts,
   };
+}
+
+type CategoryNavRow = {
+  id: string;
+  slug: string;
+  name: string;
+  icon_key: string | null;
+  sort_order: number;
+};
+
+export function mapCategoryNavRow(row: CategoryNavRow): CategoryNavEntry {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    iconKey: row.icon_key,
+    sortOrder: row.sort_order,
+  };
+}
+
+/**
+ * The single source of truth behind the header bar, the sidebar and the
+ * homepage shortcut strip. Sorted deterministically so all three render the
+ * same list in the same order.
+ */
+export async function getNavCategories(
+  client: SupabaseClient,
+): Promise<CategoryNavEntry[]> {
+  const { data, error } = await client
+    .from("categories")
+    .select("id, slug, name, icon_key, sort_order")
+    .eq("is_active", true)
+    .eq("show_in_nav", true)
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return ((data ?? []) as CategoryNavRow[]).map(mapCategoryNavRow);
 }
 
 export async function getProductsByCategory(

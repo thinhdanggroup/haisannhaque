@@ -37,3 +37,11 @@ export type ProductDetail = {
   variants: ProductVariantSummary[];
   relatedProducts: ProductCard[];
 };
+
+export type CategoryNavEntry = {
+  id: string;
+  slug: string;
+  name: string;
+  iconKey: string | null;
+  sortOrder: number;
+};

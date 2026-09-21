@@ -176,7 +176,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
         />
       )}
-      <StorefrontHeader navItems={chrome.headerNav} />
+      <StorefrontHeader navItems={chrome.categoryNav} />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <Breadcrumb
           items={[

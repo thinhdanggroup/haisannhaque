@@ -93,7 +93,7 @@ export default async function CheckoutPage({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
-      <StorefrontHeader navItems={chrome.headerNav} />
+      <StorefrontHeader navItems={chrome.categoryNav} />
       <main className="mx-auto max-w-6xl px-4 py-6">
         <p className="text-sm font-semibold text-teal-700">Thanh toán bảo mật</p>
         <h1 className="mt-1 text-3xl font-semibold">Thanh toán</h1>

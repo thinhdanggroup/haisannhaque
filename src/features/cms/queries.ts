@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getNavCategories } from "@/src/features/catalog/queries";
+import type { CategoryNavEntry } from "@/src/features/catalog/types";
 import type {
   CmsBanner,
   CmsBrandAsset,
@@ -10,6 +12,7 @@ import type {
   CmsSectionType,
   HomePageContent,
   StorefrontChrome,
+  StorefrontNavLink,
 } from "./types";
 
 type Relation<T> = T | T[] | null;
@@ -221,6 +224,15 @@ function mapCmsSectionRow(row: CmsSectionRow): CmsSection {
   };
 }
 
+export function toStorefrontNavLink(entry: CategoryNavEntry): StorefrontNavLink {
+  return {
+    id: entry.id,
+    label: entry.name,
+    href: `/categories/${entry.slug}`,
+    iconKey: entry.iconKey,
+  };
+}
+
 function mapCmsNavigationItemRow(row: CmsNavigationItemRow): CmsNavigationItem {
   return {
     id: row.id,
@@ -316,7 +328,8 @@ export async function getHomePageContent(
 export async function getStorefrontChrome(
   client: SupabaseClient,
 ): Promise<StorefrontChrome> {
-  const [navigationResult, footerResult, brandAssetResult] = await Promise.all([
+  const [navCategories, navigationResult, footerResult, brandAssetResult] = await Promise.all([
+    getNavCategories(client),
     client
       .from("cms_navigation_items")
       .select("id, placement, label, href, icon_key, sort_order")
@@ -354,8 +367,7 @@ export async function getStorefrontChrome(
   ).map(mapCmsBrandAssetRow);
 
   return {
-    headerNav: navigationItems.filter((item) => item.placement === "header"),
-    sidebarNav: navigationItems.filter((item) => item.placement === "sidebar"),
+    categoryNav: navCategories.map(toStorefrontNavLink),
     mobileDock: navigationItems.filter((item) => item.placement === "mobile_dock"),
     footerLinks: sortBySortOrder((footerResult.data ?? []) as CmsFooterLinkRow[]).map(
       mapCmsFooterLinkRow,
