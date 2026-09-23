@@ -28,11 +28,11 @@ const localBusinessJsonLd = {
   logo: "https://haisannhaque.com/store-logo.png",
   description: "Nền tảng thương mại hải sản trực tuyến",
   telephone: "+84867997200",
-  email: "care@haisannhaque.vn",
+  email: "haisannq3@gmail.com",
   address: {
     "@type": "PostalAddress",
     streetAddress:
-      "SAV.2-00.04 Tầng trệt, Tháp 2, Toà Nhà The Sun Avenue, 28 Mai Chí Thọ",
+      "SAV.2-00.04 Tầng trệt, Tháp 2, Toà Nhà The Sun Avenue, 28 Mai Chí Thọ, P.Bình Trưng",
     addressLocality: "Thành phố Hồ Chí Minh",
     addressCountry: "VN",
   },

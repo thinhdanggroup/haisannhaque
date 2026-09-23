@@ -188,7 +188,7 @@ export function StorefrontFooter({
             <a
               href="tel:0867997200"
               className="mt-4 inline-flex min-h-10 items-center rounded-md bg-orange-700 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-orange-800"
-              aria-label="Hotline 0867 997 200"
+              aria-label="Hotline 086 799 7200"
             >
               Gọi hotline
             </a>
@@ -268,9 +268,9 @@ export function StorefrontFooter({
               Thông tin công ty
             </h2>
             <p className="mt-2 text-sm leading-6 text-teal-50">
-              CÔNG TY TNHH HẢI SẢN NHÀ QUÊ. MST: 0319442718. VP: SAV.2-00.04 Tầng trệt,
+              CÔNG TY TNHH HẢI SẢN NHÀ QUÊ. MST: 0319442718. Chi nhánh 1: SAV.2-00.04 Tầng trệt,
               Tháp 2, Toà Nhà The Sun Avenue, 28 Mai Chí Thọ, P.Bình Trưng, TP.HCM, Việt Nam.
-              Hotline: 0867 997 200. Email: care@haisannhaque.vn.
+              Hotline: 086 799 7200. Email: haisannq3@gmail.com.
             </p>
             <p className="mt-1 text-xs leading-5 text-teal-100">
               Nội dung, hình ảnh và dữ liệu demo trong dự án là tài sản minh họa
