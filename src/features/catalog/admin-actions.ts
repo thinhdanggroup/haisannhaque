@@ -341,6 +341,35 @@ export async function updateVariantPricing(
   return { success: true };
 }
 
+export type DeleteVariantState = { error: string } | { success: true };
+
+// Variants are referenced by order items, stock movements and purchase
+// orders, so "delete" is a soft delete: the storefront, cart and checkout
+// already ignore inactive variants, and order history keeps its SKU.
+export async function deleteProductVariant(
+  productId: string,
+  variantId: string,
+): Promise<DeleteVariantState> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "products:update");
+
+  const ids = z.object({ productId: z.string().uuid(), variantId: z.string().uuid() });
+  const parsed = ids.safeParse({ productId, variantId });
+  if (!parsed.success) return { error: "Invalid variant ID." };
+
+  const { error } = await client
+    .from("product_variants")
+    .update({ is_active: false })
+    .eq("id", parsed.data.variantId)
+    .eq("product_id", parsed.data.productId);
+
+  if (error) return { error: "Không xóa được biến thể. Vui lòng thử lại." };
+
+  revalidatePath(`/admin/products/${parsed.data.productId}/edit`);
+  revalidatePath("/admin/products");
+  return { success: true };
+}
+
 // Number("") is 0, so coercing a blank price would silently make the product
 // free. Both money fields handle the empty string explicitly: list price
 // rejects it, sale price maps it to null ("no sale price").

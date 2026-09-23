@@ -45,6 +45,7 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
       .from("product_variants")
       .select("id, sku, unit, option_summary, list_price, sale_price, is_active")
       .eq("product_id", id)
+      .eq("is_active", true)
       .order("list_price", { ascending: true }),
     client
       .from("product_categories")

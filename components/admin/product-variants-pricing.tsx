@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import {
   createProductVariant,
+  deleteProductVariant,
   updateVariantPricing,
   type CreateVariantState,
   type UpdateVariantPricingState,
@@ -28,6 +29,19 @@ export function ProductVariantsPricing({ productId, variants }: ProductVariantsP
     updateVariantPricing,
     null,
   );
+  const [isDeleting, startDelete] = useTransition();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  function handleDelete(variant: Variant) {
+    const label = variant.optionSummary ?? variant.unit;
+    if (!window.confirm(`Xóa biến thể "${label}" (${variant.sku})?`)) return;
+
+    setDeleteError(null);
+    startDelete(async () => {
+      const result = await deleteProductVariant(productId, variant.id);
+      if ("error" in result) setDeleteError(result.error);
+    });
+  }
 
   if (variants.length === 0) {
     return (
@@ -55,6 +69,12 @@ export function ProductVariantsPricing({ productId, variants }: ProductVariantsP
           </p>
         )}
 
+        {deleteError && (
+          <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {deleteError}
+          </p>
+        )}
+
         {state && "success" in state && (
           <p className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-700">
             Đã lưu giá thành công.
@@ -69,6 +89,7 @@ export function ProductVariantsPricing({ productId, variants }: ProductVariantsP
                 <th className="px-4 py-3 text-left">SKU</th>
                 <th className="px-4 py-3 text-left">Giá niêm yết (₫)</th>
                 <th className="px-4 py-3 text-left">Giá khuyến mãi (₫)</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -105,6 +126,17 @@ export function ProductVariantsPricing({ productId, variants }: ProductVariantsP
                       placeholder="—"
                       className="min-h-9 w-36 rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
                     />
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      disabled={isDeleting}
+                      onClick={() => handleDelete(v)}
+                      aria-label={`Xóa biến thể ${v.optionSummary ?? v.unit}`}
+                      className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-100 disabled:opacity-50"
+                    >
+                      Xóa
+                    </button>
                   </td>
                 </tr>
               ))}

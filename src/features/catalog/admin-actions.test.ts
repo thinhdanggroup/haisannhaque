@@ -21,6 +21,7 @@ import {
   archiveProduct,
   createProduct,
   createProductVariant,
+  deleteProductVariant,
   updateVariantPricing,
 } from "./admin-actions";
 
@@ -280,5 +281,53 @@ describe("updateVariantPricing", () => {
     const result = await updateVariantPricing(null, formData({ [`listPrice_${variantId}`]: "" }));
     expect(result).toEqual({ error: expect.stringContaining("List price") });
     expect(variantUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe("deleteProductVariant", () => {
+  const productId = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
+  const variantId = "b2c3d4e5-f6a7-8901-bcde-f12345678901";
+  let variantUpdate: ReturnType<typeof vi.fn>;
+  let eqVariant: ReturnType<typeof vi.fn>;
+  let eqProduct: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+
+    eqProduct = vi.fn().mockResolvedValue({ error: null });
+    eqVariant = vi.fn().mockReturnValue({ eq: eqProduct });
+    variantUpdate = vi.fn().mockReturnValue({ eq: eqVariant });
+    mockFrom.mockImplementation((table: string) => {
+      if (table === "product_variants") return { update: variantUpdate };
+      return {
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            data: [{ admin_roles: { name: "super_admin" } }],
+            error: null,
+          }),
+        }),
+      };
+    });
+  });
+
+  it("soft-deletes the variant, scoped to its product", async () => {
+    const result = await deleteProductVariant(productId, variantId);
+    expect(result).toEqual({ success: true });
+    expect(variantUpdate).toHaveBeenCalledWith({ is_active: false });
+    expect(eqVariant).toHaveBeenCalledWith("id", variantId);
+    expect(eqProduct).toHaveBeenCalledWith("product_id", productId);
+  });
+
+  it("rejects a non-UUID variant id without touching the database", async () => {
+    const result = await deleteProductVariant(productId, "not-a-uuid");
+    expect(result).toEqual({ error: expect.any(String) });
+    expect(variantUpdate).not.toHaveBeenCalled();
+  });
+
+  it("surfaces a database error instead of reporting success", async () => {
+    eqProduct.mockResolvedValue({ error: { message: "boom" } });
+    const result = await deleteProductVariant(productId, variantId);
+    expect(result).toEqual({ error: expect.any(String) });
   });
 });

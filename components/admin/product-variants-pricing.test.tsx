@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 
 vi.mock("@/src/features/catalog/admin-actions", () => ({
   createProductVariant: vi.fn(),
+  deleteProductVariant: vi.fn(),
   updateVariantPricing: vi.fn(),
 }));
 
@@ -52,5 +53,11 @@ describe("ProductVariantsPricing", () => {
     const hidden = container.querySelectorAll('input[name="productId"]');
     expect(hidden).toHaveLength(2);
     hidden.forEach((input) => expect((input as HTMLInputElement).value).toBe(productId));
+  });
+
+  it("offers a delete button for each variant", () => {
+    render(<ProductVariantsPricing productId={productId} variants={[variant]} />);
+
+    expect(screen.getByRole("button", { name: /Xóa biến thể Hũ 500g/ })).toBeTruthy();
   });
 });
