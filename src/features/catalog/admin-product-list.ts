@@ -7,6 +7,7 @@ type ProductClient = Pick<SupabaseClient, "from">;
 export type AdminProductListRow = {
   id: string;
   name: string;
+  slug: string;
   sku: string;
   status: string;
   variants: number;
@@ -22,6 +23,7 @@ export type AdminProductListPage = {
 type ProductRecord = {
   id: string;
   name: string;
+  slug: string;
   status: string;
   product_variants: Array<{ id: string; sku: string }> | null;
 };
@@ -95,7 +97,7 @@ export async function getAdminProductsPage(
 ): Promise<AdminProductListPage> {
   let builder = client
     .from("products")
-    .select("id, name, status, product_variants(id, sku)", { count: "exact" });
+    .select("id, name, slug, status, product_variants(id, sku)", { count: "exact" });
 
   if (query.length > 0) {
     const matchedIds = await findProductIdsBySku(client, query);
@@ -123,6 +125,7 @@ export async function getAdminProductsPage(
     rows: ((data ?? []) as ProductRecord[]).map((product) => ({
       id: product.id,
       name: product.name,
+      slug: product.slug,
       sku:
         (product.product_variants ?? []).map((variant) => variant.sku).join(", ") || "—",
       status: product.status,

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ProductEditForm } from "@/components/admin/product-edit-form";
+import { ProductPreviewLink } from "@/components/admin/product-preview-link";
 import { ProductImagesManager } from "@/components/admin/product-images-manager";
 import { ProductRelatedManager } from "@/components/admin/product-related-manager";
 import { ProductVariantsPricing } from "@/components/admin/product-variants-pricing";
@@ -33,7 +34,7 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
   const [productResult, imagesResult, variantsResult, assignedCategoriesResult, allCategoriesResult] = await Promise.all([
     client
       .from("products")
-      .select("id, name, status, short_description, description, origin")
+      .select("id, name, slug, status, short_description, description, origin")
       .eq("id", id)
       .single(),
     client
@@ -121,6 +122,13 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
       <AdminPageHeader
         title="Sửa sản phẩm"
         description={product.name}
+        action={
+          <ProductPreviewLink
+            slug={product.slug}
+            status={product.status}
+            className="inline-flex min-h-10 items-center rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          />
+        }
       />
       <ProductEditForm
         id={product.id}

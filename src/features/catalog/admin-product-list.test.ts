@@ -128,6 +128,7 @@ describe("getAdminProductsPage", () => {
         {
           id: "p1",
           name: "Bạch tuộc baby khay",
+          slug: "bach-tuoc-baby-khay",
           status: "published",
           product_variants: [{ id: "v1", sku: "BABY_OCTOPUS_TRAY" }],
         },
@@ -146,6 +147,7 @@ describe("getAdminProductsPage", () => {
     expect(result.rows[0]).toEqual({
       id: "p1",
       name: "Bạch tuộc baby khay",
+      slug: "bach-tuoc-baby-khay",
       sku: "BABY_OCTOPUS_TRAY",
       status: "published",
       variants: 1,

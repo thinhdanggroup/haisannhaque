@@ -161,7 +161,7 @@ export default async function AdminProductsPage({
             ? `Không tìm thấy sản phẩm nào khớp với “${query}”.`
             : "Chưa có sản phẩm nào."
         }
-        actionsSlot={(row) => <ProductRowActions id={row.id} name={row.name} />}
+        actionsSlot={(row) => <ProductRowActions id={row.id} name={row.name} slug={row.slug} status={row.status} />}
       />
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
