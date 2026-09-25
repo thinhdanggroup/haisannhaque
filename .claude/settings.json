@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh thinhda@110.172.28.198 'cd ~/haisannhaque && ./scripts/deploy.sh')"
+    ]
+  }
+}
