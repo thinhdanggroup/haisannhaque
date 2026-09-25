@@ -126,7 +126,8 @@ Production is a **self-hosted Docker stack on `110.172.28.198`**, not Vercel. A
 **Auto-deploy:** once a storefront or admin change is finished and verified
 (typecheck, lint, tests pass), commit, push to `main`, and run the deploy below
 without waiting to be asked. Afterwards, confirm the server is on the new commit
-and that https://haisannhaque.com returns `200`.
+and that https://haisannhaque.com returns `200`, then run the `prod-smoke-test`
+skill (read-only browser check of the live site).
 
 Deploy = push to `main` first, then:
 
