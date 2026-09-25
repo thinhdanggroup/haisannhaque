@@ -50,3 +50,6 @@ uploads/
 deploy/ansible/group_vars/
 deploy/ansible/.venv/
 .superpowers/
+
+# scripts/smoke-prod.mjs screenshots
+.smoke-prod/
