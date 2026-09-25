@@ -123,6 +123,11 @@ Production is a **self-hosted Docker stack on `110.172.28.198`**, not Vercel. A
 | Live URL | https://haisannhaque.com |
 | Secrets | `.env` on the server (gitignored); `.env.local` is local only |
 
+**Auto-deploy:** once a storefront or admin change is finished and verified
+(typecheck, lint, tests pass), commit, push to `main`, and run the deploy below
+without waiting to be asked. Afterwards, confirm the server is on the new commit
+and that https://haisannhaque.com returns `200`.
+
 Deploy = push to `main` first, then:
 
 ```bash
