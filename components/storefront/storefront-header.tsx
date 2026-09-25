@@ -4,7 +4,6 @@ import {
   Phone,
   Search,
   ShoppingCart,
-  Truck,
   UserRound,
 } from "lucide-react";
 import type { StorefrontNavLink } from "@/src/features/cms/types";
@@ -21,14 +20,6 @@ export function StorefrontHeader({ navItems }: StorefrontHeaderProps) {
       data-visual-treatment="market-template"
       className="sticky top-0 z-40 border-b border-teal-100 bg-white text-slate-950 shadow-[0_10px_24px_rgba(15,74,76,0.08)]"
     >
-      <div className="bg-[#0f3f46] text-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-end gap-3 px-3 py-2 text-xs font-bold md:px-4 md:text-sm">
-          <span className="flex items-center gap-2 whitespace-nowrap">
-            <Truck className="h-4 w-4 text-orange-200" aria-hidden="true" />
-            <span>Giao hàng 2H</span>
-          </span>
-        </div>
-      </div>
       <div className="bg-white text-slate-950">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-3 py-3 md:flex-row md:items-center md:px-4">
           <div className="flex items-center justify-between gap-3">
