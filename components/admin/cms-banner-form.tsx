@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import type { CmsBannerState } from "@/src/features/cms/admin-actions";
+import { CmsImageUrlField } from "./cms-image-url-field";
 
 type SectionOption = { id: string; sectionKey: string; pageKey: string };
 
@@ -81,28 +82,20 @@ export function CmsBannerForm({ action, sections, initialValues }: CmsBannerForm
         />
       </label>
 
-      <label className="block text-sm" htmlFor="imageUrl">
-        <span className="font-medium text-slate-700">URL hình ảnh</span>
-        <input
-          id="imageUrl"
-          name="imageUrl"
-          required
-          type="url"
-          defaultValue={initialValues?.imageUrl}
-          className={INPUT_CLASS}
-        />
-      </label>
+      <CmsImageUrlField
+        name="imageUrl"
+        label="Hình ảnh"
+        required
+        defaultValue={initialValues?.imageUrl}
+        inputClassName={INPUT_CLASS}
+      />
 
-      <label className="block text-sm" htmlFor="mobileImageUrl">
-        <span className="font-medium text-slate-700">URL hình mobile (tuỳ chọn)</span>
-        <input
-          id="mobileImageUrl"
-          name="mobileImageUrl"
-          type="url"
-          defaultValue={initialValues?.mobileImageUrl}
-          className={INPUT_CLASS}
-        />
-      </label>
+      <CmsImageUrlField
+        name="mobileImageUrl"
+        label="Hình mobile (tuỳ chọn)"
+        defaultValue={initialValues?.mobileImageUrl}
+        inputClassName={INPUT_CLASS}
+      />
 
       <label className="block text-sm" htmlFor="ctaLabel">
         <span className="font-medium text-slate-700">Nhãn CTA (tuỳ chọn)</span>
