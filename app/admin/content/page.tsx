@@ -375,11 +375,21 @@ export default async function AdminContentPage() {
           rows={pageData.rows.sections}
           emptyMessage="Chưa có phần CMS nào."
           actionsSlot={(row) => (
-            <CmsRowActions
-              editHref={`/admin/content/sections/${row.id}/edit`}
-              deleteAction={deleteCmsSection.bind(null, row.id)}
-              label={row.sectionKey}
-            />
+            <div className="flex items-center justify-end gap-2">
+              {row.type === "recommendation_tabs" && (
+                <Link
+                  href={`/admin/content/sections/${row.id}/tabs`}
+                  className="rounded-md border border-teal-200 px-3 py-1 text-xs font-medium text-teal-700 hover:bg-teal-50"
+                >
+                  Tab & sản phẩm
+                </Link>
+              )}
+              <CmsRowActions
+                editHref={`/admin/content/sections/${row.id}/edit`}
+                deleteAction={deleteCmsSection.bind(null, row.id)}
+                label={row.sectionKey}
+              />
+            </div>
           )}
         />
         <CmsTableSection

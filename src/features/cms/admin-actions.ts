@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerClient } from "@/src/lib/supabase/server";
 import { requireAdminPermission } from "@/src/features/admin/auth";
+import {
+  collectTabProductIds,
+  recommendationTabsInputSchema,
+} from "@/src/features/cms/recommendation-tabs";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -237,6 +241,111 @@ export async function deleteCmsSection(id: string): Promise<void> {
   if (error) throw error;
 
   revalidatePath("/admin/content");
+}
+
+// ── Recommendation tabs ("Gợi ý cho bạn") ──────────────────────────────────
+
+export type RecommendationTabsState = { error: string } | { success: true } | null;
+
+export async function saveRecommendationTabs(
+  _prev: RecommendationTabsState,
+  formData: FormData,
+): Promise<RecommendationTabsState> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "cms:update");
+
+  const sectionId = z.string().uuid().safeParse(formData.get("sectionId"));
+  if (!sectionId.success) return { error: "Phần không hợp lệ." };
+
+  let rawTabs: unknown;
+  try {
+    rawTabs = JSON.parse(String(formData.get("tabs") ?? "[]"));
+  } catch {
+    return { error: "Dữ liệu tab không hợp lệ." };
+  }
+
+  const tabs = recommendationTabsInputSchema.safeParse(rawTabs);
+  if (!tabs.success) return { error: tabs.error.issues[0]?.message ?? "Dữ liệu tab không hợp lệ." };
+
+  const { data: section, error: sectionError } = await client
+    .from("cms_sections")
+    .select("id, section_type, metadata")
+    .eq("id", sectionId.data)
+    .single();
+
+  if (sectionError || !section) return { error: "Không tìm thấy phần." };
+  if (section.section_type !== "recommendation_tabs")
+    return { error: "Phần này không phải loại recommendation_tabs." };
+
+  const metadata =
+    section.metadata && typeof section.metadata === "object" && !Array.isArray(section.metadata)
+      ? (section.metadata as Record<string, unknown>)
+      : {};
+
+  const { error: updateError } = await client
+    .from("cms_sections")
+    .update({
+      metadata: {
+        ...metadata,
+        tabs: tabs.data.map((tab) => ({
+          key: tab.key,
+          label: tab.label,
+          ...(tab.href ? { href: tab.href } : {}),
+          productIds: tab.productIds,
+        })),
+      },
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", sectionId.data);
+
+  if (updateError) throw updateError;
+
+  const productIds = collectTabProductIds(tabs.data);
+
+  const { error: deleteError } = await client
+    .from("cms_section_products")
+    .delete()
+    .eq("section_id", sectionId.data);
+
+  if (deleteError) throw deleteError;
+
+  if (productIds.length > 0) {
+    const { error: insertError } = await client.from("cms_section_products").insert(
+      productIds.map((productId, index) => ({
+        section_id: sectionId.data,
+        product_id: productId,
+        sort_order: index,
+      })),
+    );
+
+    if (insertError) throw insertError;
+  }
+
+  revalidatePath("/");
+  revalidatePath(`/admin/content/sections/${sectionId.data}/tabs`);
+  return { success: true };
+}
+
+export async function searchProductsForRecommendations(
+  query: string,
+): Promise<Array<{ id: string; name: string; slug: string }>> {
+  const term = query.trim();
+  if (!term) return [];
+
+  const client = await createServerClient();
+  await requireAdminPermission(client, "cms:update");
+
+  const { data, error } = await client
+    .from("products")
+    .select("id, name, slug")
+    .ilike("name", `%${term.replace(/[%_\\]/g, "\\$&")}%`)
+    .eq("status", "published")
+    .order("name")
+    .limit(15);
+
+  if (error) throw error;
+
+  return data ?? [];
 }
 
 // ── CMS Banners ────────────────────────────────────────────────────────────

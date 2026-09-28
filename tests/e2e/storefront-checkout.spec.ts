@@ -75,6 +75,27 @@ test.describe("storefront checkout smoke", () => {
     });
   }
 
+  test("recommendation tabs switch their product list", async ({ page }) => {
+    await page.goto("/");
+    const section = page.getByRole("region", { name: "Gợi ý cho bạn" });
+    const visiblePanel = section.getByRole("tabpanel");
+
+    await expect(section.getByRole("tab", { name: "Bữa cơm gia đình" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await expect(visiblePanel.getByText("Cua xanh", { exact: false })).toBeVisible();
+
+    await section.getByRole("tab", { name: "Cuối tuần đãi khách" }).click();
+
+    await expect(section.getByRole("tab", { name: "Cuối tuần đãi khách" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await expect(visiblePanel.getByText("Tôm hùm xanh", { exact: false })).toBeVisible();
+    await expect(visiblePanel.getByText("Cua xanh", { exact: false })).toHaveCount(0);
+  });
+
   test("loads core storefront routes and checkout form", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("banner")).toBeVisible();

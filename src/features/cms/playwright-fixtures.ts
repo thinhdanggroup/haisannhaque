@@ -737,10 +737,26 @@ export const playwrightHomeFixture: HomePageContent = {
       metadata: {
         viewMoreHref: "/search?collection=recommendations",
         tabs: [
-          { key: "family", label: "Bữa cơm gia đình" },
-          { key: "party", label: "Cuối tuần đãi khách" },
-          { key: "quick", label: "Món nhanh trong ngày" },
-          { key: "premium", label: "Hải sản cao cấp" },
+          {
+            key: "family",
+            label: "Bữa cơm gia đình",
+            productIds: [fixtureProducts.freshSalmon.id, fixtureProducts.blueCrab.id],
+          },
+          {
+            key: "party",
+            label: "Cuối tuần đãi khách",
+            productIds: [fixtureProducts.greenLobster.id, fixtureProducts.canadaOyster.id],
+          },
+          {
+            key: "quick",
+            label: "Món nhanh trong ngày",
+            productIds: [fixtureProducts.salmonBowl.id, fixtureProducts.hotpotCombo.id],
+          },
+          {
+            key: "premium",
+            label: "Hải sản cao cấp",
+            productIds: [fixtureProducts.sashimiMix.id, fixtureProducts.scallopMeat.id],
+          },
         ],
       },
       banners: [],

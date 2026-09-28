@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { CmsSectionForm } from "@/components/admin/cms-section-form";
@@ -45,6 +46,13 @@ export default async function CmsSectionEditPage({ params }: Props) {
   return (
     <div>
       <AdminPageHeader title="Sửa phần" description={s.section_key} />
+      {s.section_type === "recommendation_tabs" && (
+        <p className="mb-4 text-sm">
+          <Link href={`/admin/content/sections/${s.id}/tabs`} className="text-teal-700 hover:underline">
+            Quản lý tab & sản phẩm gợi ý →
+          </Link>
+        </p>
+      )}
       <CmsSectionForm
         action={updateCmsSection}
         pages={(pagesResult.data ?? []).map((p) => ({ pageKey: p.page_key, title: p.title }))}
