@@ -73,6 +73,25 @@ Sections define the layout zones within a page. Each section has a type that tel
 | `content_highlights` | Editorial card grid |
 | `footer` | Footer layout zone |
 
+### Recommendation tabs ("Gợi ý cho bạn")
+
+A `recommendation_tabs` section renders a row of tabs on the homepage. Each tab has its own product list, and clicking a tab swaps the product grid to that list.
+
+Manage tabs at `/admin/content/sections/[id]/tabs` — click **Tab & sản phẩm** on the section's row in the content list, or the link on its edit page.
+
+| Field | Notes |
+|---|---|
+| Tab name | Shown on the storefront. Required, max 60 characters. |
+| Key | Unique within the section. Lowercase, digits, hyphens. Pre-filled for new tabs. |
+| Link | Optional. Must start with `/` or `#`. When set, the tab opens that page instead of switching products. |
+| Products | Search published products by name and add them. Up to 40 per tab; reorder with ↑/↓, remove with ✕. |
+
+Tabs are ordered with ↑/↓; the first tab is selected when the page loads. Nothing is saved until you click **Lưu tab**, which updates the homepage immediately.
+
+A tab with no products shows every product in the section. The section still needs Status = Active to appear, and its title, subtitle, and sort order are edited on the regular section edit page.
+
+Under the hood, tabs are stored in `cms_sections.metadata.tabs` (`{ key, label, href?, productIds }`), and `cms_section_products` holds the union of all tab products so the homepage loads every card in one query.
+
 ---
 
 ## Banners

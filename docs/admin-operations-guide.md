@@ -258,6 +258,29 @@ Các vùng bố cục bên trong một trang. Loại phần xác định compone
 | `content_highlights` | Lưới thẻ nội dung biên tập |
 | `footer` | Vùng bố cục footer |
 
+#### 5.2.1 Tab gợi ý ("Gợi ý cho bạn")
+
+Phần loại `recommendation_tabs` hiển thị một hàng tab trên trang chủ (ví dụ: *Bữa cơm gia đình*, *Cuối tuần đãi khách*…). Mỗi tab có danh sách sản phẩm riêng; khách bấm tab nào thì lưới sản phẩm đổi sang sản phẩm của tab đó.
+
+**Đường dẫn:** `/admin/content/sections/[id]/tabs` — vào **Nội dung → Phần CMS**, bấm **Tab & sản phẩm** trên hàng `recommendation_tabs` (hoặc link *Quản lý tab & sản phẩm gợi ý* trong trang Sửa phần).
+
+| Thao tác | Cách làm |
+|---|---|
+| Thêm tab | Bấm **Thêm tab**, nhập **Tên tab** (tối đa 60 ký tự). **Khóa** được tạo sẵn, có thể đổi (chữ thường, số, gạch ngang; không trùng nhau). |
+| Đổi tên tab | Sửa ô **Tên tab**. |
+| Sắp xếp tab | Dùng nút ↑ / ↓ ở góc tab. Tab đầu tiên được chọn sẵn khi khách mở trang. |
+| Xóa tab | Bấm biểu tượng thùng rác, xác nhận. |
+| Thêm sản phẩm vào tab | Gõ tên vào ô *Tìm sản phẩm để thêm…*, chọn sản phẩm trong danh sách. Chỉ sản phẩm **published** mới xuất hiện. Tối đa 40 sản phẩm mỗi tab. |
+| Sắp xếp / bỏ sản phẩm | Nút ↑ / ↓ và ✕ trên từng dòng sản phẩm. |
+| Liên kết (tuỳ chọn) | Nếu điền (phải bắt đầu bằng `/` hoặc `#`, ví dụ `/categories/tom`), bấm tab sẽ **mở trang đó** thay vì đổi danh sách sản phẩm. |
+
+Bấm **Lưu tab** để lưu — trang chủ cập nhật ngay. Mọi thay đổi chỉ được ghi khi bấm Lưu; dòng *Có thay đổi chưa lưu* nhắc bạn khi còn chỉnh sửa dở.
+
+> **Lưu ý:**
+> - Tab chưa chọn sản phẩm nào sẽ hiển thị **toàn bộ** sản phẩm của phần — hãy chọn sản phẩm cho từng tab.
+> - Phần phải ở trạng thái **Active** mới hiện trên trang chủ. Tiêu đề, phụ đề, thứ tự và trạng thái chỉnh ở trang **Sửa phần**, không phải trang tab.
+> - Một sản phẩm có thể nằm trong nhiều tab.
+
 ### 5.3 Banner
 
 Tài nguyên hình ảnh gắn vào một phần. Nhiều banner trong một phần `hero` tạo thành lưới hero.
