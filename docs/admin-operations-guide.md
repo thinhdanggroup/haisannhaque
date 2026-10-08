@@ -128,11 +128,22 @@ Mỗi biến thể đại diện cho một SKU có thể mua (ví dụ: gói 500
 | SKU | ✱ | Mã đơn vị lưu kho duy nhất |
 | Đơn vị | ✱ | Đơn vị hiển thị (ví dụ: `kg`, `con`, `hộp`) |
 | Tóm tắt tùy chọn | — | Nhãn hiển thị trên bộ chọn (ví dụ: `500g`) |
-| Giá niêm yết | ✱ | Giá gốc tính bằng VNĐ |
-| Giá khuyến mãi | — | Giá giảm; hiển thị cùng giá gốc bị gạch ngang |
+| Giá niêm yết | ✱ | Giá gốc tính bằng VNĐ. Nhận số thập phân (tối đa 2 chữ số sau dấu phẩy) |
+| Giá khuyến mãi | — | Giá giảm; hiển thị cùng giá gốc bị gạch ngang. Để trống nếu không giảm giá |
 | Kích hoạt | — | Bật/tắt để ẩn biến thể mà không xóa |
 
 Nhấn **Thêm biến thể** để thêm hàng mới. Cần ít nhất một biến thể đang kích hoạt thì sản phẩm mới có thể mua được trên storefront.
+
+**Cách nhập giá.** Ô giá nhận cả số nguyên lẫn số thập phân, gõ theo kiểu nào cũng được. Ngay dưới ô có dòng **= …d** cho biết hệ thống sẽ lưu giá nào; hãy nhìn dòng này trước khi bấm **Lưu giá**.
+
+| Bạn gõ | Được lưu thành |
+|---|---|
+| `125000` hoặc `125.000` | 125.000đ |
+| `1.250.000` | 1.250.000đ |
+| `125500,5` hoặc `125500.5` | 125.500,5đ |
+| `125.500,75` | 125.500,75đ |
+
+> Dấu chấm theo sau đúng 3 chữ số (`125.000`) được hiểu là dấu phân cách hàng nghìn, không phải phần thập phân. Giá chỉ giữ 2 chữ số thập phân; số lẻ hơn được làm tròn. Nếu dòng xem trước báo **Giá không hợp lệ**, hãy sửa trước khi lưu.
 
 #### Hình ảnh
 
@@ -239,7 +250,7 @@ Các vùng bố cục bên trong một trang. Loại phần xác định compone
 | Loại phần | ✱ | Xem bảng loại bên dưới |
 | Tiêu đề | — | Tiêu đề tùy chọn hiển thị phía trên phần |
 | Phụ đề | — | Văn bản phụ tùy chọn |
-| Layout | — | Chuỗi biến thể bố cục (ví dụ: `default`, `compact`) |
+| Layout | — | `default` = lưới sản phẩm; `carousel` = một hàng sản phẩm trượt ngang (có nút ‹ › trên máy tính, vuốt trên điện thoại). Chỉ áp dụng cho `product_rail` và `flash_sale` |
 | Thứ tự sắp xếp | — | Số nhỏ hơn = hiển thị cao hơn trên trang |
 | Trạng thái | — | Active / Inactive |
 
@@ -250,7 +261,7 @@ Các vùng bố cục bên trong một trang. Loại phần xác định compone
 | `hero` | Lưới banner hero toàn chiều rộng |
 | `service_strip` | Hàng nổi bật dịch vụ dạng icon + nhãn |
 | `category_shortcuts` | Lưới icon danh mục |
-| `product_rail` | Băng chuyền sản phẩm cuộn ngang |
+| `product_rail` | Danh sách sản phẩm (lưới, hoặc trượt ngang nếu Layout = `carousel`) |
 | `flash_sale` | Đồng hồ đếm ngược + lưới sản phẩm |
 | `promo_band` | Thanh thông báo khuyến mãi mỏng |
 | `recommendation_tabs` | Đề xuất sản phẩm dạng tab |
@@ -280,6 +291,25 @@ Bấm **Lưu tab** để lưu — trang chủ cập nhật ngay. Mọi thay đ�
 > - Tab chưa chọn sản phẩm nào sẽ hiển thị **toàn bộ** sản phẩm của phần — hãy chọn sản phẩm cho từng tab.
 > - Phần phải ở trạng thái **Active** mới hiện trên trang chủ. Tiêu đề, phụ đề, thứ tự và trạng thái chỉnh ở trang **Sửa phần**, không phải trang tab.
 > - Một sản phẩm có thể nằm trong nhiều tab.
+
+#### 5.2.2 Chọn sản phẩm cho phần ("Bán chạy" và các phần sản phẩm khác)
+
+Phần loại `product_rail` và `flash_sale` hiển thị danh sách sản phẩm do bạn tự chọn. Phần **Bán chạy** trên trang chủ là một phần như vậy: nó nằm ngay dưới khung "Hải Sản Nhà Quê" và trên khung "Chợ hải sản hôm nay", dạng hàng trượt ngang.
+
+**Đường dẫn:** `/admin/content/sections/[id]/products`. Vào **Nội dung → Phần CMS**, bấm **Sản phẩm** trên hàng của phần (ví dụ `best-sellers`), hoặc bấm link *Chọn sản phẩm hiển thị* trong trang **Sửa phần**.
+
+| Thao tác | Cách làm |
+|---|---|
+| Thêm sản phẩm | Gõ tên vào ô *Tìm sản phẩm để thêm…* rồi chọn. Chỉ sản phẩm **published** mới xuất hiện trong danh sách tìm. Tối đa 40 sản phẩm. |
+| Sắp xếp | Nút ↑ / ↓ trên từng dòng. Sản phẩm đầu tiên hiện đầu tiên. |
+| Bỏ sản phẩm | Nút ✕ trên dòng sản phẩm. |
+| Lưu | Bấm **Lưu sản phẩm**. Trang chủ cập nhật ngay. |
+
+> **Lưu ý:**
+> - Sản phẩm chỉ hiện trên trang chủ khi có **ít nhất một biến thể đang kích hoạt** (có giá). Nếu bạn chọn 5 sản phẩm mà chỉ thấy 2, hãy kiểm tra biến thể của 3 sản phẩm còn lại ở mục [3.3](#33-chỉnh-sửa-sản-phẩm).
+> - Muốn phần hiện dạng lưới thay vì trượt ngang: vào **Sửa phần**, đổi **Bố cục** từ `carousel` sang `default`.
+> - Muốn đổi vị trí phần trên trang chủ: sửa **Thứ tự** (số nhỏ hiện trước). "Bán chạy" đang là `5`, nằm giữa "Hải Sản Nhà Quê" (`0`) và "Chợ hải sản hôm nay" (`10`).
+> - Nút **Xem thêm** của phần dẫn tới đường dẫn đã cấu hình sẵn cho phần đó.
 
 ### 5.3 Banner
 
@@ -354,30 +384,96 @@ Các nhóm liên kết hiển thị trong các cột footer của trang.
 | Thứ tự sắp xếp | — | Kiểm soát thứ tự trong nhóm |
 | Trạng thái | — | Active / Inactive |
 
-### 5.6 Brand asset
+> Các link trong nhóm **Hỗ trợ khách hàng** được tạo và cập nhật tự động từ mục [5.7 Trang Hỗ trợ khách hàng](#57-trang-hỗ-trợ-khách-hàng). Đừng sửa tay các link đó ở đây; hãy sửa trang tương ứng.
 
-Logo dùng trong dải đối tác, hàng phương thức thanh toán và huy hiệu tin tưởng.
+### 5.6 Hình ảnh: tài khoản ngân hàng, app đặt hàng, logo (Brand asset)
+
+Nơi đính kèm ảnh mã QR chuyển khoản, logo các app đặt hàng (ShopeeFood, GrabFood…) và các logo khác ở chân trang. Trên trang **Nội dung**, mục này có tên **Hình ảnh: tài khoản ngân hàng, app đặt hàng, logo**.
 
 **Đường dẫn:** `/admin/content/brand-assets/new` · `/admin/content/brand-assets/[id]/edit`
 
 | Trường | Bắt buộc | Ghi chú |
 |---|---|---|
-| Asset key | ✱ | Định danh duy nhất trong vị trí |
-| Vị trí | ✱ | `partner`, `payment`, `trust`, `brand` |
-| URL hình ảnh | ✱ | URL đầy đủ đến file logo |
-| Văn bản thay thế | ✱ | Mô tả trợ năng của logo |
-| Href | — | Bao logo trong một liên kết nếu được cung cấp |
-| Thứ tự sắp xếp | — | Kiểm soát thứ tự trong vị trí |
-| Trạng thái | — | Active / Inactive |
+| Khóa tài nguyên | ✱ | Tên định danh, không trùng trong cùng vị trí (ví dụ `bank-techcombank`, `order-app-shopeefood`) |
+| Vị trí | ✱ | Xem bảng vị trí bên dưới. Khi đổi vị trí, nhãn các ô bên dưới đổi theo để gợi ý cần nhập gì |
+| Hình ảnh | ✱ | Bấm **Tải ảnh lên** để chọn ảnh từ máy (JPG, PNG, WEBP hoặc GIF, tối đa 5MB), hoặc dán một URL `https://`. Ảnh xem trước hiện ngay bên dưới |
+| Văn bản / thông tin | ✱ | Với tài khoản ngân hàng: thông tin tài khoản. Với app: tên hiển thị. Với logo khác: mô tả ngắn |
+| Đường dẫn | — | Với app đặt hàng: link gian hàng trên app. Với tài khoản ngân hàng: để trống |
+| Thứ tự | — | Số nhỏ hiện trước |
+| Trạng thái | — | Hoạt động / Không hoạt động |
 
 **Các vị trí:**
 
-| Vị trí | Dùng cho |
+| Vị trí | Hiện ở đâu |
 |---|---|
-| `partner` | Logo thương hiệu nhà cung cấp / đối tác |
-| `payment` | Icon phương thức thanh toán chấp nhận (Visa, VNPay, v.v.) |
-| `trust` | Huy hiệu bảo mật / chứng nhận |
-| `brand` | Khu vực brand asset chung |
+| Tài khoản ngân hàng (`bank_account`) | Trang thanh toán khi khách chọn **Chuyển khoản ngân hàng**, trang **Đặt hàng thành công**, và chân trang |
+| Đặt hàng qua app (`order_app`) | Mục **Đặt hàng qua app** ở chân trang và cuối khung thanh toán. Bấm logo sẽ mở app trong tab mới |
+| Thanh toán (`payment`) | Nhóm "Thanh toán" ở chân trang (logo COD, MoMo, VNPAY…) |
+| Đối tác (`partner`) | Nhóm "Đối tác" ở chân trang |
+| Cam kết (`trust`) | Nhóm "Cam kết" ở chân trang |
+| Thương hiệu (`brand`) | Khu vực thương hiệu chung |
+
+#### Thêm tài khoản ngân hàng (ảnh QR chuyển khoản)
+
+1. Vào **Nội dung**, mục **Hình ảnh: tài khoản ngân hàng, app đặt hàng, logo**, bấm **Thêm** (hoặc bấm **Sửa** trên tài khoản đã có).
+2. **Vị trí:** chọn *Tài khoản ngân hàng (ảnh QR chuyển khoản)*.
+3. **Ảnh mã QR chuyển khoản:** bấm **Tải ảnh lên**, chọn ảnh QR lấy từ app ngân hàng.
+4. **Thông tin tài khoản:** gõ trên một dòng, các phần cách nhau bằng ` - ` (khoảng trắng, gạch ngang, khoảng trắng). Ví dụ:
+   `Techcombank - 1903 7253 7380 24 - HO KINH DOANH COM NHA VI QUE`
+   Mỗi phần sẽ hiện trên một dòng riêng; phần đầu được in đậm.
+5. Để trống **Đường dẫn**, bấm **Lưu**.
+
+Khi khách đặt hàng bằng chuyển khoản, trang **Đặt hàng thành công** hiện QR, thông tin tài khoản và dòng **Nội dung chuyển khoản: \<mã đơn hàng\>** để khách ghi vào nội dung chuyển khoản. Có nhiều tài khoản thì thêm nhiều mục; chúng hiện theo **Thứ tự**.
+
+#### Thêm app đặt hàng (ShopeeFood, GrabFood…)
+
+1. Bấm **Thêm** (hoặc **Sửa** trên app đã có).
+2. **Vị trí:** chọn *Đặt hàng qua app (logo Shopee, Grab…)*.
+3. **Logo app:** bấm **Tải ảnh lên**, chọn logo (nên dùng ảnh nền trong suốt hoặc nền trắng, chiều ngang khoảng 240px).
+4. **Tên hiển thị:** ví dụ `Đặt hàng qua ShopeeFood`. Tên này hiện khi rê chuột lên logo, và hiện thay cho logo nếu chưa có ảnh.
+5. **Link gian hàng trên app:** dán link gian hàng (bắt đầu bằng `https://`).
+6. Bấm **Lưu**.
+
+> **Lưu ý:**
+> - Mục nào còn dùng ảnh mẫu `placehold.co` sẽ hiện **chữ** thay cho ảnh. Hãy tải ảnh thật lên để thay.
+> - Muốn tạm ẩn mà không xóa: đặt **Trạng thái** = *Không hoạt động*.
+
+### 5.7 Trang Hỗ trợ khách hàng
+
+Các trang như *Chính sách giao hàng*, *Hướng dẫn đặt hàng*, *Đổi trả và khiếu nại*… Mỗi trang có địa chỉ riêng `haisannhaque.com/ho-tro/<đường-dẫn>` và tự có link trong cột **Hỗ trợ khách hàng** ở chân trang.
+
+**Đường dẫn:** menu bên trái **Hỗ trợ khách hàng** (`/admin/support-pages`)
+
+| Trường | Bắt buộc | Ghi chú |
+|---|---|---|
+| Tiêu đề | ✱ | Tên trang, cũng là chữ hiện ở chân trang |
+| Đường dẫn | ✱ | Phần cuối của địa chỉ trang. Khi tạo trang mới, đường dẫn được tạo tự động từ tiêu đề (bỏ dấu), có thể sửa. Chỉ gồm chữ thường không dấu, số và dấu gạch ngang |
+| Nội dung | — | Văn bản của trang, xem cách định dạng bên dưới. Khung **Xem trước** bên phải cho thấy trang sẽ hiện thế nào |
+| Thứ tự ở chân trang | — | Số nhỏ hiện trước trong cột Hỗ trợ khách hàng |
+| Trạng thái | — | **Hiển thị**: trang mở được và có link ở chân trang. **Ẩn (bản nháp)**: trang không mở được và link bị ẩn |
+
+**Định dạng nội dung.** Gõ văn bản bình thường; vài ký hiệu đơn giản tạo định dạng:
+
+| Gõ | Kết quả |
+|---|---|
+| `## Tiêu đề nhỏ` | Tiêu đề mục |
+| `- nội dung` | Gạch đầu dòng |
+| `1. nội dung` | Danh sách đánh số (các bước) |
+| `**chữ đậm**` | **chữ đậm** |
+| Một dòng trống | Bắt đầu đoạn mới |
+| `https://…` | Tự thành link bấm được |
+
+**Thao tác:**
+
+| Việc cần làm | Cách làm |
+|---|---|
+| Thêm trang | Bấm **Thêm trang**, nhập tiêu đề và nội dung, bấm **Tạo trang**. Link ở chân trang được thêm tự động |
+| Sửa trang | Bấm **Sửa** trên hàng của trang, chỉnh rồi bấm **Lưu**. Đổi tiêu đề thì chữ ở chân trang cũng đổi theo |
+| Xem trang trên web | Bấm vào đường dẫn `/ho-tro/…` trong danh sách (mở tab mới) |
+| Tạm ẩn | Đổi **Trạng thái** sang *Ẩn (bản nháp)* |
+| Xóa | Bấm **Xóa**, xác nhận. Link ở chân trang bị xóa theo |
+
+> **Việc cần làm:** hai trang *Chính sách giao hàng* và *Đổi trả và khiếu nại* hiện chỉ có nội dung tạm ("đang được cập nhật" và số hotline). Hãy viết nội dung chính sách thật cho hai trang này.
 
 ---
 
@@ -434,6 +530,16 @@ draft_checkout
 ```
 
 Nhấn nút chuyển trạng thái để chuyển đơn hàng sang trạng thái tiếp theo. Nhãn nút phản ánh trạng thái đích (ví dụ: **Xác nhận đơn**, **Đã giao vận chuyển**).
+
+### 6.3 Tài khoản khách hàng & tích điểm
+
+Khách có thể tự đăng ký tài khoản tại `haisannhaque.com/register` (có link **Đăng ký** ở trang đăng nhập, ở trang thanh toán và ở các trang tài khoản). Khách nhập họ tên, số điện thoại, email và mật khẩu (ít nhất 8 ký tự). Tài khoản dùng được ngay, không cần xác nhận email.
+
+- Khi khách **đã đăng nhập** và đặt hàng, đơn được gắn vào tài khoản: khách thấy đơn ở **Tài khoản → Đơn hàng**, và họ tên, số điện thoại được điền sẵn ở trang thanh toán.
+- Điểm được cộng khi đơn chuyển sang trạng thái **Hoàn thành** (`completed`): **1.000đ = 1 điểm** (theo tổng tiền đơn). Khách xem điểm ở **Tài khoản → Tích điểm**.
+- Đơn đặt khi **chưa đăng nhập** không được tích điểm, và cũng không thể gắn lại vào tài khoản sau đó. Trang thanh toán nhắc khách đăng nhập hoặc đăng ký trước khi đặt.
+
+> Để khách được cộng điểm, hãy nhớ chuyển đơn sang **Hoàn thành** sau khi giao xong (mục [6.2](#62-chi-tiết-đơn-hàng)).
 
 ---
 
@@ -781,7 +887,7 @@ Nhấn **Xóa** trên hàng trong danh sách. Một hộp xác nhận trình duy
 - Dùng bất kỳ URL `https://` công khai — Supabase Storage, Cloudflare R2, Unsplash, v.v.
 - Hình ảnh được render với `<Image unoptimized>` — không cần cấu hình domain Next.js.
 - Tránh URL `placehold.co` — chúng kích hoạt placeholder màu xám/xanh ngọc.
-- Tải file lên Supabase Storage: tạo bucket công khai, tải file lên, sao chép URL công khai.
+- Cách dễ nhất: bấm **Tải ảnh lên** ngay trong form (có ở Banner và mục Hình ảnh 5.6). Ảnh được lưu vào Supabase Storage và URL được điền tự động.
 
 ---
 

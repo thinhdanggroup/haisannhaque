@@ -6,7 +6,7 @@ This guide explains how to use the `/admin/content` page to manage all CMS conte
 
 ## Overview
 
-The content dashboard lets admins create, edit, and delete six types of CMS entities:
+The content dashboard lets admins create, edit, and delete these CMS entities (support pages have their own admin menu item):
 
 | Entity | URL segment | What it controls |
 |---|---|---|
@@ -15,7 +15,8 @@ The content dashboard lets admins create, edit, and delete six types of CMS enti
 | Banners | `/admin/content/banners` | Image banners inside a section |
 | Navigation items | `/admin/content/navigation` | Header, sidebar, footer, and mobile nav links |
 | Footer links | `/admin/content/footer-links` | Grouped links in the site footer |
-| Brand assets | `/admin/content/brand-assets` | Partner, payment, trust, and brand logos |
+| Brand assets | `/admin/content/brand-assets` | Bank-transfer QR, order-app logos, partner/payment/trust/brand logos |
+| Support pages | `/admin/support-pages` | "Hỗ trợ khách hàng" pages at `/ho-tro/<slug>` (separate admin menu item) |
 
 All mutations require the `cms:update` admin permission.
 
@@ -54,7 +55,7 @@ Sections define the layout zones within a page. Each section has a type that tel
 | Section key | Unique identifier within the page. Lowercase, hyphens only. |
 | Section type | Controls the rendered component. See types below. |
 | Title / Subtitle | Optional display text passed to the component. |
-| Layout | Optional layout variant string (e.g. `default`, `compact`). |
+| Layout | Optional layout variant. For `product_rail` / `flash_sale`: `default` renders a grid, `carousel` a horizontally scrolling row (arrows on desktop, swipe on mobile). |
 | Sort order | Lower numbers appear first. |
 | Status | Active / Inactive. |
 
@@ -91,6 +92,14 @@ Tabs are ordered with ↑/↓; the first tab is selected when the page loads. No
 A tab with no products shows every product in the section. The section still needs Status = Active to appear, and its title, subtitle, and sort order are edited on the regular section edit page.
 
 Under the hood, tabs are stored in `cms_sections.metadata.tabs` (`{ key, label, href?, productIds }`), and `cms_section_products` holds the union of all tab products so the homepage loads every card in one query.
+
+### Product rail products ("Bán chạy" and other product rails)
+
+`product_rail` and `flash_sale` sections show a hand-picked product list. Manage it at `/admin/content/sections/[id]/products`: click **Sản phẩm** on the section's row in the content list, or *Chọn sản phẩm hiển thị* on its edit page.
+
+Search published products by name, add up to 40, reorder with ↑/↓, remove with ✕, then click **Lưu sản phẩm**. The homepage updates immediately. Saving keeps the badge text of products that stay in the list.
+
+A product only renders if it has at least one active variant. The homepage "Bán chạy" section (`best-sellers`) uses Layout `carousel` and Sort order `5`, which places it between the `hero-main` (0) and `hero` (10) sections.
 
 ---
 
@@ -150,7 +159,7 @@ Footer links are grouped sets of links rendered at the bottom of the page.
 
 | Field | Notes |
 |---|---|
-| Group label | Column heading (e.g. `Company`, `Support`, `Legal`). Links with the same group label are rendered together. |
+| Group label | Column heading (e.g. `Company`, `Support`, `Legal`). Links with the same group label are rendered together. Links in the `Hỗ trợ khách hàng` group are managed by support pages; edit the page, not the link. |
 | Label | Link text. |
 | Href | Destination path or URL. |
 | Sort order | Controls order within the group. |
@@ -160,17 +169,17 @@ Footer links are grouped sets of links rendered at the bottom of the page.
 
 ## Brand assets
 
-Brand assets are logos used in partner strips, payment method rows, and trust badges.
+Brand assets are images shown in the footer and checkout: the bank-transfer QR, order-app logos, and partner, payment and trust logos. On the content dashboard the table is titled **Hình ảnh: tài khoản ngân hàng, app đặt hàng, logo**.
 
 ### Fields
 
 | Field | Notes |
 |---|---|
 | Asset key | Unique identifier within the placement. |
-| Placement | `partner`, `payment`, `trust`, or `brand`. |
-| Image URL | Full URL to the logo image. |
-| Alt text | Accessible description of the logo. Required. |
-| Href | Optional. Wraps the logo in a link. |
+| Placement | See placements below. Field labels change with the placement to hint what to enter. |
+| Image | Click **Tải ảnh lên** to upload (JPEG/PNG/WEBP/GIF, max 5 MB, stored in the `media` bucket), or paste an `https://` URL. |
+| Alt text | For `bank_account`: the account details, written as `Bank - Number - Holder` (split on ` - ` into lines). For `order_app`: the display name. Otherwise an accessible description. Required. |
+| Href | Optional. Wraps the image in a link; external links open in a new tab. Leave empty for `bank_account`. |
 | Sort order | Controls order within the placement. |
 | Status | Active / Inactive. |
 
@@ -178,10 +187,30 @@ Brand assets are logos used in partner strips, payment method rows, and trust ba
 
 | Placement | Where it appears |
 |---|---|
-| `partner` | Partner brand strip (e.g. supplier logos) |
-| `payment` | Accepted payment method icons |
-| `trust` | Trust badge row (e.g. security certifications) |
+| `bank_account` | Checkout (when "Chuyển khoản ngân hàng" is selected), the order confirmation page (with the order number as transfer note), and the footer |
+| `order_app` | "Đặt hàng qua app" in the footer and at the bottom of the checkout payment panel |
+| `partner` | Footer "Đối tác" group |
+| `payment` | Footer "Thanh toán" group (accepted payment method icons) |
+| `trust` | Footer "Cam kết" group |
 | `brand` | General brand asset area |
+
+Assets whose image URL is a `placehold.co` placeholder render their alt text instead of the image.
+
+---
+
+## Support pages ("Hỗ trợ khách hàng")
+
+Managed at `/admin/support-pages` (its own item in the admin sidebar). Each page is served at `/ho-tro/<slug>` and owns a footer link in the `Hỗ trợ khách hàng` group: creating, renaming, reordering, hiding or deleting a page updates that link automatically.
+
+| Field | Notes |
+|---|---|
+| Title | Page heading and footer link text. |
+| Slug | Lowercase, digits, hyphens. Derived from the title (diacritics removed) for new pages; editable. Changing it moves the footer link. |
+| Body | Plain text with light markup: `## heading`, `- bullet`, `1. step`, `**bold**`, blank line = new paragraph, bare `https://` URLs become links. A live preview sits beside the editor. No HTML. |
+| Sort order | Order within the footer group. |
+| Status | Published (page reachable, link shown) / Draft (page 404s, link hidden). |
+
+Stored in `cms_support_pages`; anonymous readers can only read published rows (RLS).
 
 ---
 

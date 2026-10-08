@@ -802,3 +802,21 @@ Never hard-delete products, variants, categories, or suppliers. Use the soft-del
 | Feature | Documentation |
 |---|---|
 | Facebook Post Generator | [Setup & Operations](./social-post-generator.md) — AI-generated Facebook sales posts (admin) |
+| Support pages | [Content guide](./admin-content-guide.md#support-pages-hỗ-trợ-khách-hàng) — `cms_support_pages`, `/ho-tro/[slug]`, footer-link sync in `src/features/cms/support-page-actions.ts` |
+| Bank transfer & order apps | [Content guide](./admin-content-guide.md#brand-assets) — `cms_brand_assets` placements `bank_account` / `order_app`, exposed as `StorefrontChrome.bankAccounts` / `orderAppAssets` |
+| Product rail picker & carousel | [Content guide](./admin-content-guide.md#product-rail-products-bán-chạy-and-other-product-rails) — `saveSectionProducts`; `layout: "carousel"` renders `ProductCarousel` |
+| Customer sign-up & loyalty link | See below |
+
+### Customer sign-up and loyalty
+
+- `/register` → `registerAction` (`src/features/account/register-action.ts`) creates the auth user with the **service-role client** and `email_confirm: true`, because production's default Supabase mailer only delivers to team addresses. It then creates the `customers` row and signs the user in.
+- `ensureCustomerForUser` (`src/features/account/customer-link.ts`) returns or creates the `customers` row for an auth user. `submitCheckout` calls it for signed-in users and sets `carts.customer_id`, which `create_order_from_checkout` copies onto the order. `award_loyalty_points` only awards orders with a `customer_id`, so guest orders never earn points.
+- Login and register accept `?next=`, validated by `safeNextPath` (relative paths only).
+
+### Prices
+
+Prices are `numeric(12,2)`. Admin price fields are free text parsed by `parsePrice` (`src/lib/format.ts`), which accepts `125500.5`, `125.500,5` and `1.250.000`, and treats a single dot followed by exactly three digits as a thousands separator. `formatVnd` shows up to 2 decimals.
+
+### Font
+
+The site font is Be Vietnam Pro (`next/font/google`, `vietnamese` + `latin` subsets, weights 400–800), exposed as `--font-sans`. Don't set `font-family` on `body` directly. An Arial override there is what made weights and diacritics render unevenly before.
