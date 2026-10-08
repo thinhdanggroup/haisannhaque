@@ -899,3 +899,4 @@ Nhấn **Xóa** trên hàng trong danh sách. Một hộp xác nhận trình duy
 | [Cập Nhật Hero Banner](admin-update-hero-banner.md) | Chỉnh sửa banner hiện có (ảnh, nội dung, CTA, thứ tự) |
 | [Hướng Dẫn Quản Lý Nội Dung](admin-content-guide.md) | Chi tiết về trang CMS, phần, điều hướng, footer |
 | [Quy Trình Đăng Sản Phẩm Mới](admin-post-product-flow.md) | Tạo sản phẩm thủ công và nhập CSV hàng loạt |
+| [Hướng Dẫn Tính Năng Mới (10/2026)](huong-dan-tinh-nang-moi.md) | Có hình minh hoạ: giá thập phân, ảnh QR ngân hàng & app đặt hàng, trang Hỗ trợ khách hàng, đăng ký tích điểm, mục Bán chạy |
