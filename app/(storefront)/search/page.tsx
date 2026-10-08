@@ -121,6 +121,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         paymentAssets={chrome.paymentAssets}
         partnerAssets={chrome.partnerAssets}
         trustAssets={chrome.trustAssets}
+        bankAccounts={chrome.bankAccounts}
+        orderAppAssets={chrome.orderAppAssets}
       />
     </div>
   );

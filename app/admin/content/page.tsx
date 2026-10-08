@@ -376,6 +376,14 @@ export default async function AdminContentPage() {
           emptyMessage="Chưa có phần CMS nào."
           actionsSlot={(row) => (
             <div className="flex items-center justify-end gap-2">
+              {(row.type === "product_rail" || row.type === "flash_sale") && (
+                <Link
+                  href={`/admin/content/sections/${row.id}/products`}
+                  className="rounded-md border border-teal-200 px-3 py-1 text-xs font-medium text-teal-700 hover:bg-teal-50"
+                >
+                  Sản phẩm
+                </Link>
+              )}
               {row.type === "recommendation_tabs" && (
                 <Link
                   href={`/admin/content/sections/${row.id}/tabs`}
@@ -469,7 +477,8 @@ export default async function AdminContentPage() {
           )}
         />
         <CmsTableSection
-          title="Tài nguyên thương hiệu"
+          title="Hình ảnh: tài khoản ngân hàng, app đặt hàng, logo"
+          note="Thêm ảnh QR chuyển khoản (vị trí “Tài khoản ngân hàng”) và logo Shopee/Grab (vị trí “Đặt hàng qua app”). Bấm “Tải ảnh lên” trong form để đính kèm ảnh."
           newHref="/admin/content/brand-assets/new"
           columns={[
             { key: "assetKey", label: "Tài nguyên" },

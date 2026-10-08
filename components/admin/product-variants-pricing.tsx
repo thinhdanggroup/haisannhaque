@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { formatVnd, parsePrice } from "@/src/lib/format";
 import {
   createProductVariant,
   deleteProductVariant,
@@ -106,23 +107,17 @@ export function ProductVariantsPricing({ productId, variants }: ProductVariantsP
                   </td>
                   <td className="px-4 py-3 text-slate-500">{v.sku}</td>
                   <td className="px-4 py-3">
-                    <input
-                      type="number"
+                    <PriceInput
                       name={`listPrice_${v.id}`}
                       defaultValue={v.listPrice}
-                      min={0}
-                      step={1000}
                       required
                       className="min-h-9 w-36 rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <input
-                      type="number"
+                    <PriceInput
                       name={`salePrice_${v.id}`}
                       defaultValue={v.salePrice ?? ""}
-                      min={0}
-                      step={1000}
                       placeholder="—"
                       className="min-h-9 w-36 rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
                     />
@@ -213,11 +208,8 @@ function AddVariantForm({ productId }: { productId: string }) {
           <span>
             Giá niêm yết (₫) <span className="text-red-600">*</span>
           </span>
-          <input
-            type="number"
+          <PriceInput
             name="listPrice"
-            min={0}
-            step={1000}
             required
             className={inputClass}
           />
@@ -225,11 +217,8 @@ function AddVariantForm({ productId }: { productId: string }) {
 
         <label className="space-y-1 text-sm text-slate-700">
           <span>Giá khuyến mãi (₫)</span>
-          <input
-            type="number"
+          <PriceInput
             name="salePrice"
-            min={0}
-            step={1000}
             placeholder="Để trống nếu không giảm giá"
             className={inputClass}
           />
@@ -249,5 +238,55 @@ function AddVariantForm({ productId }: { productId: string }) {
         {isPending ? "Đang thêm…" : "Thêm biến thể"}
       </button>
     </form>
+  );
+}
+
+/**
+ * Free-text price field: accepts decimals ("125500.5") and Vietnamese notation
+ * ("125.500,5"), and shows how the value will be read so typos are visible
+ * before saving. Parsing is repeated server-side with the same parsePrice.
+ */
+function PriceInput({
+  defaultValue,
+  className,
+  ...props
+}: Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "defaultValue"> & {
+  defaultValue?: number | string;
+}) {
+  const initialValue = defaultValue === undefined ? "" : String(defaultValue);
+  const [value, setValue] = useState(initialValue);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // A controlled input ignores form.reset(), which AddVariantForm calls after
+  // a successful create, so mirror the reset by hand.
+  useEffect(() => {
+    const form = inputRef.current?.form;
+    if (!form) return;
+    const handleReset = () => setValue(initialValue);
+    form.addEventListener("reset", handleReset);
+    return () => form.removeEventListener("reset", handleReset);
+  }, [initialValue]);
+  const parsed = value.trim() === "" ? null : parsePrice(value);
+  const invalid = parsed !== null && (!Number.isFinite(parsed) || parsed < 0);
+
+  return (
+    <span className="block">
+      <input
+        {...props}
+        ref={inputRef}
+        type="text"
+        inputMode="decimal"
+        autoComplete="off"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        aria-invalid={invalid || undefined}
+        className={className}
+      />
+      {parsed !== null && (
+        <span className={`mt-0.5 block text-[11px] ${invalid ? "text-red-600" : "text-slate-500"}`}>
+          {invalid ? "Giá không hợp lệ" : `= ${formatVnd(parsed)}`}
+        </span>
+      )}
+    </span>
   );
 }

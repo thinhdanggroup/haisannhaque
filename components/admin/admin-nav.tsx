@@ -5,6 +5,7 @@ const adminLinks = [
   { href: "/admin/products", label: "Sản phẩm" },
   { href: "/admin/categories", label: "Danh mục" },
   { href: "/admin/content", label: "Nội dung" },
+  { href: "/admin/support-pages", label: "Hỗ trợ khách hàng" },
   { href: "/admin/shop-sync", label: "Đồng bộ ShopeeFood" },
   { href: "/admin/flash-sales", label: "Flash Sale" },
   { href: "/admin/social-posts", label: "Bài đăng Facebook" },

@@ -277,6 +277,7 @@ function fixtureRail({
   products,
   type = "product_rail",
   metadata = {},
+  layout = "dense_grid",
 }: {
   id: string;
   key: string;
@@ -287,6 +288,7 @@ function fixtureRail({
   products: HomePageContent["sections"][number]["products"];
   type?: "product_rail" | "flash_sale";
   metadata?: Record<string, unknown>;
+  layout?: string;
 }): HomePageContent["sections"][number] {
   return {
     id,
@@ -294,7 +296,7 @@ function fixtureRail({
     type,
     title,
     subtitle,
-    layout: "dense_grid",
+    layout,
     sortOrder,
     metadata: { viewMoreHref, ...metadata },
     banners: [],
@@ -547,6 +549,26 @@ export const playwrightChromeFixture: StorefrontChrome = {
       color: "fef9c3",
     }),
   ],
+  bankAccounts: [
+    fixtureBrandAsset({
+      assetKey: "bank-demo",
+      placement: "bank_account",
+      imageText: "QR",
+      altText: "Ngân hàng Demo - 0000 1111 2222 - HAI SAN NHA QUE",
+      sortOrder: 10,
+      color: "e0f7fa",
+    }),
+  ],
+  orderAppAssets: [
+    fixtureBrandAsset({
+      assetKey: "order-app-shopeefood",
+      placement: "order_app",
+      imageText: "ShopeeFood",
+      altText: "Đặt hàng qua ShopeeFood",
+      sortOrder: 10,
+      color: "ee4d2d",
+    }),
+  ],
 };
 
 export const playwrightHomeFixture: HomePageContent = {
@@ -670,6 +692,7 @@ export const playwrightHomeFixture: HomePageContent = {
       subtitle: "Sản phẩm được chọn nhiều tuần này",
       sortOrder: 40,
       viewMoreHref: "/categories/best-sellers",
+      layout: "carousel",
       products: [
         fixtureProducts.alaskaLobster,
         fixtureProducts.koreanAbalone,

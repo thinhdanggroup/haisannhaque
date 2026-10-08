@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerClient } from "@/src/lib/supabase/server";
 import { requireAdminPermission } from "@/src/features/admin/auth";
+import { parsePrice } from "@/src/lib/format";
 
 const updateProductSchema = z.object({
   id: z.string().uuid(),
@@ -298,7 +299,7 @@ export async function updateVariantPricing(
       .string()
       .trim()
       .min(1, "List price is required")
-      .transform((value) => Number(value))
+      .transform(parsePrice)
       .pipe(
         z
           .number({ message: "List price must be a number" })
@@ -307,9 +308,9 @@ export async function updateVariantPricing(
     salePrice: z
       .string()
       .trim()
-      .refine((value) => value === "" || Number.isFinite(Number(value)), "Sale price must be a number")
-      .refine((value) => value === "" || Number(value) >= 0, "Sale price must be 0 or more")
-      .transform((value) => (value === "" ? null : Number(value))),
+      .refine((value) => value === "" || Number.isFinite(parsePrice(value)), "Sale price must be a number")
+      .refine((value) => value === "" || parsePrice(value) >= 0, "Sale price must be 0 or more")
+      .transform((value) => (value === "" ? null : parsePrice(value))),
   });
 
   const updates = variantIds.map((id) => {
@@ -382,7 +383,7 @@ const createVariantSchema = z.object({
     .string()
     .trim()
     .min(1, "List price is required")
-    .transform((value) => Number(value))
+    .transform(parsePrice)
     .pipe(
       z
         .number({ message: "List price must be a number" })
@@ -391,9 +392,9 @@ const createVariantSchema = z.object({
   salePrice: z
     .string()
     .trim()
-    .refine((value) => value === "" || Number.isFinite(Number(value)), "Sale price must be a number")
-    .refine((value) => value === "" || Number(value) >= 0, "Sale price must be 0 or more")
-    .transform((value) => (value === "" ? null : Number(value))),
+    .refine((value) => value === "" || Number.isFinite(parsePrice(value)), "Sale price must be a number")
+    .refine((value) => value === "" || parsePrice(value) >= 0, "Sale price must be 0 or more")
+    .transform((value) => (value === "" ? null : parsePrice(value))),
 });
 
 export type CreateVariantState = { error: string } | { success: true } | null;

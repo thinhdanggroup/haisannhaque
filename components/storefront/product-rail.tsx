@@ -3,6 +3,8 @@ import { ChevronRight } from "lucide-react";
 import type { CmsSection } from "@/src/features/cms/types";
 import type { ActiveFlashSale } from "@/src/features/flash-sales/types";
 import { FlashSaleCountdown } from "./flash-sale-countdown";
+import { ProductCard } from "./product-card";
+import { ProductCarousel } from "./product-carousel";
 import { ProductGrid } from "./product-grid";
 import { storefrontTheme } from "./storefront-theme";
 
@@ -185,12 +187,29 @@ export function ProductRail({ section, flashSale }: ProductRailProps) {
         </div>
       </div>
 
-      <ProductGrid
-        products={section.products}
-        density="dense"
-        emptyMessage="Chưa có sản phẩm trong khu vực này."
-        flashSale={flashSale}
-      />
+      {section.layout === "carousel" && section.products.length > 0 ? (
+        <ProductCarousel label={title}>
+          {section.products.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={index}
+              flashSale={
+                flashSale?.productIds.includes(product.id)
+                  ? { discountPct: flashSale.discountPct, endAt: flashSale.endAt }
+                  : null
+              }
+            />
+          ))}
+        </ProductCarousel>
+      ) : (
+        <ProductGrid
+          products={section.products}
+          density="dense"
+          emptyMessage="Chưa có sản phẩm trong khu vực này."
+          flashSale={flashSale}
+        />
+      )}
     </section>
   );
 }

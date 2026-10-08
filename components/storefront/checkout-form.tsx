@@ -1,14 +1,43 @@
+import Link from "next/link";
+import type { CmsBrandAsset } from "@/src/features/cms/types";
 import { CheckoutPanel } from "./checkout-panel";
+import { OrderAppLinks } from "./order-app-links";
+import { PaymentMethodField } from "./payment-method-field";
 import { submitCheckout } from "@/app/(storefront)/checkout/actions";
 
 type CheckoutFormProps = {
   cartId?: string;
+  bankAccounts?: CmsBrandAsset[];
+  orderAppAssets?: CmsBrandAsset[];
+  /** Signed-in customer: prefills the form and the order earns points. */
+  customer?: { fullName: string | null; phone: string | null } | null;
 };
 
-export function CheckoutForm({ cartId }: CheckoutFormProps) {
+export function CheckoutForm({
+  cartId,
+  bankAccounts = [],
+  orderAppAssets = [],
+  customer = null,
+}: CheckoutFormProps) {
   return (
     <form action={submitCheckout} className="space-y-5">
       <input type="hidden" name="cartId" value={cartId ?? ""} />
+      {customer ? (
+        <p className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-800">
+          Đơn hàng này sẽ được tích điểm vào tài khoản của bạn khi hoàn tất.
+        </p>
+      ) : (
+        <p className="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-800">
+          <Link href="/login?next=/checkout" className="font-semibold underline">
+            Đăng nhập
+          </Link>{" "}
+          hoặc{" "}
+          <Link href="/register?next=/checkout" className="font-semibold underline">
+            đăng ký tài khoản
+          </Link>{" "}
+          để tích điểm cho đơn hàng này.
+        </p>
+      )}
       <CheckoutPanel title="Thông tin giao hàng">
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block text-sm" htmlFor="receiverName">
@@ -17,6 +46,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
               id="receiverName"
               name="receiverName"
               autoComplete="name"
+              defaultValue={customer?.fullName ?? undefined}
               required
               minLength={2}
               className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
@@ -28,6 +58,7 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
               id="phone"
               name="phone"
               autoComplete="tel"
+              defaultValue={customer?.phone ?? undefined}
               required
               minLength={8}
               pattern="[0-9+\s\-]{8,15}"
@@ -113,21 +144,14 @@ export function CheckoutForm({ cartId }: CheckoutFormProps) {
               <option value="nationwide_shipping">Giao toàn quốc</option>
             </select>
           </label>
-          <label className="block text-sm" htmlFor="paymentMethod">
-            <span className="font-medium text-slate-700">Phương thức thanh toán</span>
-            <select
-              id="paymentMethod"
-              name="paymentMethod"
-              defaultValue="cod"
-              className="mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-teal-600"
-            >
-              <option value="cod">Tiền mặt khi nhận hàng</option>
-              <option value="bank_transfer">Chuyển khoản ngân hàng</option>
-              <option value="momo">MoMo</option>
-              <option value="vnpay">VNPAY</option>
-            </select>
-          </label>
+          <PaymentMethodField bankAccounts={bankAccounts} />
         </div>
+        {orderAppAssets.length > 0 && (
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <p className="mb-2 text-sm text-slate-600">Hoặc đặt hàng qua app:</p>
+            <OrderAppLinks assets={orderAppAssets} />
+          </div>
+        )}
       </CheckoutPanel>
       <button
         type="submit"

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { CmsBrandAssetState } from "@/src/features/cms/admin-actions";
+import { CmsImageUrlField } from "./cms-image-url-field";
 
 type InitialValues = {
   id: string;
@@ -23,7 +24,29 @@ type CmsBrandAssetFormProps = {
 const INPUT_CLASS =
   "mt-1 min-h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100";
 
-const PLACEMENTS = ["partner", "payment", "trust", "brand"] as const;
+const PLACEMENTS = [
+  { value: "bank_account", label: "Tài khoản ngân hàng (ảnh QR chuyển khoản)" },
+  { value: "order_app", label: "Đặt hàng qua app (logo Shopee, Grab…)" },
+  { value: "payment", label: "Thanh toán (logo ở chân trang)" },
+  { value: "partner", label: "Đối tác (chân trang)" },
+  { value: "trust", label: "Cam kết (chân trang)" },
+  { value: "brand", label: "Thương hiệu" },
+] as const;
+
+const PLACEMENT_HINTS: Record<string, { image: string; alt: string; href: string }> = {
+  bank_account: {
+    image: "Ảnh mã QR chuyển khoản",
+    alt: "Thông tin tài khoản — VD: Techcombank - 1903 7253 7380 24 - NGUYEN VAN A",
+    href: "Để trống",
+  },
+  order_app: {
+    image: "Logo app (ShopeeFood, GrabFood…)",
+    alt: "Tên hiển thị — VD: Đặt hàng qua ShopeeFood",
+    href: "Link gian hàng trên app (https://…)",
+  },
+};
+
+const DEFAULT_HINTS = { image: "Hình ảnh", alt: "Văn bản thay thế", href: "Đường dẫn (tuỳ chọn)" };
 
 export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormProps) {
   const [state, formAction, isPending] = useActionState<CmsBrandAssetState, FormData>(
@@ -31,6 +54,8 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
     null,
   );
   const isEdit = Boolean(initialValues);
+  const [placement, setPlacement] = useState(initialValues?.placement ?? "bank_account");
+  const hints = PLACEMENT_HINTS[placement] ?? DEFAULT_HINTS;
 
   return (
     <form action={formAction} className="max-w-xl space-y-4">
@@ -60,31 +85,28 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
           id="placement"
           name="placement"
           required
-          defaultValue={initialValues?.placement ?? "brand"}
+          value={placement}
+          onChange={(event) => setPlacement(event.target.value)}
           className={INPUT_CLASS}
         >
           {PLACEMENTS.map((p) => (
-            <option key={p} value={p}>
-              {p}
+            <option key={p.value} value={p.value}>
+              {p.label}
             </option>
           ))}
         </select>
       </label>
 
-      <label className="block text-sm" htmlFor="imageUrl">
-        <span className="font-medium text-slate-700">URL hình ảnh</span>
-        <input
-          id="imageUrl"
-          name="imageUrl"
-          required
-          type="url"
-          defaultValue={initialValues?.imageUrl}
-          className={INPUT_CLASS}
-        />
-      </label>
+      <CmsImageUrlField
+        name="imageUrl"
+        label={hints.image}
+        required
+        defaultValue={initialValues?.imageUrl}
+        inputClassName={INPUT_CLASS}
+      />
 
       <label className="block text-sm" htmlFor="altText">
-        <span className="font-medium text-slate-700">Văn bản thay thế</span>
+        <span className="font-medium text-slate-700">{hints.alt}</span>
         <input
           id="altText"
           name="altText"
@@ -95,7 +117,7 @@ export function CmsBrandAssetForm({ action, initialValues }: CmsBrandAssetFormPr
       </label>
 
       <label className="block text-sm" htmlFor="href">
-        <span className="font-medium text-slate-700">Đường dẫn (tuỳ chọn)</span>
+        <span className="font-medium text-slate-700">{hints.href}</span>
         <input
           id="href"
           name="href"

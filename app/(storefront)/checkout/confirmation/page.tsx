@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
+import { BankTransferInfo } from "@/components/storefront/bank-transfer-info";
 import { MobileStorefrontDock } from "@/components/storefront/mobile-storefront-dock";
 import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { StorefrontHeader } from "@/components/storefront/storefront-header";
@@ -15,9 +16,9 @@ export const preferredRegion = "sin1";
 export default async function CheckoutConfirmationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ orderNo?: string }>;
+  searchParams: Promise<{ orderNo?: string; method?: string }>;
 }) {
-  const { orderNo } = await searchParams;
+  const { orderNo, method } = await searchParams;
 
   const chrome = shouldUseStorefrontPlaywrightFixture()
     ? playwrightChromeFixture
@@ -41,6 +42,12 @@ export default async function CheckoutConfirmationPage({
           Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất.
           Cảm ơn bạn đã tin tưởng Hải Sản Nhà Quê!
         </p>
+        {method === "bank_transfer" && chrome.bankAccounts.length > 0 && (
+          <div className="mx-auto mt-8 max-w-md text-left">
+            <h2 className="mb-3 text-center text-base font-semibold">Thông tin chuyển khoản</h2>
+            <BankTransferInfo accounts={chrome.bankAccounts} transferNote={orderNo} />
+          </div>
+        )}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link
             href="/account/orders"
@@ -62,6 +69,8 @@ export default async function CheckoutConfirmationPage({
         paymentAssets={chrome.paymentAssets}
         partnerAssets={chrome.partnerAssets}
         trustAssets={chrome.trustAssets}
+        bankAccounts={chrome.bankAccounts}
+        orderAppAssets={chrome.orderAppAssets}
       />
     </div>
   );

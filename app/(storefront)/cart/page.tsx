@@ -138,6 +138,8 @@ export default async function CartPage() {
         paymentAssets={chrome.paymentAssets}
         partnerAssets={chrome.partnerAssets}
         trustAssets={chrome.trustAssets}
+        bankAccounts={chrome.bankAccounts}
+        orderAppAssets={chrome.orderAppAssets}
       />
     </div>
   );

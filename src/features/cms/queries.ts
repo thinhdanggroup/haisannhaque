@@ -375,5 +375,7 @@ export async function getStorefrontChrome(
     paymentAssets: brandAssets.filter((asset) => asset.placement === "payment"),
     partnerAssets: brandAssets.filter((asset) => asset.placement === "partner"),
     trustAssets: brandAssets.filter((asset) => asset.placement === "trust"),
+    bankAccounts: brandAssets.filter((asset) => asset.placement === "bank_account"),
+    orderAppAssets: brandAssets.filter((asset) => asset.placement === "order_app"),
   };
 }

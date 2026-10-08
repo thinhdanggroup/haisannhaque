@@ -5,6 +5,8 @@ import type {
   CmsBrandAsset,
   CmsFooterLink,
 } from "@/src/features/cms/types";
+import { BankTransferInfo } from "./bank-transfer-info";
+import { OrderAppLinks } from "./order-app-links";
 import { isTextPlaceholderImage } from "./storefront-placeholder-image";
 import { StoreLogo } from "./store-logo";
 
@@ -13,6 +15,8 @@ type StorefrontFooterProps = {
   paymentAssets: CmsBrandAsset[];
   partnerAssets: CmsBrandAsset[];
   trustAssets: CmsBrandAsset[];
+  bankAccounts?: CmsBrandAsset[];
+  orderAppAssets?: CmsBrandAsset[];
 };
 
 type FooterGroup = {
@@ -113,7 +117,11 @@ function LinkedAsset({ asset, children }: LinkedAssetProps) {
     return <Link href={asset.href}>{children}</Link>;
   }
 
-  return <a href={asset.href}>{children}</a>;
+  return (
+    <a href={asset.href} target="_blank" rel="noopener noreferrer">
+      {children}
+    </a>
+  );
 }
 
 function AssetGroup({
@@ -172,6 +180,8 @@ export function StorefrontFooter({
   paymentAssets,
   partnerAssets,
   trustAssets,
+  bankAccounts = [],
+  orderAppAssets = [],
 }: StorefrontFooterProps) {
   const footerGroups = getFooterGroups(footerLinks);
 
@@ -227,6 +237,27 @@ export function StorefrontFooter({
             ))}
           </div>
         </div>
+
+        {(orderAppAssets.length > 0 || bankAccounts.length > 0) && (
+          <div className="mt-8 grid gap-6 border-t border-slate-200 pt-8 md:grid-cols-2">
+            {orderAppAssets.length > 0 && (
+              <div>
+                <h2 className="text-sm font-bold text-slate-950">Đặt hàng qua app</h2>
+                <div className="mt-3">
+                  <OrderAppLinks assets={orderAppAssets} />
+                </div>
+              </div>
+            )}
+            {bankAccounts.length > 0 && (
+              <div>
+                <h2 className="text-sm font-bold text-slate-950">Chuyển khoản ngân hàng</h2>
+                <div className="mt-3">
+                  <BankTransferInfo accounts={bankAccounts} compact />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="mt-8 grid grid-cols-2 gap-6 border-t border-slate-200 pt-8 sm:grid-cols-3">
           <AssetGroup

@@ -41,7 +41,7 @@ function move<T>(items: T[], from: number, to: number): T[] {
   return next;
 }
 
-function TabProductPicker({
+export function TabProductPicker({
   tab,
   productsById,
   onAdd,

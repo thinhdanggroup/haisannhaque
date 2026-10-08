@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerClient } from "@/src/lib/supabase/server";
+import { safeNextPath } from "./customer-link";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -31,5 +32,5 @@ export async function loginAction(
     return { error: "Email hoặc mật khẩu không đúng." };
   }
 
-  redirect("/account/orders");
+  redirect(safeNextPath(formData.get("next"), "/account/orders"));
 }

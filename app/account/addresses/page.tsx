@@ -11,6 +11,8 @@ export default async function AccountAddressesPage() {
       <div className="py-12 text-center">
         <p className="text-slate-600 mb-4">Vui lòng đăng nhập để quản lý địa chỉ của bạn.</p>
         <a href="/login" className="text-blue-600 hover:underline font-medium">Đăng nhập</a>
+        <span className="mx-2 text-slate-400">hoặc</span>
+        <a href="/register" className="text-blue-600 hover:underline font-medium">Đăng ký tài khoản</a>
       </div>
     );
   }

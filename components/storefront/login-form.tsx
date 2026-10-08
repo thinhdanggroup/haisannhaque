@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { loginAction, type LoginState } from "@/src/features/account/login-action";
 
-export function LoginForm() {
+export function LoginForm({ next }: { next?: string }) {
   const [state, action, isPending] = useActionState<LoginState, FormData>(
     loginAction,
     null,
@@ -12,6 +12,7 @@ export function LoginForm() {
 
   return (
     <form action={action} className="space-y-4">
+      {next && <input type="hidden" name="next" value={next} />}
       {state?.error && (
         <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
@@ -52,8 +53,11 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-slate-500">
         Chưa có tài khoản?{" "}
-        <Link href="/register" className="font-medium text-teal-700 hover:underline">
-          Đăng ký
+        <Link
+          href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"}
+          className="font-medium text-teal-700 hover:underline"
+        >
+          Đăng ký để tích điểm
         </Link>
       </p>
     </form>

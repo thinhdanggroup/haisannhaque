@@ -76,7 +76,7 @@ export type CmsFooterLink = {
 export type CmsBrandAsset = {
   id: string;
   assetKey: string;
-  placement: "partner" | "payment" | "trust" | "brand";
+  placement: "partner" | "payment" | "trust" | "brand" | "bank_account" | "order_app";
   imageUrl: string;
   altText: string;
   href: string | null;
@@ -90,6 +90,20 @@ export type StorefrontChrome = {
   paymentAssets: CmsBrandAsset[];
   partnerAssets: CmsBrandAsset[];
   trustAssets: CmsBrandAsset[];
+  /** Transfer QR image + account details (alt text) for bank transfers. */
+  bankAccounts: CmsBrandAsset[];
+  /** Delivery-app logos (ShopeeFood, GrabFood…) linking to the shop's app page. */
+  orderAppAssets: CmsBrandAsset[];
+};
+
+export type CmsSupportPage = {
+  id: string;
+  slug: string;
+  title: string;
+  body: string;
+  sortOrder: number;
+  isPublished: boolean;
+  updatedAt: string;
 };
 
 export type HomePageContent = {

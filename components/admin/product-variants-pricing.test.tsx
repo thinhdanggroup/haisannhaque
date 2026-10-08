@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 vi.mock("@/src/features/catalog/admin-actions", () => ({
   createProductVariant: vi.fn(),
@@ -28,8 +28,19 @@ describe("ProductVariantsPricing", () => {
     expect(screen.getByText(/Chưa có biến thể nào/)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Thêm biến thể" })).toBeTruthy();
     expect(
-      screen.getByRole("spinbutton", { name: /Giá niêm yết/ }).hasAttribute("required"),
+      screen.getByRole("textbox", { name: /Giá niêm yết/ }).hasAttribute("required"),
     ).toBe(true);
+  });
+
+  it("accepts decimal prices and previews how they will be saved", () => {
+    render(<ProductVariantsPricing productId={productId} variants={[]} />);
+
+    const input = screen.getByRole("textbox", { name: /Giá niêm yết/ }) as HTMLInputElement;
+    expect(input.getAttribute("inputmode")).toBe("decimal");
+    expect(input.hasAttribute("step")).toBe(false);
+
+    fireEvent.change(input, { target: { value: "125500,5" } });
+    expect(screen.getByText("= 125.500,5d")).toBeTruthy();
   });
 
   it("explains that a variant-less product stays hidden from the storefront", () => {

@@ -14,6 +14,7 @@ import {
 import type { StorefrontChrome } from "@/src/features/cms/types";
 import { createServerClient } from "@/src/lib/supabase/server";
 import { createAdminClient } from "@/src/lib/supabase/admin";
+import { getAccountProfile } from "@/src/features/account/queries";
 
 export const dynamic = "force-dynamic";
 export const preferredRegion = "sin1";
@@ -24,6 +25,22 @@ async function loadStorefrontChrome(): Promise<StorefrontChrome> {
   }
   const client = await createServerClient();
   return getStorefrontChrome(client);
+}
+
+async function loadSignedInCustomer() {
+  if (shouldUseStorefrontPlaywrightFixture()) return null;
+  const client = await createServerClient();
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+  if (!user) return null;
+
+  const profile = await getAccountProfile(client, user.id);
+  const metadata = (user.user_metadata ?? {}) as { full_name?: string; phone?: string };
+  return {
+    fullName: profile?.fullName ?? metadata.full_name ?? null,
+    phone: profile?.phone ?? metadata.phone ?? null,
+  };
 }
 
 function formatCurrency(value: number): string {
@@ -37,6 +54,7 @@ export default async function CheckoutPage({
 }) {
   const { error } = await searchParams;
   const chrome = await loadStorefrontChrome();
+  const customer = await loadSignedInCustomer();
 
   const cookieStore = await cookies();
   const cartId = cookieStore.get("cart_id")?.value;
@@ -106,7 +124,12 @@ export default async function CheckoutPage({
           </div>
         )}
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <CheckoutForm cartId={cartId} />
+          <CheckoutForm
+            cartId={cartId}
+            bankAccounts={chrome.bankAccounts}
+            orderAppAssets={chrome.orderAppAssets}
+            customer={customer}
+          />
           <CheckoutPanel title="Tóm tắt đơn hàng">
             <div className="space-y-3 text-sm">
               {items.length > 0 && (
@@ -162,6 +185,8 @@ export default async function CheckoutPage({
         paymentAssets={chrome.paymentAssets}
         partnerAssets={chrome.partnerAssets}
         trustAssets={chrome.trustAssets}
+        bankAccounts={chrome.bankAccounts}
+        orderAppAssets={chrome.orderAppAssets}
       />
     </div>
   );

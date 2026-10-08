@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createOrderFromCheckout } from "@/src/features/checkout/create-order";
+import { ensureCustomerForUser } from "@/src/features/account/customer-link";
+import { createAdminClient } from "@/src/lib/supabase/admin";
 import { createServerClient } from "@/src/lib/supabase/server";
 
 function parseOrderError(msg: string): string {
@@ -20,6 +22,25 @@ export async function submitCheckout(formData: FormData) {
   }
 
   const client = await createServerClient();
+
+  // Attach the order to a signed-in customer so it shows in /account/orders
+  // and earns loyalty points once completed (the order copies
+  // carts.customer_id). Guests check out exactly as before.
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+
+  if (user) {
+    try {
+      const admin = createAdminClient();
+      const customerId = await ensureCustomerForUser(admin, user);
+      const { error } = await admin.from("carts").update({ customer_id: customerId }).eq("id", cartId);
+      if (error) throw error;
+    } catch (err) {
+      // Never block a sale on the loyalty link.
+      console.error("submitCheckout: could not link cart to customer", err);
+    }
+  }
 
   let result;
   try {
@@ -44,5 +65,6 @@ export async function submitCheckout(formData: FormData) {
 
   cookieStore.delete("cart_id");
 
-  redirect(`/checkout/confirmation?orderNo=${result.orderNo}`);
+  const paymentMethod = formData.get("paymentMethod") === "bank_transfer" ? "&method=bank_transfer" : "";
+  redirect(`/checkout/confirmation?orderNo=${result.orderNo}${paymentMethod}`);
 }

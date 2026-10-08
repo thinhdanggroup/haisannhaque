@@ -118,12 +118,20 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
 
       <label className="block text-sm" htmlFor="layout">
         <span className="font-medium text-slate-700">Bố cục</span>
+        <span className="ml-1 text-xs text-slate-400">
+          (default = lưới; carousel = hàng sản phẩm trượt ngang)
+        </span>
         <input
           id="layout"
           name="layout"
+          list="cms-section-layouts"
           defaultValue={initialValues?.layout ?? "default"}
           className={INPUT_CLASS}
         />
+        <datalist id="cms-section-layouts">
+          <option value="default" />
+          <option value="carousel" />
+        </datalist>
       </label>
 
       <label className="block text-sm" htmlFor="sortOrder">

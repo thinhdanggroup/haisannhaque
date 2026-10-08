@@ -46,6 +46,13 @@ export default async function CmsSectionEditPage({ params }: Props) {
   return (
     <div>
       <AdminPageHeader title="Sửa phần" description={s.section_key} />
+      {(s.section_type === "product_rail" || s.section_type === "flash_sale") && (
+        <p className="mb-4 text-sm">
+          <Link href={`/admin/content/sections/${s.id}/products`} className="text-teal-700 hover:underline">
+            Chọn sản phẩm hiển thị →
+          </Link>
+        </p>
+      )}
       {s.section_type === "recommendation_tabs" && (
         <p className="mb-4 text-sm">
           <Link href={`/admin/content/sections/${s.id}/tabs`} className="text-teal-700 hover:underline">

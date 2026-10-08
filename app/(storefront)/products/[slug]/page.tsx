@@ -192,6 +192,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
         paymentAssets={chrome.paymentAssets}
         partnerAssets={chrome.partnerAssets}
         trustAssets={chrome.trustAssets}
+        bankAccounts={chrome.bankAccounts}
+        orderAppAssets={chrome.orderAppAssets}
       />
     </div>
   );

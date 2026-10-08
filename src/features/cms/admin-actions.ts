@@ -326,6 +326,83 @@ export async function saveRecommendationTabs(
   return { success: true };
 }
 
+// ── Product rail products ("Bán chạy", …) ─────────────────────────────────
+
+export type SectionProductsState = { error: string } | { success: true } | null;
+
+const sectionProductIdsSchema = z
+  .array(z.string().uuid())
+  .max(40, "Tối đa 40 sản phẩm.")
+  .refine((ids) => new Set(ids).size === ids.length, "Sản phẩm bị trùng.");
+
+export async function saveSectionProducts(
+  _prev: SectionProductsState,
+  formData: FormData,
+): Promise<SectionProductsState> {
+  const client = await createServerClient();
+  await requireAdminPermission(client, "cms:update");
+
+  const sectionId = z.string().uuid().safeParse(formData.get("sectionId"));
+  if (!sectionId.success) return { error: "Phần không hợp lệ." };
+
+  let rawIds: unknown;
+  try {
+    rawIds = JSON.parse(String(formData.get("productIds") ?? "[]"));
+  } catch {
+    return { error: "Danh sách sản phẩm không hợp lệ." };
+  }
+
+  const productIds = sectionProductIdsSchema.safeParse(rawIds);
+  if (!productIds.success)
+    return { error: productIds.error.issues[0]?.message ?? "Danh sách sản phẩm không hợp lệ." };
+
+  const { data: section, error: sectionError } = await client
+    .from("cms_sections")
+    .select("id, section_type")
+    .eq("id", sectionId.data)
+    .single();
+
+  if (sectionError || !section) return { error: "Không tìm thấy phần." };
+  if (section.section_type !== "product_rail" && section.section_type !== "flash_sale")
+    return { error: "Chỉ phần danh sách sản phẩm mới chọn được sản phẩm ở đây." };
+
+  // Keep badges ("Hot", "-20%"…) of products that stay in the list.
+  const { data: existing, error: existingError } = await client
+    .from("cms_section_products")
+    .select("product_id, badge_text")
+    .eq("section_id", sectionId.data);
+
+  if (existingError) throw existingError;
+
+  const badges = new Map(
+    (existing ?? []).map((row) => [row.product_id as string, row.badge_text as string | null]),
+  );
+
+  const { error: deleteError } = await client
+    .from("cms_section_products")
+    .delete()
+    .eq("section_id", sectionId.data);
+
+  if (deleteError) throw deleteError;
+
+  if (productIds.data.length > 0) {
+    const { error: insertError } = await client.from("cms_section_products").insert(
+      productIds.data.map((productId, index) => ({
+        section_id: sectionId.data,
+        product_id: productId,
+        sort_order: index,
+        badge_text: badges.get(productId) ?? null,
+      })),
+    );
+
+    if (insertError) throw insertError;
+  }
+
+  revalidatePath("/");
+  revalidatePath(`/admin/content/sections/${sectionId.data}/products`);
+  return { success: true };
+}
+
 export async function searchProductsForRecommendations(
   query: string,
 ): Promise<Array<{ id: string; name: string; slug: string }>> {
@@ -683,7 +760,14 @@ export async function deleteCmsFooterLink(id: string): Promise<void> {
 
 // ── CMS Brand Assets ───────────────────────────────────────────────────────
 
-const BRAND_PLACEMENTS = ["partner", "payment", "trust", "brand"] as const;
+const BRAND_PLACEMENTS = [
+  "partner",
+  "payment",
+  "trust",
+  "brand",
+  "bank_account",
+  "order_app",
+] as const;
 
 const cmsBrandAssetCreateSchema = z.object({
   assetKey: z.string().min(1, "Asset key is required"),
