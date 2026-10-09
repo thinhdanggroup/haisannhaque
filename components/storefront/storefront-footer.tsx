@@ -200,10 +200,6 @@ export function StorefrontFooter({
               Tháp 2, Toà Nhà The Sun Avenue, 28 Mai Chí Thọ, P.Bình Trưng, TP.HCM, Việt Nam.
               Hotline: 086 799 7200. Email: haisannq3@gmail.com.
             </p>
-            <p className="mt-1 text-xs leading-5 text-teal-100">
-              Nội dung, hình ảnh và dữ liệu demo trong dự án là tài sản minh họa
-              phục vụ xây dựng hệ thống thương mại hải sản.
-            </p>
             <div className="mt-3 w-fit rounded-md border border-teal-200 bg-white px-4 py-3 text-center text-xs font-bold uppercase text-teal-700">
               Đã thông báo
               <span className="block text-[10px] font-semibold text-slate-500">
