@@ -118,9 +118,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <MobileStorefrontDock items={chrome.mobileDock} />
       <StorefrontFooter
         footerLinks={chrome.footerLinks}
-        paymentAssets={chrome.paymentAssets}
-        partnerAssets={chrome.partnerAssets}
-        trustAssets={chrome.trustAssets}
         bankAccounts={chrome.bankAccounts}
         orderAppAssets={chrome.orderAppAssets}
       />

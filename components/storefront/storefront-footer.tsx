@@ -1,20 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import type {
   CmsBrandAsset,
   CmsFooterLink,
 } from "@/src/features/cms/types";
 import { BankTransferInfo } from "./bank-transfer-info";
 import { OrderAppLinks } from "./order-app-links";
-import { isTextPlaceholderImage } from "./storefront-placeholder-image";
 import { StoreLogo } from "./store-logo";
 
 type StorefrontFooterProps = {
   footerLinks: CmsFooterLink[];
-  paymentAssets: CmsBrandAsset[];
-  partnerAssets: CmsBrandAsset[];
-  trustAssets: CmsBrandAsset[];
   bankAccounts?: CmsBrandAsset[];
   orderAppAssets?: CmsBrandAsset[];
 };
@@ -22,11 +17,6 @@ type StorefrontFooterProps = {
 type FooterGroup = {
   groupLabel: string;
   links: CmsFooterLink[];
-};
-
-type LinkedAssetProps = {
-  asset: CmsBrandAsset;
-  children: ReactNode;
 };
 
 const fallbackFooterLinks: CmsFooterLink[] = [
@@ -76,12 +66,6 @@ const fallbackFooterLinks: CmsFooterLink[] = [
 
 const requiredFooterGroups = ["Thông tin", "Chính sách", "Sản phẩm"];
 
-const fallbackAssetLabels = {
-  payment: ["COD", "MoMo", "VNPAY"],
-  partner: ["Đối tác bán lẻ", "Đối tác giao hàng"],
-  trust: ["Tươi mỗi ngày", "Giữ lạnh"],
-};
-
 function getFooterGroups(footerLinks: CmsFooterLink[]): FooterGroup[] {
   const sourceLinks = footerLinks.length > 0 ? footerLinks : fallbackFooterLinks;
   const linksByGroup = new Map<string, CmsFooterLink[]>();
@@ -108,78 +92,8 @@ function getFooterGroups(footerLinks: CmsFooterLink[]): FooterGroup[] {
   }));
 }
 
-function LinkedAsset({ asset, children }: LinkedAssetProps) {
-  if (!asset.href) {
-    return children;
-  }
-
-  if (asset.href.startsWith("/")) {
-    return <Link href={asset.href}>{children}</Link>;
-  }
-
-  return (
-    <a href={asset.href} target="_blank" rel="noopener noreferrer">
-      {children}
-    </a>
-  );
-}
-
-function AssetGroup({
-  title,
-  assets,
-  fallbackLabels,
-}: {
-  title: string;
-  assets: CmsBrandAsset[];
-  fallbackLabels: string[];
-}) {
-  return (
-    <div>
-      <h2 className="text-sm font-bold text-slate-950">{title}</h2>
-      {assets.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {assets.map((asset) => (
-            <LinkedAsset key={asset.id} asset={asset}>
-              <span className="flex h-12 min-w-24 items-center justify-center rounded-md border border-teal-100 bg-white px-3 shadow-sm">
-                {!isTextPlaceholderImage(asset.imageUrl) ? (
-                  <Image
-                    src={asset.imageUrl}
-                    alt={asset.altText}
-                    width={120}
-                    height={48}
-                    className="max-h-8 w-auto object-contain"
-                    unoptimized
-                  />
-                ) : (
-                  <span className="text-xs font-bold text-slate-600">
-                    {asset.altText}
-                  </span>
-                )}
-              </span>
-            </LinkedAsset>
-          ))}
-        </div>
-      ) : (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {fallbackLabels.map((label) => (
-            <span
-              key={label}
-              className="flex min-h-10 items-center rounded-md border border-teal-100 bg-white px-3 text-xs font-semibold text-slate-600 shadow-sm"
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function StorefrontFooter({
   footerLinks,
-  paymentAssets,
-  partnerAssets,
-  trustAssets,
   bankAccounts = [],
   orderAppAssets = [],
 }: StorefrontFooterProps) {
@@ -258,24 +172,6 @@ export function StorefrontFooter({
             )}
           </div>
         )}
-
-        <div className="mt-8 grid grid-cols-2 gap-6 border-t border-slate-200 pt-8 sm:grid-cols-3">
-          <AssetGroup
-            title="Thanh toán"
-            assets={paymentAssets}
-            fallbackLabels={fallbackAssetLabels.payment}
-          />
-          <AssetGroup
-            title="Đối tác"
-            assets={partnerAssets}
-            fallbackLabels={fallbackAssetLabels.partner}
-          />
-          <AssetGroup
-            title="Cam kết"
-            assets={trustAssets}
-            fallbackLabels={fallbackAssetLabels.trust}
-          />
-        </div>
       </div>
 
       <div id="stores" className="bg-[#0f3f46] pb-24 pt-8 text-white md:pb-8">

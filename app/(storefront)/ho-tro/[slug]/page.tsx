@@ -66,9 +66,6 @@ export default async function SupportPage({ params }: Props) {
       <MobileStorefrontDock items={chrome.mobileDock} />
       <StorefrontFooter
         footerLinks={chrome.footerLinks}
-        paymentAssets={chrome.paymentAssets}
-        partnerAssets={chrome.partnerAssets}
-        trustAssets={chrome.trustAssets}
         bankAccounts={chrome.bankAccounts}
         orderAppAssets={chrome.orderAppAssets}
       />
