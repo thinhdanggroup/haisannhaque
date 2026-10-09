@@ -7,6 +7,7 @@ import type {
 import { BankTransferInfo } from "./bank-transfer-info";
 import { OrderAppLinks } from "./order-app-links";
 import { StoreLogo } from "./store-logo";
+import { StoreMap } from "./store-map";
 
 type StorefrontFooterProps = {
   footerLinks: CmsFooterLink[];
@@ -175,7 +176,7 @@ export function StorefrontFooter({
       </div>
 
       <div id="stores" className="bg-[#0f3f46] pb-24 pt-8 text-white md:pb-8">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-[220px_minmax(0,1fr)_180px] md:items-center">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-[220px_minmax(0,1fr)_320px] md:items-center">
           <div className="flex flex-col gap-2">
             <div className="w-fit rounded-xl bg-white p-2 shadow-sm">
               <Image
@@ -203,13 +204,14 @@ export function StorefrontFooter({
               Nội dung, hình ảnh và dữ liệu demo trong dự án là tài sản minh họa
               phục vụ xây dựng hệ thống thương mại hải sản.
             </p>
+            <div className="mt-3 w-fit rounded-md border border-teal-200 bg-white px-4 py-3 text-center text-xs font-bold uppercase text-teal-700">
+              Đã thông báo
+              <span className="block text-[10px] font-semibold text-slate-500">
+                Bộ Công Thương
+              </span>
+            </div>
           </div>
-          <div className="w-fit rounded-md border border-teal-200 bg-white px-4 py-3 text-center text-xs font-bold uppercase text-teal-700">
-            Đã thông báo
-            <span className="block text-[10px] font-semibold text-slate-500">
-              Bộ Công Thương
-            </span>
-          </div>
+          <StoreMap />
         </div>
       </div>
     </footer>
