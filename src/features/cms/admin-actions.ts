@@ -124,6 +124,23 @@ const SECTION_TYPES = [
   "footer",
 ] as const;
 
+// "Xem thêm" link on product rails; stored in cms_sections.metadata.viewMoreHref.
+const viewMoreHrefSchema = z
+  .string()
+  .trim()
+  .refine((value) => value === "" || /^(\/|https?:\/\/)/.test(value), {
+    message: "Đường dẫn \"Xem thêm\" phải bắt đầu bằng / hoặc http(s)://",
+  });
+
+function withViewMoreHref(
+  metadata: Record<string, unknown>,
+  viewMoreHref: string,
+): Record<string, unknown> {
+  const rest = { ...metadata };
+  delete rest.viewMoreHref;
+  return viewMoreHref ? { ...rest, viewMoreHref } : rest;
+}
+
 const cmsSectionCreateSchema = z.object({
   pageKey: z.string().min(1, "Page is required"),
   sectionKey: z
@@ -136,6 +153,7 @@ const cmsSectionCreateSchema = z.object({
   layout: z.string().min(1, "Layout is required"),
   sortOrder: z.coerce.number().int().min(0),
   isActive: z.boolean(),
+  viewMoreHref: viewMoreHrefSchema,
 });
 
 const cmsSectionUpdateSchema = z.object({
@@ -147,6 +165,7 @@ const cmsSectionUpdateSchema = z.object({
   layout: z.string().min(1, "Layout is required"),
   sortOrder: z.coerce.number().int().min(0),
   isActive: z.boolean(),
+  viewMoreHref: viewMoreHrefSchema,
 });
 
 export async function createCmsSection(
@@ -165,6 +184,7 @@ export async function createCmsSection(
     layout: formData.get("layout") || "default",
     sortOrder: formData.get("sortOrder") ?? 0,
     isActive: formData.get("isActive") === "true",
+    viewMoreHref: formData.get("viewMoreHref") ?? "",
   });
 
   if (!result.success) return { error: result.error.issues[0]?.message ?? "Invalid input." };
@@ -178,6 +198,7 @@ export async function createCmsSection(
     layout: result.data.layout,
     sort_order: result.data.sortOrder,
     is_active: result.data.isActive,
+    metadata: withViewMoreHref({}, result.data.viewMoreHref),
   });
 
   if (error) {
@@ -206,9 +227,23 @@ export async function updateCmsSection(
     layout: formData.get("layout") || "default",
     sortOrder: formData.get("sortOrder") ?? 0,
     isActive: formData.get("isActive") === "true",
+    viewMoreHref: formData.get("viewMoreHref") ?? "",
   });
 
   if (!result.success) return { error: result.error.issues[0]?.message ?? "Invalid input." };
+
+  const { data: existing, error: existingError } = await client
+    .from("cms_sections")
+    .select("metadata")
+    .eq("id", result.data.id)
+    .single();
+
+  if (existingError || !existing) return { error: "Không tìm thấy phần." };
+
+  const metadata =
+    existing.metadata && typeof existing.metadata === "object" && !Array.isArray(existing.metadata)
+      ? (existing.metadata as Record<string, unknown>)
+      : {};
 
   const { error } = await client
     .from("cms_sections")
@@ -220,12 +255,14 @@ export async function updateCmsSection(
       layout: result.data.layout,
       sort_order: result.data.sortOrder,
       is_active: result.data.isActive,
+      metadata: withViewMoreHref(metadata, result.data.viewMoreHref),
       updated_at: new Date().toISOString(),
     })
     .eq("id", result.data.id);
 
   if (error) throw error;
 
+  revalidatePath("/");
   revalidatePath("/admin/content");
   redirect("/admin/content");
 }

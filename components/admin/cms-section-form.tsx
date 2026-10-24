@@ -16,6 +16,7 @@ type InitialValues = {
   layout: string;
   sortOrder: number;
   isActive: boolean;
+  viewMoreHref: string;
 };
 
 type CmsSectionFormProps = {
@@ -132,6 +133,20 @@ export function CmsSectionForm({ action, pages, initialValues }: CmsSectionFormP
           <option value="default" />
           <option value="carousel" />
         </datalist>
+      </label>
+
+      <label className="block text-sm" htmlFor="viewMoreHref">
+        <span className="font-medium text-slate-700">Đường dẫn &quot;Xem thêm&quot;</span>
+        <span className="ml-1 text-xs text-slate-400">
+          (vd. /categories/best-sellers — để trống nếu không dùng)
+        </span>
+        <input
+          id="viewMoreHref"
+          name="viewMoreHref"
+          placeholder="/categories/..."
+          defaultValue={initialValues?.viewMoreHref}
+          className={INPUT_CLASS}
+        />
       </label>
 
       <label className="block text-sm" htmlFor="sortOrder">

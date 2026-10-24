@@ -32,7 +32,7 @@ export default async function CmsSectionEditPage({ params }: Props) {
     client
       .from("cms_sections")
       .select(
-        "id, page_key, section_key, section_type, title, subtitle, layout, sort_order, is_active",
+        "id, page_key, section_key, section_type, title, subtitle, layout, sort_order, is_active, metadata",
       )
       .eq("id", id)
       .single(),
@@ -42,6 +42,7 @@ export default async function CmsSectionEditPage({ params }: Props) {
   if (sectionResult.error || !sectionResult.data) notFound();
 
   const s = sectionResult.data;
+  const metadata = (s.metadata ?? {}) as Record<string, unknown>;
 
   return (
     <div>
@@ -73,6 +74,7 @@ export default async function CmsSectionEditPage({ params }: Props) {
           layout: s.layout,
           sortOrder: s.sort_order,
           isActive: s.is_active,
+          viewMoreHref: typeof metadata.viewMoreHref === "string" ? metadata.viewMoreHref : "",
         }}
       />
     </div>
